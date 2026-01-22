@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DDS Architect v6.5 (Order Pro)</title>
+    <title>DDS Architect v6.6 (Order Pro)</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -117,6 +117,40 @@
         .hidden-section {
             display: none;
         }
+        /* TOAST ANIMATIONS (Top-Right) */
+        #toast-container {
+        position: fixed;
+        top: 20px; /* <--- Changed from bottom to top */ right: 20px; z-index: 100; display: flex; flex-direction:
+            column; gap: 10px; } .toast { background: rgba(17, 24, 39, 0.95); border: 1px solid rgba(75, 85, 99, 0.5);
+            color: white; padding: 12px 16px; border-radius: 8px; /* Fixed syntax error 'rounded' -> 'border-radius' */
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center; /* Fixed syntax error 'items-center' -> 'align-items' */
+            gap: 10px;
+
+            /* Animation Entry */
+            animation: slideIn 0.3s ease-out forwards;
+            transform: translateX(100%);
+            }
+
+            /* Border Colors */
+            .toast.error { border-left: 3px solid #ef4444; }
+            .toast.success { border-left: 3px solid #22c55e; }
+            .toast.info { border-left: 3px solid #3b82f6; }
+
+            /* Slide in from right */
+            @keyframes slideIn { to { transform: translateX(0); } }
+
+                /* Fade out UPWARDS (Better for top positioning) */
+                @keyframes fadeOut {
+                    to {
+                    opacity: 0;
+                    transform: translateY(-10px); /* Moves up while fading */
+                    }
+                    }
     </style>
 </head>
 
@@ -136,7 +170,7 @@
                 <div>
                     <h1 class="text-lg font-bold tracking-tight text-white leading-none">DDS <span
                             class="text-accent">Architect</span></h1>
-                    <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Order Pro v6.5</span>
+                    <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Order Pro v6.6</span>
                 </div>
             </div>
 
@@ -590,8 +624,7 @@
             </div>
         </div>
     </main>
-
-
+<div id="toast-container"></div>
     <!-- LOGIC -->
     <script>
         // --- 1. DATA DEFINITIONS ---
@@ -1984,7 +2017,7 @@
             const amount = parseFloat(document.getElementById('order-amount').value);
 
             if (!base || isNaN(amount) || amount <= 0) {
-                alert("Please select a drug and enter a valid amount.");
+                showToast("Please select a drug and enter a valid amount.",'error');
                 return;
             }
 
@@ -2172,10 +2205,24 @@
             let totalSlots = 0;
             let totalWeight = 0;
 
+            // WEIGHT: Can be summed globally (Total weight doesn't care about stacking)
             Object.entries(globalPacks).forEach(([size, count]) => {
-                const limit = stackLimits[size] || 1;
-                totalSlots += Math.ceil(count / limit);
                 totalWeight += (size * count);
+            });
+
+            // SLOTS: Must be calculated PER DRUG (Per Base) to prevent mixing
+            // manifestData is grouped by Base (e.g., 'amphetamine': {5: 1}, 'marijuana': {5: 1})
+            Object.keys(manifestData).forEach(baseId => {
+                const packs = manifestData[baseId];
+                
+                // For this specific drug, calculate how many slots its packs take
+                Object.entries(packs).forEach(([size, count]) => {
+                    const limit = stackLimits[size] || 1; 
+                    // Example: 1x5g Amp (Limit 3) -> Ceil(1/3) = 1 Slot
+                    // Example: 1x5g MJ  (Limit 3) -> Ceil(1/3) = 1 Slot
+                    // Total = 2 Slots (Correct)
+                    totalSlots += Math.ceil(count / limit);
+                });
             });
 
             document.getElementById('dist-total-weight').innerText = totalWeight + 'g';
@@ -2186,14 +2233,13 @@
             container.innerHTML = '';
 
             if (Object.keys(manifestData).length === 0) {
-                container.innerHTML =
-                    `<div class="text-[10px] text-gray-600 italic text-center mt-4">No active orders</div>`;
+                container.innerHTML = `<div class="text-[10px] text-gray-600 italic text-center mt-4">No active orders</div>`;
                 return;
             }
 
             Object.keys(manifestData).forEach(baseId => {
                 const packs = manifestData[baseId];
-
+                
                 // Get pretty name and color
                 const ingInfo = ingredients.find(i => i.id === baseId);
                 const displayName = ingInfo ? ingInfo.name : baseId.charAt(0).toUpperCase() + baseId.slice(1);
@@ -2202,7 +2248,11 @@
                 // Format string: "2x20g / 1x10g"
                 const packString = Object.entries(packs)
                     .sort((a, b) => parseFloat(b[0]) - parseFloat(a[0])) // Sort by size descending
-                    .map(([size, count]) => `<span class="text-white font-mono">${count}x${size}g</span>`)
+                    .map(([size, count]) => {
+                        // Optional: Show slot usage per item for debugging? 
+                        // For now just show the count like before
+                        return `<span class="text-white font-mono">${count}x${size}g</span>`;
+                    })
                     .join('<span class="text-gray-600 mx-1">/</span>');
 
                 const row = document.createElement('div');
@@ -2270,6 +2320,26 @@
             } else {
                 originalSwitchView(view);
             }
+        }
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const el = document.createElement('div');
+            el.className = `toast ${type}`;
+            
+            // Icon based on type
+            let icon = '';
+            if(type === 'error') icon = '<svg class="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+            else if(type === 'success') icon = '<svg class="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
+            else icon = '<svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+
+            el.innerHTML = `${icon}<span>${msg}</span>`;
+            container.appendChild(el);
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                el.style.animation = 'fadeOut 0.3s ease-out forwards';
+                setTimeout(() => el.remove(), 300);
+            }, 3000);
         }
     </script>
 </body>
