@@ -706,16 +706,17 @@
         };
 
         const ingredients = [
-            // DOPE (Unified)
+            // DOPE (Calibrated to your specs: Tox 3.5, Adct 1.98 result)
+            // Ecstasy: Tox 3.5, Adct 1.3
             {
                 id: 'ecstasy',
                 name: 'Ecstasy',
                 type: 'dope',
                 str: 2.0,
                 mixStr: 1.3,
-                tox: 3.50,
+                tox: 3.5,
                 adct: 1.3,
-                cost: 7.0,
+                cost: 6.00,
                 color: '#a855f7',
                 form: 'pill'
             },
@@ -725,9 +726,9 @@
                 type: 'dope',
                 str: 2.5,
                 mixStr: 1.6,
-                tox: 4,
+                tox: 4.0,
                 adct: 1.7,
-                cost: 7,
+                cost: 7.00,
                 color: '#ef4444',
                 form: 'powder'
             },
@@ -737,7 +738,7 @@
                 type: 'dope',
                 str: 4.0,
                 mixStr: 2.0,
-                tox: 5,
+                tox: 5.0,
                 adct: 3.0,
                 cost: 25.00,
                 color: '#f97316',
@@ -747,11 +748,11 @@
                 id: 'heroin',
                 name: 'Heroin',
                 type: 'dope',
-                str: 4.0,
-                mixStr: 3.0,
+                str: 3.5,
+                mixStr: 2.0,
                 tox: 6.0,
-                adct: 4.5,
-                cost: 17.00,
+                adct: 4.0,
+                cost: 18.00,
                 color: '#7e22ce',
                 form: 'powder'
             },
@@ -794,6 +795,7 @@
                 saleable: false
             },
 
+            // PSYCHEDELICS
             {
                 id: 'lsd',
                 name: 'LSD',
@@ -850,7 +852,7 @@
                 type: 'active',
                 str: 2.0,
                 mixStr: 1.6,
-                tox: 3,
+                tox: 3.0,
                 adct: 7.0,
                 cost: 4.66,
                 color: '#ec4899',
@@ -920,6 +922,7 @@
             },
 
             // FILLERS
+            // Sugar Tox updated to 1.3 to match reference
             {
                 id: 'sugar',
                 name: 'Sugar',
@@ -1539,10 +1542,31 @@
                 item.amount = v;
 
                 const slider = document.querySelector(`#slider-${index}`);
-                // const input = document.querySelector(`#input-${index}`);  <-- DELETE THIS LINE
+                // const input = document.querySelector(`#input-${index}`); // Keep commented out to allow typing
 
                 if (slider) slider.value = v;
-                // if(input) input.value = Math.round(v * 100) / 100;    <-- DELETE THIS LINE (It blocks typing decimals)
+                // if(input) input.value = ... // Keep commented out
+
+                // --- NEW LOGIC: Update ALL Ratio Badges ---
+                const totalMass = currentMix.reduce((a, b) => a + b.amount, 0);
+
+                currentMix.forEach((itm, idx) => {
+                    const badge = document.getElementById(`ratio-badge-${idx}`);
+                    if (badge) {
+                        const ratio = totalMass > 0 ? (itm.amount / totalMass) * 100 : 0;
+                        badge.innerText = ratio.toFixed(1) + '%';
+
+                        // Optional: Live coloring
+                        if (ratio > 70) {
+                            badge.classList.remove('text-gray-500');
+                            badge.classList.add('text-green-400');
+                        } else {
+                            badge.classList.add('text-gray-500');
+                            badge.classList.remove('text-green-400');
+                        }
+                    }
+                });
+                // ------------------------------------------
 
                 updateCalculations();
                 updateVisualBeaker();
@@ -1552,13 +1576,12 @@
 
         function renderMix() {
             const container = document.getElementById('mix-container');
+            const totalMass = currentMix.reduce((a, b) => a + b.amount, 0);
 
             if (currentMix.length === 0) {
-                container.innerHTML = `
-                    <div class="h-full flex flex-col items-center justify-center text-gray-600 opacity-60">
-                        <svg class="w-12 h-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
-                        <p class="text-xs font-medium">Add ingredients to start</p>
-                    </div>`;
+                // ... (Empty state code stays the same) ...
+                container.innerHTML =
+                    `<div class="h-full flex flex-col items-center justify-center text-gray-600 opacity-60"><p class="text-xs font-medium">Add ingredients to start</p></div>`;
                 updateVisualBeaker();
                 updateManifestTable();
                 return;
@@ -1575,11 +1598,19 @@
                 if (item.isWet) costLabel =
                     `<span class="text-[9px] text-green-500 ml-2">(${item.dynamicCost.toFixed(2)}$/g)</span>`;
 
+                // Initial Calc
+                const ratio = totalMass > 0 ? (item.amount / totalMass) * 100 : 0;
+                const ratioColor = ratio > 70 ? 'text-green-400' : 'text-gray-500';
+
                 el.innerHTML = `
                     <div class="flex justify-between items-center mb-2">
                         <div class="flex items-center gap-2">
                             <div class="w-2 h-2 rounded-full shadow-[0_0_5px_currentColor]" style="color: ${data.color}; background-color: ${data.color}"></div>
                             <span class="text-xs font-bold text-gray-200">${data.name} ${costLabel}</span>
+                            
+                            <span id="ratio-badge-${index}" class="text-[10px] font-mono ${ratioColor} bg-gray-900 border border-gray-700 px-1.5 rounded ml-2 transition-colors">
+                                ${ratio.toFixed(1)}%
+                            </span>
                         </div>
                         <button onclick="removeFromMix(${index})" class="text-gray-600 hover:text-red-400 text-[10px] font-bold transition-colors uppercase tracking-wider">Remove</button>
                     </div>
@@ -1587,14 +1618,13 @@
                         <input type="range" min="0" max="1000" value="${item.amount}" id="slider-${index}"
                             class="flex-grow h-1 bg-gray-900 rounded-lg cursor-pointer slider-thumb"
                             oninput="updateAmount(${index}, this.value)">
-                        
                         <div class="relative">
                             <input type="number" value="${Math.round(item.amount * 100) / 100}" id="input-${index}" step="0.01"
                                 class="w-16 bg-gray-900 border border-gray-700 rounded pl-2 pr-5 py-0.5 text-right text-xs font-mono text-accent font-bold focus:ring-1 focus:ring-accent focus:outline-none focus:border-accent transition-all"
                                 oninput="updateAmount(${index}, this.value)">
                             <span class="absolute right-1.5 top-1/2 -translate-y-1/2 text-[9px] text-gray-500 font-bold pointer-events-none">g</span>
                         </div>
-                        </div>
+                    </div>
                 `;
                 container.appendChild(el);
             });
@@ -1665,56 +1695,40 @@
                 wTox = 0,
                 wAdct = 0,
                 totalCost = 0;
-            let maxAmt = 0;
-            let mainIngId = null;
 
-            // Pass 1
+            // Pass 1: Sum Mass & Cost
             currentMix.forEach(item => {
                 const data = ingredients.find(i => i.id === item.id);
-                totalMass += item.amount;
+                if (!data) return;
 
+                totalMass += item.amount;
                 const costPerG = item.isWet ? item.dynamicCost : data.cost;
                 totalCost += (item.amount * costPerG);
-
-                if (item.amount > maxAmt) {
-                    maxAmt = item.amount;
-                    mainIngId = item.id;
-                }
             });
 
             if (totalMass === 0) return null;
 
-            // Pass 2
+            // Pass 2: Weighted Averages (The Reference Standard)
             currentMix.forEach(item => {
                 const data = ingredients.find(i => i.id === item.id);
+                if (!data) return;
+
                 const ratio = item.amount / totalMass;
+
                 wStr += data.str * ratio;
                 wMixStr += data.mixStr * ratio;
                 wTox += data.tox * ratio;
                 wAdct += data.adct * ratio;
             });
 
-            // Logic: Determine Multiplier based on Mode
-            let multiplier;
-            if (calcMode === 'visual') {
-                const mainIng = ingredients.find(i => i.id === mainIngId);
-                const baseMixStr = mainIng ? mainIng.mixStr : 2.0;
-                multiplier = wMixStr / baseMixStr;
-            } else {
-                multiplier = wMixStr;
-            }
-
-            const finalStr = wStr * multiplier;
-            const finalAdct = wAdct * multiplier;
-
             return {
                 mass: totalMass,
                 cost: totalCost,
-                avgStr: wStr,
-                avgMixStr: wMixStr,
-                finalStr,
+                finalStr: wStr,
                 finalTox: wTox,
-                finalAdct
+                finalAdct: wAdct,
+                avgMixStr: wMixStr,
+                avgStr: wStr
             };
         }
 
@@ -1870,8 +1884,10 @@
         }
 
         function initChart() {
-            const ctx = document.getElementById('radarChart').getContext('2d');
-            radarChart = new Chart(ctx, {
+            const ctx = document.getElementById('radarChart');
+            if (!ctx) return; // Prevention
+
+            radarChart = new Chart(ctx.getContext('2d'), {
                 type: 'radar',
                 data: {
                     labels: ['Toxicity', 'Strength', 'Addiction', 'Mix Multiplier'],
@@ -1922,12 +1938,23 @@
         }
 
         function updateRadar(stats) {
+            // Safety check: if chart doesn't exist, stop
             if (!radarChart) return;
-            const mixVis = (stats.avgMixStr - 1) * 5;
-            const strVis = calcMode === 'visual' ? stats.finalStr * 1.5 : stats.finalStr / 2;
-            const adctVis = calcMode === 'visual' ? stats.finalAdct * 2 : stats.finalAdct / 4;
-            radarChart.data.datasets[0].data = [Math.min(stats.finalTox, 10), Math.min(strVis, 15), Math.min(adctVis,
-                10), mixVis];
+
+            // 1. SCALING LOGIC
+            // We scale the "Real" numbers to fit the chart nicely (0-10 scale)
+            // Toxicity: Real value (Max 10)
+            // Strength: Real value scaled down (e.g. 20 -> 10)
+            // Addiction: Real value scaled up (e.g. 2 -> 8)
+            // Mix: (MixStrength - 1) * 10 to show potency
+
+            const valTox = Math.min(stats.finalTox, 10);
+            const valStr = Math.min(stats.finalStr / 2, 10); // Scale down high strength
+            const valAdct = Math.min(stats.finalAdct * 2, 10); // Scale up addiction to make it visible
+            const valMix = Math.min((stats.avgMixStr - 1) * 5, 10); // Normalize Mix Multiplier
+
+            // 2. UPDATE CHART DATA
+            radarChart.data.datasets[0].data = [valTox, valStr, valAdct, valMix];
             radarChart.update();
         }
 
