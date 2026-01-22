@@ -3,14 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DDS Architect v5.9 (Enterprise)</title>
+    <title>DDS Architect v6.2 (Grow Op)</title>
     
-    <!-- External Libraries -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Tailwind Configuration -->
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Config -->
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -36,30 +40,23 @@
                         adct: '#ec4899',
                         psych: '#22d3ee', 
                         profit: '#22c55e',
-                    },
-                    animation: {
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        weed: '#22c55e',
                     }
                 }
             }
         }
     </script>
 
-    <!-- Custom Styles -->
     <style>
-       /* Base Settings */
        body { background-color: #030712; color: #e5e7eb; }
        
-       /* Scrollbar Customization */
        .scroller::-webkit-scrollbar { width: 6px; height: 6px; }
        .scroller::-webkit-scrollbar-track { background: #111827; }
        .scroller::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
        .scroller::-webkit-scrollbar-thumb:hover { background: #4b5563; }
 
-       /* Chart Container */
        .chart-container { position: relative; width: 100%; height: 180px; }
         
-       /* Range Slider Customization */
        .slider-thumb { -webkit-appearance: none; appearance: none; }
        .slider-thumb::-webkit-slider-thumb {
             appearance: none; width: 12px; height: 12px;
@@ -70,27 +67,19 @@
         }
        .slider-thumb::-webkit-slider-thumb:hover { transform: scale(1.2); }
        
-       /* Glassmorphism Panel */
        .glass-panel {
             background: rgba(17, 24, 39, 0.6); backdrop-filter: blur(12px);
             border: 1px solid rgba(75, 85, 99, 0.3); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
        }
 
-       /* Input Cleanups */
-       input[type=number]::-webkit-inner-spin-button, 
-       input[type=number]::-webkit-outer-spin-button { 
-            -webkit-appearance: none; margin: 0; 
-       }
-
-       /* Table Styles */
-       .manifest-table th { font-size: 10px; text-transform: uppercase; color: #6b7280; font-weight: 700; padding: 4px; text-align: left; }
-       .manifest-table td { font-size: 11px; color: #d1d5db; padding: 4px; border-top: 1px solid #1f2937; }
-       .manifest-table tr:hover td { background-color: rgba(255,255,255,0.02); }
+       input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+       
+       .hidden-section { display: none; }
     </style>
 </head>
 <body class="h-screen flex flex-col font-sans selection:bg-accent selection:text-white overflow-hidden">
 
-    <!-- TOP NAVIGATION BAR -->
+    <!-- Header -->
     <header class="border-b border-gray-800 bg-gray-950/80 backdrop-blur-md sticky top-0 z-50 flex-none">
         <div class="max-w-[1800px] mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
@@ -99,44 +88,49 @@
                 </div>
                 <div>
                     <h1 class="text-lg font-bold tracking-tight text-white leading-none">DDS <span class="text-accent">Architect</span></h1>
-                    <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Enterprise Edition v6.0</span>
+                    <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Grow Op v6.2</span>
                 </div>
             </div>
 
-            <!-- Calculation Mode Switcher -->
-            <div class="flex items-center bg-gray-900 rounded-lg p-1 border border-gray-700 shadow-inner">
-                <button id="mode-visual" onclick="setMode('visual')" class="text-[10px] font-bold px-3 py-1.5 rounded-md bg-gray-700 text-white transition-all shadow-sm flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-green-400"></span> WEBSITE
-                </button>
-                <button id="mode-internal" onclick="setMode('internal')" class="text-[10px] font-bold px-3 py-1.5 rounded-md text-gray-400 hover:text-white transition-all flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-red-900"></span> INTERNAL
-                </button>
+            <div class="flex items-center gap-4">
+                <!-- Nav -->
+                <nav class="flex bg-gray-900 rounded-lg p-1 border border-gray-700">
+                    <button onclick="switchView('lab')" id="nav-lab" class="px-4 py-1.5 rounded-md text-[10px] font-bold text-white bg-gray-700 shadow-sm transition-all">LABORATORY</button>
+                    <button onclick="switchView('grow')" id="nav-grow" class="px-4 py-1.5 rounded-md text-[10px] font-bold text-gray-400 hover:text-white transition-all">GROW ROOM</button>
+                </nav>
+
+                <!-- Mode Selection -->
+                <div class="flex items-center bg-gray-900 rounded-lg p-1 border border-gray-700 shadow-inner">
+                    <button id="mode-visual" onclick="setMode('visual')" class="text-[10px] font-bold px-3 py-1.5 rounded-md bg-gray-700 text-white transition-all shadow-sm flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-green-400"></span> WEBSITE
+                    </button>
+                    <button id="mode-internal" onclick="setMode('internal')" class="text-[10px] font-bold px-3 py-1.5 rounded-md text-gray-400 hover:text-white transition-all flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-red-900"></span> INTERNAL
+                    </button>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- MAIN WORKSPACE -->
-    <main class="flex-grow p-4 lg:p-6 max-w-[1800px] mx-auto w-full overflow-hidden flex flex-col xl:flex-row gap-6">
+    <!-- === VIEW: LABORATORY === -->
+    <main id="view-lab" class="flex-grow p-4 lg:p-6 max-w-[1800px] mx-auto w-full overflow-hidden flex flex-col xl:flex-row gap-6">
         
-        <!-- LEFT COLUMN: INGREDIENT PANTRY -->
+        <!-- Left: Pantry -->
         <div class="xl:w-[340px] flex-none flex flex-col gap-4 h-full min-h-0">
             <div class="glass-panel rounded-xl flex flex-col h-full overflow-hidden shadow-2xl ring-1 ring-white/5">
-                
-                <!-- Search & Header -->
                 <div class="p-4 border-b border-gray-700/50 bg-gray-900/30">
                     <div class="flex justify-between items-center mb-3">
                         <h2 class="text-xs font-bold uppercase tracking-widest text-gray-400">Pantry</h2>
-                        <button id="clear-premixes" onclick="clearPremixes()" class="hidden text-[9px] text-red-400 hover:text-red-300 uppercase font-bold border border-red-900/50 bg-red-900/20 px-2 py-0.5 rounded transition-all">Clear Premixes</button>
+                        <span class="text-[9px] text-gray-500 font-mono bg-gray-800 px-2 py-0.5 rounded border border-gray-700">Bulk Costs</span>
                     </div>
                     <div class="relative">
-                        <input type="text" id="pantry-search" placeholder="Search components..." 
-                            class="w-full bg-gray-950 border border-gray-700 rounded-lg py-2 pl-9 pr-3 text-xs text-white focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all placeholder-gray-600"
+                        <input type="text" id="pantry-search" placeholder="Search..." 
+                            class="w-full bg-gray-950 border border-gray-700 rounded-lg py-2 pl-9 pr-3 text-xs text-white focus:outline-none focus:border-accent transition-all placeholder-gray-600"
                             onkeyup="searchPantry()">
                         <svg class="w-3.5 h-3.5 absolute left-3 top-2.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </div>
                 </div>
                 
-                <!-- Category Tabs -->
                 <div class="px-4 pt-2">
                     <div class="flex p-1 gap-1 bg-gray-950 rounded-lg border border-gray-800 flex-wrap">
                         <button class="flex-1 py-1.5 text-[10px] font-bold uppercase rounded hover:bg-gray-800 text-gray-400 transition-all active-tab bg-gray-800 text-white shadow-sm border border-gray-700" data-tab="dope" onclick="filterPantry('dope')">Drugs</button>
@@ -146,17 +140,12 @@
                     </div>
                 </div>
 
-                <!-- Ingredient List Container -->
-                <div id="pantry-list" class="flex-grow overflow-y-auto scroller p-2 space-y-1">
-                    <!-- Javascript populates this -->
-                </div>
+                <div id="pantry-list" class="flex-grow overflow-y-auto scroller p-2 space-y-1"></div>
             </div>
         </div>
 
-        <!-- CENTER COLUMN: MIXING FLASK & WORKBENCH -->
+        <!-- Center: Flask -->
         <div class="flex-grow flex flex-col gap-4 h-full min-h-0 min-w-0">
-            
-            <!-- Flask Status Header -->
             <div class="glass-panel p-3 rounded-xl flex items-center justify-between flex-none">
                 <div class="flex items-center gap-4">
                     <div class="flex items-center gap-3 pl-2">
@@ -168,71 +157,50 @@
                     </div>
                 </div>
                 
-                <div class="flex items-center gap-3 pr-2">
-                    <div class="text-right mr-4">
+                <div class="flex items-center gap-6 pr-2">
+                    <div class="text-right">
                         <div class="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Total Mass</div>
                         <div class="text-xl font-mono font-bold text-white leading-none"><span id="total-mass">0</span><span class="text-sm text-gray-500 ml-1">g</span></div>
                     </div>
-                    
-                    <!-- Save Premix Action -->
                     <button onclick="savePremix()" class="group p-2 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 transition-all" title="Save as Premix">
-                        <svg class="w-5 h-5 text-indigo-400 group-hover:text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+                        <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
                     </button>
-
-                    <!-- Reset Action -->
                     <button onclick="resetLab()" class="group p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 transition-all" title="Empty Flask">
-                        <svg class="w-5 h-5 text-red-400 group-hover:text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
                 </div>
             </div>
 
-            <div class="flex flex-row gap-4 h-2/3 min-h-0">
-                <!-- Visual Beaker Side Panel -->
+            <div class="flex flex-row gap-4 h-full min-h-0">
                 <div class="w-16 glass-panel rounded-xl flex flex-col p-1.5 flex-none relative">
                     <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gray-900 border border-gray-700 px-2 py-0.5 rounded text-[9px] text-gray-400 font-mono z-10 shadow-sm">MIX</div>
-                    <div class="w-full h-full bg-gray-950/50 rounded-lg overflow-hidden flex flex-col-reverse relative border border-gray-800" id="visual-beaker">
-                        <!-- Bars injected here -->
-                    </div>
+                    <div class="w-full h-full bg-gray-950/50 rounded-lg overflow-hidden flex flex-col-reverse relative border border-gray-800" id="visual-beaker"></div>
                 </div>
 
-                <!-- Active Ingredient Sliders -->
                 <div class="glass-panel rounded-xl flex-grow flex flex-col relative overflow-hidden shadow-2xl">
-                    <div class="flex-grow overflow-y-auto scroller p-4 space-y-3" id="mix-container">
-                        <!-- Content injected here -->
-                    </div>
+                    <div class="flex-grow overflow-y-auto scroller p-4 space-y-3" id="mix-container"></div>
                 </div>
             </div>
-
-            <!-- Detailed Batch Manifest (New Feature) -->
+            
+            <!-- Detailed Batch Manifest -->
             <div class="h-1/3 glass-panel rounded-xl flex flex-col overflow-hidden min-h-0">
                 <div class="p-2 border-b border-gray-700/50 bg-gray-900/30 flex justify-between items-center">
                     <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 px-2">Batch Manifest</h3>
                 </div>
                 <div class="overflow-y-auto scroller p-0">
-                    <table class="w-full text-left manifest-table">
-                        <thead class="bg-gray-900/50 sticky top-0">
-                            <tr>
-                                <th class="pl-3">Ingredient</th>
-                                <th class="text-right">Mass (g)</th>
-                                <th class="text-right">%</th>
-                                <th class="text-right pr-3">Cost Contrib.</th>
-                            </tr>
+                    <table class="w-full text-left text-[11px] text-gray-400">
+                        <thead class="bg-gray-900/50 sticky top-0 font-bold uppercase text-gray-500">
+                            <tr><th class="pl-3 py-2">Item</th><th class="text-right">Mass</th><th class="text-right">%</th><th class="text-right pr-3">Cost</th></tr>
                         </thead>
-                        <tbody id="manifest-body">
-                            <!-- Rows injected by JS -->
-                        </tbody>
+                        <tbody id="manifest-body"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- RIGHT COLUMN: ANALYTICS & FINANCIALS -->
+        <!-- Right: Analytics -->
         <div class="xl:w-[360px] flex-none flex flex-col gap-4 h-full min-h-0 overflow-y-auto scroller pr-1">
-            
-            <!-- Warning System -->
             <div id="warnings" class="space-y-2 flex-none"></div>
-
-            <!-- Stats Grid -->
             <div class="grid grid-cols-3 gap-2 flex-none">
                 <div class="stat-card p-3 rounded-xl group relative overflow-hidden">
                     <div class="text-[9px] text-gray-400 uppercase font-bold">Strength</div>
@@ -248,8 +216,6 @@
                     <div class="text-2xl font-mono font-bold text-gray-300 tracking-tight" id="val-tox">0.00</div>
                 </div>
             </div>
-
-            <!-- Financial Dashboard -->
             <div class="stat-card p-4 rounded-xl flex-none bg-gray-900/50 border border-gray-700">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-xs font-bold text-gray-300 uppercase tracking-widest">Financials</h3>
@@ -258,12 +224,10 @@
                         <input type="number" id="street-price" value="10" class="bg-transparent border-none text-right text-xs text-white font-mono w-10 p-0 focus:ring-0" onchange="updateCalculations()">
                     </div>
                 </div>
-                
                 <div class="mb-4 text-center p-3 bg-gray-900/80 rounded-lg border border-gray-800">
                     <div class="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Total Profit (Batch)</div>
-                    <div class="text-3xl font-mono font-bold text-green-400 leading-none" id="val-profit-batch">$0.00</div>
+                    <div class="text-3xl font-mono font-bold text-green-400 leading-none" id="val-profit-batch">$0</div>
                 </div>
-
                 <div class="grid grid-cols-2 gap-4 text-xs font-mono mb-2">
                     <div>
                         <div class="text-[9px] text-gray-500 uppercase mb-1">Total Cost</div>
@@ -275,43 +239,130 @@
                         <div class="text-lg font-mono font-bold text-green-400" id="val-profit-gram">$0.00</div>
                     </div>
                 </div>
-
                 <div class="h-1.5 bg-gray-800 rounded-full overflow-hidden flex w-full">
                     <div id="cost-bar" class="bg-red-500/40 h-full" style="width: 0%"></div>
                     <div id="profit-bar" class="bg-green-500/40 h-full" style="width: 0%"></div>
                 </div>
             </div>
-
-            <!-- Radar Chart -->
-            <div class="stat-card p-4 rounded-xl flex-none border border-gray-800 bg-gray-900/30">
+            <div class="stat-card p-4 rounded-xl flex-none">
                 <div class="chart-container h-[160px]">
                     <canvas id="radarChart"></canvas>
                 </div>
             </div>
-
-            <!-- Saved Recipes -->
             <div class="glass-panel flex-grow rounded-xl overflow-hidden flex flex-col min-h-[150px]">
                 <div class="p-3 border-b border-gray-700/50 bg-gray-900/30">
                     <h2 class="text-xs font-bold uppercase tracking-widest text-gray-400">Recipes</h2>
                 </div>
                 <div class="overflow-y-auto scroller p-2 space-y-2" id="recipe-list"></div>
             </div>
-
         </div>
     </main>
 
-    <!-- LOGIC SYSTEM -->
+    <!-- === VIEW: GROW ROOM === -->
+    <main id="view-grow" class="hidden flex-grow p-4 lg:p-6 max-w-[1800px] mx-auto w-full overflow-hidden flex flex-col">
+        <div class="glass-panel p-6 rounded-xl border border-gray-700/50 bg-gray-900/40 shadow-2xl h-full flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-white tracking-tight">Strain Database</h2>
+                    <p class="text-sm text-gray-400 mt-1">Growth times, yields, and drying efficiency.</p>
+                </div>
+                <div class="flex items-center gap-2 bg-gray-800/50 px-4 py-2 rounded-lg border border-gray-700">
+                    <span class="text-xs text-gray-500 uppercase font-bold">Watering:</span>
+                    <span class="text-xs text-blue-400 font-mono">Every 10-15 Hours (All Strains)</span>
+                </div>
+            </div>
+
+            <!-- Strains Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+                <!-- Cards Injected via JS -->
+                <div id="grow-grid" class="contents"></div>
+            </div>
+
+            <!-- Tips Section -->
+            <div class="bg-gray-900/60 rounded-xl p-4 border border-gray-800 mt-auto">
+                <h3 class="text-sm font-bold text-gray-300 uppercase mb-3 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Grower's Notes
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-gray-500">
+                    <p><strong>Dehydration:</strong> Plants lose health after ~15 hours without water. Total death occurs between 25-29 hours depending on strain.</p>
+                    <p><strong>Drying:</strong> Converting Wet to Dry reduces weight significantly (35-45% retention). Cost/gram essentially doubles during drying.</p>
+                    <p><strong>Yields:</strong> Values shown are per single seed/pot. Outdoor growing generally provides slightly higher health stability.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- WET WEED MODAL -->
+    <div id="wet-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+        <div class="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-lg shadow-2xl modal-fade p-6 relative">
+            <h3 class="text-lg font-bold text-white mb-1">Add Wet Marijuana</h3>
+            <p class="text-xs text-gray-500 mb-4">Select a strain to auto-calculate production cost.</p>
+            
+            <div class="grid grid-cols-2 gap-2 mb-6">
+                <button onclick="setStrainData('ghetto')" class="p-3 rounded border border-gray-700 hover:border-green-500/50 bg-gray-800/50 hover:bg-gray-800 text-left transition-all group">
+                    <div class="text-[10px] uppercase text-gray-500 font-bold group-hover:text-green-400">Ghetto Kush</div>
+                    <div class="text-xs text-white">Cost: $45 / 205g</div>
+                </button>
+                <button onclick="setStrainData('stoner')" class="p-3 rounded border border-gray-700 hover:border-purple-500/50 bg-gray-800/50 hover:bg-gray-800 text-left transition-all group">
+                    <div class="text-[10px] uppercase text-gray-500 font-bold group-hover:text-purple-400">Stoner Haze</div>
+                    <div class="text-xs text-white">Cost: $45 / 322g</div>
+                </button>
+                <button onclick="setStrainData('firecracker')" class="p-3 rounded border border-gray-700 hover:border-red-500/50 bg-gray-800/50 hover:bg-gray-800 text-left transition-all group">
+                    <div class="text-[10px] uppercase text-gray-500 font-bold group-hover:text-red-400">Firecracker</div>
+                    <div class="text-xs text-white">Cost: $40 / 312g</div>
+                </button>
+                <button onclick="setStrainData('bongbreaker')" class="p-3 rounded border border-gray-700 hover:border-blue-500/50 bg-gray-800/50 hover:bg-gray-800 text-left transition-all group">
+                    <div class="text-[10px] uppercase text-gray-500 font-bold group-hover:text-blue-400">Bong Breaker</div>
+                    <div class="text-xs text-white">Cost: $40 / 305g</div>
+                </button>
+            </div>
+
+            <div class="space-y-4 border-t border-gray-800 pt-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] uppercase text-gray-400 font-bold mb-1">Seed Cost ($)</label>
+                        <input type="number" id="seed-cost" value="40" class="w-full bg-gray-950 border border-gray-700 rounded p-2 text-white font-mono focus:border-green-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase text-gray-400 font-bold mb-1">Harvest Yield (g)</label>
+                        <input type="number" id="harvest-yield" value="305" class="w-full bg-gray-950 border border-gray-700 rounded p-2 text-white font-mono focus:border-green-500 outline-none">
+                    </div>
+                </div>
+                
+                <div class="p-3 bg-gray-800 rounded border border-gray-700 flex justify-between items-center">
+                    <span class="text-[10px] text-gray-400 uppercase">Calculated Cost Basis</span>
+                    <span class="text-xl font-mono text-green-400" id="calc-cost-display">$0.13/g</span>
+                </div>
+            </div>
+
+            <div class="flex gap-2 mt-6">
+                <button onclick="closeWetModal()" class="flex-1 py-3 rounded border border-gray-700 text-gray-400 hover:text-white hover:bg-gray-800 text-xs font-bold transition-all">Cancel</button>
+                <button onclick="confirmWetAdd()" class="flex-1 py-3 rounded bg-green-700 text-white hover:bg-green-600 text-xs font-bold transition-all shadow-lg shadow-green-900/20">Add to Flask</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIC -->
     <script>
         // --- 1. DATA DEFINITIONS ---
-        // Stats calibrated to match community tools (Relative Mode) and In-Game Memory (Absolute Mode)
+        const strainsData = {
+            ghetto: { name: "Ghetto Kush", cost: 45, wet: 205, dry: 73.8, time: 78, wetRatio: 2.62, dryRatio: 0.95, dryRate: 36, death: 28, color: "text-green-400", border: "border-green-500/30" },
+            stoner: { name: "Stoner Haze", cost: 45, wet: 322, dry: 112.7, time: 108, wetRatio: 2.98, dryRatio: 1.04, dryRate: 35, death: 28, color: "text-purple-400", border: "border-purple-500/30" },
+            firecracker: { name: "Firecracker", cost: 40, wet: 312, dry: 124.8, time: 100, wetRatio: 3.12, dryRatio: 1.25, dryRate: 40, death: 25, color: "text-red-400", border: "border-red-500/30" },
+            bongbreaker: { name: "Bong Breaker", cost: 40, wet: 305, dry: 137.25, time: 96, wetRatio: 3.39, dryRatio: 1.53, dryRate: 45, death: 29, color: "text-blue-400", border: "border-blue-500/30" }
+        };
+
         const ingredients = [
-            // DOPE
+            // DOPE (Unified)
             { id: 'ecstasy', name: 'Ecstasy', type: 'dope', str: 3.14, mixStr: 1.3, tox: 3.58, adct: 2.10, cost: 6.94, color: '#a855f7', form: 'pill' },
             { id: 'amphetamine', name: 'Amphetamine', type: 'dope', str: 2.5, mixStr: 1.6, tox: 4, adct: 1.7, cost: 7.00, color: '#ef4444', form: 'powder' },
             { id: 'cocaine', name: 'Cocaine', type: 'dope', str: 4.0, mixStr: 2.0, tox: 5, adct: 3.0, cost: 25.00, color: '#f97316', form: 'powder' },
             { id: 'heroin', name: 'Heroin', type: 'dope', str: 3.5, mixStr: 2.0, tox: 6.0, adct: 4.0, cost: 18.00, color: '#7e22ce', form: 'powder' },
             { id: 'meth', name: 'Crystal Meth', type: 'dope', str: 3.0, mixStr: 2.4, tox: 5.5, adct: 3.0, cost: 9.00, color: '#3b82f6', form: 'crystal' },
-            { id: 'marijuana', name: 'Marijuana', type: 'dope', str: 2.0, mixStr: 1.0, tox: 0.5, adct: 0.8, cost: 5.00, color: '#22c55e', form: 'plant' },
+            { id: 'marijuana', name: 'Marijuana (Dry)', type: 'dope', str: 2.0, mixStr: 1.0, tox: 0.5, adct: 0.8, cost: 5.00, color: '#22c55e', form: 'plant' },
+            { id: 'wet_weed', name: 'Marijuana (Wet)', type: 'dope', str: 1.5, mixStr: 1.0, tox: 1.0, adct: 0.5, cost: 0.00, color: '#14532d', form: 'plant', custom: true, saleable: false },
+            
             { id: 'lsd', name: 'LSD', type: 'dope', str: 5.0, mixStr: 2.0, tox: 1.5, adct: 1.2, cost: 20.00, color: '#22d3ee', form: 'blotter' },
             { id: 'shrooms', name: 'Mushrooms', type: 'dope', str: 2.5, mixStr: 1.1, tox: 0.5, adct: 0.5, cost: 10.00, color: '#a16207', form: 'plant' },
             { id: 'dmt', name: 'DMT', type: 'dope', str: 7.0, mixStr: 2.2, tox: 5.0, adct: 2.0, cost: 30.00, color: '#fbbf24', form: 'crystal' },
@@ -350,13 +401,13 @@
             {name: "Fentastic", items: [{id: 'heroin', amount: 200}, {id: 'fentanyl', amount: 12}, {id: 'paracetamol', amount: 8}, {id: 'sugar', amount: 15}, {id: 'acetone', amount: 1}], desc: "Extremely potent.", tags: ["Deadly"]}
         ];
 
-        // --- 2. APPLICATION STATE ---
+        // STATE VARIABLES
         let currentMix = [];
         let radarChart = null;
         let calcMode = 'visual'; // 'visual' = Relative to Main Ingredient (Website Logic)
         let savedPremixes = [];
 
-        // --- 3. CORE LIFECYCLE ---
+        // --- CORE LIFECYCLE ---
         document.addEventListener('DOMContentLoaded', () => {
             loadPremixes();
             initPantry('dope');
@@ -364,62 +415,156 @@
             renderMix();
             initChart();
             updateCalculations();
+            renderGrowGrid(); // Initialize new view
+
+            // Modal Listeners
+            document.getElementById('seed-cost').addEventListener('input', updateModalCalc);
+            document.getElementById('harvest-yield').addEventListener('input', updateModalCalc);
         });
 
-        // --- 4. PREMIX MANAGER ---
-        function savePremix() {
-            if (currentMix.length === 0) {
-                alert("Cannot save an empty mix!");
-                return;
-            }
-            const name = prompt("Enter a name for this Premix:");
-            if (!name) return;
+        // --- NAVIGATION ---
+        function switchView(view) {
+            // UI States
+            const labBtn = document.getElementById('nav-lab');
+            const growBtn = document.getElementById('nav-grow');
+            const labView = document.getElementById('view-lab');
+            const growView = document.getElementById('view-grow');
 
-            const totalMass = currentMix.reduce((a, b) => a + b.amount, 0);
+            if(view === 'lab') {
+                labBtn.classList.replace('text-gray-400', 'text-white'); labBtn.classList.add('bg-gray-700', 'shadow-sm');
+                growBtn.classList.replace('text-white', 'text-gray-400'); growBtn.classList.remove('bg-gray-700', 'shadow-sm');
+                labView.classList.remove('hidden'); labView.classList.add('flex');
+                growView.classList.add('hidden');
+            } else {
+                growBtn.classList.replace('text-gray-400', 'text-white'); growBtn.classList.add('bg-gray-700', 'shadow-sm');
+                labBtn.classList.replace('text-white', 'text-gray-400'); labBtn.classList.remove('bg-gray-700', 'shadow-sm');
+                growView.classList.remove('hidden'); growView.classList.add('flex');
+                labView.classList.add('hidden');
+            }
+        }
+
+        // --- GROW ROOM LOGIC ---
+        function renderGrowGrid() {
+            const grid = document.getElementById('grow-grid');
+            grid.innerHTML = '';
             
-            // Normalize recipe to percentages
+            Object.keys(strainsData).forEach(key => {
+                const s = strainsData[key];
+                const card = document.createElement('div');
+                card.className = `p-5 rounded-xl bg-gray-900/50 border ${s.border} relative group hover:bg-gray-800 transition-all`;
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-lg font-bold text-white tracking-tight">${s.name}</h3>
+                        <span class="text-xs ${s.color} font-mono border border-current px-2 py-0.5 rounded opacity-70 group-hover:opacity-100">${s.time} hrs</span>
+                    </div>
+                    
+                    <div class="space-y-3 mb-5">
+                        <div class="flex justify-between text-xs border-b border-gray-800 pb-2">
+                            <span class="text-gray-500">Seed Cost</span>
+                            <span class="text-white font-mono">$${s.cost}</span>
+                        </div>
+                        <div class="flex justify-between text-xs border-b border-gray-800 pb-2">
+                            <span class="text-gray-500">Wet Yield</span>
+                            <span class="text-white font-mono">${s.wet}g</span>
+                        </div>
+                        <div class="flex justify-between text-xs border-b border-gray-800 pb-2">
+                            <span class="text-gray-500">Dry Yield</span>
+                            <span class="text-white font-mono">${s.dry}g <span class="text-gray-600">(${s.dryRate}%)</span></span>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-950 rounded-lg p-3 grid grid-cols-2 gap-2 text-center">
+                        <div>
+                            <div class="text-[9px] uppercase text-gray-500">Wet Cost</div>
+                            <div class="text-sm font-mono text-green-400">$${(s.cost/s.wet).toFixed(2)}/g</div>
+                        </div>
+                        <div>
+                            <div class="text-[9px] uppercase text-gray-500">Dry Cost</div>
+                            <div class="text-sm font-mono text-orange-400">$${(s.cost/s.dry).toFixed(2)}/g</div>
+                        </div>
+                    </div>
+
+                    <div class="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div class="w-2 h-2 rounded-full ${s.color.replace('text', 'bg')} animate-pulse"></div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // --- WET WEED LOGIC ---
+        function setStrainData(key) {
+            const s = strainsData[key];
+            if(s) {
+                document.getElementById('seed-cost').value = s.cost;
+                document.getElementById('harvest-yield').value = s.wet;
+                updateModalCalc();
+            }
+        }
+        
+        function closeWetModal() { document.getElementById('wet-modal').classList.add('hidden'); }
+
+        function updateModalCalc() {
+            const cost = parseFloat(document.getElementById('seed-cost').value) || 0;
+            const yieldVal = parseFloat(document.getElementById('harvest-yield').value) || 1;
+            const pricePerG = cost / yieldVal;
+            document.getElementById('calc-cost-display').innerText = '$' + pricePerG.toFixed(2) + '/g';
+        }
+
+        function confirmWetAdd() {
+            const cost = parseFloat(document.getElementById('seed-cost').value) || 0;
+            const yieldVal = parseFloat(document.getElementById('harvest-yield').value) || 1;
+            const dynamicCost = cost / yieldVal;
+            
+            // Push with special flag
+            currentMix.push({ 
+                id: 'wet_weed', 
+                amount: 10, 
+                dynamicCost: dynamicCost,
+                isWet: true 
+            });
+            
+            closeWetModal();
+            renderMix();
+            updateCalculations();
+        }
+
+        // --- PREMIX LOGIC (v6.1) ---
+        function savePremix() {
+            if (currentMix.length === 0) { alert("Empty!"); return; }
+            const name = prompt("Name this premix:");
+            if (!name) return;
+            const totalMass = currentMix.reduce((a, b) => a + b.amount, 0);
             const composition = currentMix.map(item => ({
                 id: item.id,
-                ratio: item.amount / totalMass
+                ratio: item.amount / totalMass,
+                dynamicCost: item.dynamicCost, // Preserve wet weed cost
+                isWet: item.isWet
             }));
-
-            const premix = {
-                id: 'premix_' + Date.now(),
-                name: name,
-                composition: composition,
-                color: '#fbbf24' // Gold
-            };
-
-            savedPremixes.push(premix);
+            savedPremixes.push({ id: 'premix_' + Date.now(), name, composition, color: '#fbbf24' });
             localStorage.setItem('dds_premixes_v2', JSON.stringify(savedPremixes));
             
-            // Refresh UI if needed
             const activeTab = document.querySelector('.active-tab');
-            if(activeTab && activeTab.dataset.tab === 'premix') {
-                filterPantry('premix');
-            } else {
-                alert(`Premix "${name}" saved! You can find it in the 'Premix' tab.`);
-            }
+            if(activeTab && activeTab.dataset.tab === 'premix') filterPantry('premix');
         }
 
         function loadPremixes() {
             try {
                 const saved = localStorage.getItem('dds_premixes_v2');
                 if (saved) savedPremixes = JSON.parse(saved);
-            } catch(e) {
-                console.error("Error loading premixes", e);
-            }
+            } catch(e) {}
         }
 
         function addPremixToFlask(premix) {
-            const amountToAdd = 10; // Default dose
+            const amountToAdd = 10;
             premix.composition.forEach(comp => {
                 const amount = comp.ratio * amountToAdd;
-                const existing = currentMix.find(i => i.id === comp.id);
-                if (existing) {
-                    existing.amount += amount;
+                if (comp.id === 'wet_weed') {
+                    currentMix.push({ id: comp.id, amount, dynamicCost: comp.dynamicCost, isWet: true });
                 } else {
-                    currentMix.push({ id: comp.id, amount: amount });
+                    const existing = currentMix.find(i => i.id === comp.id && !i.isWet);
+                    if (existing) existing.amount += amount;
+                    else currentMix.push({ id: comp.id, amount });
                 }
             });
             renderMix();
@@ -427,14 +572,34 @@
         }
         
         function clearPremixes() {
-            if(confirm("Are you sure you want to delete ALL saved premixes? This cannot be undone.")) {
+            if(confirm("Delete all saved premixes?")) {
                 savedPremixes = [];
                 localStorage.removeItem('dds_premixes_v2');
                 filterPantry('premix');
             }
         }
 
-        // --- 5. PANTRY & SEARCH ---
+        // --- CALCULATION MODE ---
+        function setMode(mode) {
+            calcMode = mode;
+            const visBtn = document.getElementById('mode-visual');
+            const intBtn = document.getElementById('mode-internal');
+            
+            if (mode === 'visual') {
+                visBtn.classList.replace('text-gray-400', 'bg-gray-700'); visBtn.classList.replace('hover:text-white', 'text-white');
+                visBtn.classList.add('shadow-sm');
+                intBtn.classList.replace('bg-red-900/50', 'text-gray-400'); intBtn.classList.replace('text-red-200', 'hover:text-white');
+                intBtn.classList.remove('shadow-sm');
+            } else {
+                intBtn.classList.replace('text-gray-400', 'bg-red-900/50'); intBtn.classList.replace('hover:text-white', 'text-red-200');
+                intBtn.classList.add('shadow-sm');
+                visBtn.classList.replace('bg-gray-700', 'text-gray-400'); visBtn.classList.replace('text-white', 'hover:text-white');
+                visBtn.classList.remove('shadow-sm');
+            }
+            updateCalculations();
+        }
+
+        // --- PANTRY & SEARCH ---
         function filterPantry(type) {
             document.querySelectorAll('[data-tab]').forEach(el => {
                 el.classList.remove('bg-gray-800', 'text-white', 'shadow-sm', 'border-gray-700');
@@ -445,11 +610,9 @@
                 activeBtn.classList.remove('text-gray-400', 'border-transparent');
                 activeBtn.classList.add('bg-gray-800', 'text-white', 'shadow-sm', 'border-gray-700');
             }
-            
-            // Show clear button only on premix tab
             const clearBtn = document.getElementById('clear-premixes');
-            if (type === 'premix') clearBtn.classList.remove('hidden');
-            else clearBtn.classList.add('hidden');
+            if (type === 'premix' && clearBtn) clearBtn.classList.remove('hidden');
+            else if(clearBtn) clearBtn.classList.add('hidden');
 
             initPantry(type);
         }
@@ -459,11 +622,9 @@
             const list = document.getElementById('pantry-list');
             list.innerHTML = '';
             
-            // Search Regular
             const filteredIngs = ingredients.filter(i => i.name.toLowerCase().includes(term));
             filteredIngs.forEach(item => renderPantryItem(item, list));
             
-            // Search Premixes
             const filteredPremixes = savedPremixes.filter(p => p.name.toLowerCase().includes(term));
             filteredPremixes.forEach(item => renderPremixItem(item, list));
         }
@@ -473,11 +634,8 @@
             list.innerHTML = '';
             
             if (type === 'premix') {
-                if (savedPremixes.length === 0) {
-                    list.innerHTML = `<div class="text-xs text-gray-500 text-center p-6 italic">No saved premixes.<br>Create a mix and click the Save icon.</div>`;
-                } else {
-                    savedPremixes.forEach(item => renderPremixItem(item, list));
-                }
+                if (savedPremixes.length === 0) list.innerHTML = `<div class="text-xs text-gray-500 text-center p-6 italic">No saved premixes.<br>Create a mix and click the Save icon.</div>`;
+                else savedPremixes.forEach(item => renderPremixItem(item, list));
             } else {
                 const filtered = ingredients.filter(i => {
                     if (type === 'active') return ['active', 'solvent'].includes(i.type);
@@ -490,7 +648,14 @@
         function renderPantryItem(item, container) {
             const row = document.createElement('div');
             row.className = "flex items-center justify-between p-2 rounded-lg hover:bg-gray-800/80 cursor-pointer group transition-all border border-transparent hover:border-gray-700/50";
-            row.onclick = () => addToMix(item.id);
+            row.onclick = () => {
+                if(item.custom) {
+                    document.getElementById('wet-modal').classList.remove('hidden');
+                    updateModalCalc();
+                } else {
+                    addToMix(item.id);
+                }
+            };
             row.innerHTML = `
                 <div class="flex items-center gap-3">
                     <div class="w-1.5 h-8 rounded-full shadow-[0_0_8px_currentColor]" style="color: ${item.color}; background-color: ${item.color}"></div>
@@ -532,21 +697,21 @@
             updateCalculations();
         }
 
-        function removeFromMix(id) {
-            currentMix = currentMix.filter(i => i.id !== id);
+        function removeFromMix(index) {
+            currentMix.splice(index, 1);
             renderMix();
             updateCalculations();
         }
 
-        function updateAmount(id, val) {
-            const item = currentMix.find(i => i.id === id);
+        function updateAmount(index, val) {
+            const item = currentMix[index];
             if (item) {
                 let v = parseFloat(val);
                 if (isNaN(v) || v < 0) v = 0;
                 item.amount = v;
                 
-                const slider = document.querySelector(`#slider-${id}`);
-                const input = document.querySelector(`#input-${id}`);
+                const slider = document.querySelector(`#slider-${index}`);
+                const input = document.querySelector(`#input-${index}`);
                 if(slider) slider.value = v;
                 if(input) input.value = Math.round(v * 100) / 100;
                 
@@ -563,7 +728,7 @@
                 container.innerHTML = `
                     <div class="h-full flex flex-col items-center justify-center text-gray-600 opacity-60">
                         <svg class="w-12 h-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
-                        <p class="text-xs font-medium">Flask is empty</p>
+                        <p class="text-xs font-medium">Add ingredients to start</p>
                     </div>`;
                 updateVisualBeaker();
                 updateManifestTable();
@@ -571,26 +736,30 @@
             }
 
             container.innerHTML = '';
-            currentMix.forEach(item => {
+            currentMix.forEach((item, index) => {
                 const data = ingredients.find(i => i.id === item.id);
                 const el = document.createElement('div');
                 el.className = "bg-gray-800/40 border border-gray-700/50 rounded-lg p-3 group hover:border-gray-600 transition-colors";
+                
+                let costLabel = '';
+                if(item.isWet) costLabel = `<span class="text-[9px] text-green-500 ml-2">(${item.dynamicCost.toFixed(2)}$/g)</span>`;
+
                 el.innerHTML = `
                     <div class="flex justify-between items-center mb-2">
                         <div class="flex items-center gap-2">
                             <div class="w-2 h-2 rounded-full shadow-[0_0_5px_currentColor]" style="color: ${data.color}; background-color: ${data.color}"></div>
-                            <span class="text-xs font-bold text-gray-200">${data.name}</span>
+                            <span class="text-xs font-bold text-gray-200">${data.name} ${costLabel}</span>
                         </div>
-                        <button onclick="removeFromMix('${item.id}')" class="text-gray-600 hover:text-red-400 text-[10px] font-bold transition-colors uppercase tracking-wider">Remove</button>
+                        <button onclick="removeFromMix(${index})" class="text-gray-600 hover:text-red-400 text-[10px] font-bold transition-colors uppercase tracking-wider">Remove</button>
                     </div>
                     <div class="flex items-center gap-3">
-                        <input type="range" min="0" max="1000" value="${item.amount}" id="slider-${item.id}"
+                        <input type="range" min="0" max="1000" value="${item.amount}" id="slider-${index}"
                             class="flex-grow h-1 bg-gray-900 rounded-lg cursor-pointer slider-thumb"
-                            oninput="updateAmount('${item.id}', this.value)">
+                            oninput="updateAmount(${index}, this.value)">
                         <div class="relative">
-                            <input type="number" value="${Math.round(item.amount * 100) / 100}" id="input-${item.id}"
+                            <input type="number" value="${Math.round(item.amount * 100) / 100}" id="input-${index}"
                                 class="w-14 bg-gray-900 border border-gray-700 rounded px-1 py-0.5 text-right text-xs font-mono text-accent font-bold focus:ring-1 focus:ring-accent focus:outline-none focus:border-accent transition-all"
-                                oninput="updateAmount('${item.id}', this.value)">
+                                oninput="updateAmount(${index}, this.value)">
                             <span class="absolute right-5 top-1/2 -translate-y-1/2 text-[9px] text-gray-600 pointer-events-none">g</span>
                         </div>
                     </div>
@@ -640,11 +809,12 @@
             currentMix.forEach(item => {
                 const data = ingredients.find(i => i.id === item.id);
                 const pct = (item.amount / totalMass) * 100;
-                const cost = item.amount * data.cost;
+                const costPerG = item.isWet ? item.dynamicCost : data.cost;
+                const cost = item.amount * costPerG;
                 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td class="pl-3 font-medium text-gray-300">${data.name}</td>
+                    <td class="pl-3 font-medium text-gray-300 py-1">${data.name}</td>
                     <td class="text-right font-mono">${item.amount.toFixed(1)}</td>
                     <td class="text-right font-mono text-gray-500">${pct.toFixed(1)}%</td>
                     <td class="text-right pr-3 font-mono text-gray-400">$${cost.toFixed(2)}</td>
@@ -661,10 +831,13 @@
             let maxAmt = 0;
             let mainIngId = null;
 
+            // Pass 1
             currentMix.forEach(item => {
                 const data = ingredients.find(i => i.id === item.id);
                 totalMass += item.amount;
-                totalCost += (item.amount * data.cost);
+                
+                const costPerG = item.isWet ? item.dynamicCost : data.cost;
+                totalCost += (item.amount * costPerG);
                 
                 if (item.amount > maxAmt) {
                     maxAmt = item.amount;
@@ -674,6 +847,7 @@
             
             if (totalMass === 0) return null;
 
+            // Pass 2
             currentMix.forEach(item => {
                 const data = ingredients.find(i => i.id === item.id);
                 const ratio = item.amount / totalMass;
@@ -683,7 +857,7 @@
                 wAdct += data.adct * ratio;
             });
 
-            // Logic: Calculate Multiplier
+            // Logic: Determine Multiplier based on Mode
             let multiplier;
             if (calcMode === 'visual') {
                 const mainIng = ingredients.find(i => i.id === mainIngId);
@@ -707,30 +881,38 @@
                 return;
             }
 
-            // Update Basic Stats
             const eqInfo = determineEquipment(currentMix);
             document.getElementById('eq-name').innerHTML = `${eqInfo.eq} <span class="text-[10px] bg-gray-800 px-1.5 py-0.5 rounded text-gray-400 font-mono font-normal border border-gray-700 ml-2">${eqInfo.form}</span>`;
             document.getElementById('eq-icon').innerText = eqInfo.icon;
+
             document.getElementById('total-mass').innerText = Math.round(stats.mass);
             document.getElementById('val-str').innerText = stats.finalStr.toFixed(2);
             document.getElementById('val-add').innerText = stats.finalAdct.toFixed(2);
             document.getElementById('val-tox').innerText = stats.finalTox.toFixed(2);
             
-            // Update Comparisons
             const diff = stats.finalStr - stats.avgStr;
             const sign = diff >= 0 ? "+" : "";
             document.getElementById('base-str-diff').innerText = `Base: ${stats.avgStr.toFixed(2)} (${sign}${diff.toFixed(2)})`;
 
-            // Update Financials
+            // Financials
+            let saleableMass = 0;
+            currentMix.forEach(item => {
+                const data = ingredients.find(i => i.id === item.id);
+                if(data.saleable !== false && !item.isWet) {
+                    saleableMass += item.amount;
+                }
+            });
+
             const price = parseFloat(document.getElementById('street-price').value) || 0;
-            const revenue = price * stats.mass;
+            const revenue = price * saleableMass;
             const profit = revenue - stats.cost;
-            const profitPerGram = profit / stats.mass;
+            const profitPerGram = stats.mass > 0 ? profit / stats.mass : 0;
             const costPerGram = stats.cost / stats.mass;
-            const costPct = Math.min((stats.cost / revenue) * 100, 100);
+            const costPct = revenue > 0 ? Math.min((stats.cost / revenue) * 100, 100) : 100;
             
-            document.getElementById('val-cost-batch').innerText = '$' + stats.cost.toFixed(2);
+            document.getElementById('val-cost-batch').innerText = '$' + stats.cost.toFixed(0);
             document.getElementById('val-cost-gram').innerText = '($' + costPerGram.toFixed(2) + '/g)';
+            
             document.getElementById('val-profit-batch').innerText = '$' + profit.toFixed(2);
             document.getElementById('val-profit-gram').innerText = '$' + profitPerGram.toFixed(2);
             
@@ -739,11 +921,12 @@
             document.getElementById('cost-bar').style.width = safeCostPct + '%';
             document.getElementById('profit-bar').style.width = safeProfitPct + '%';
 
-            // Check Warnings
+            // Warnings
             const warnings = document.getElementById('warnings');
             warnings.innerHTML = '';
             if (stats.finalTox > 10) warnings.innerHTML += `<div class="text-[10px] text-red-200 bg-red-900/40 p-2 rounded border-l-2 border-red-500 flex items-center gap-2"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg> Lethal Toxicity (>10)</div>`;
             if (stats.finalStr > (calcMode === 'visual' ? 12 : 25)) warnings.innerHTML += `<div class="text-[10px] text-orange-200 bg-orange-900/40 p-2 rounded border-l-2 border-orange-500 flex items-center gap-2"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> Overdose Risk (High Str)</div>`;
+            if (saleableMass < stats.mass) warnings.innerHTML += `<div class="text-[10px] text-yellow-200 bg-yellow-900/40 p-2 rounded border-l-2 border-yellow-500 flex items-center gap-2">⚠️ ${Math.round(stats.mass - saleableMass)}g unsold Wet Weed</div>`;
 
             updateRadar(stats);
         }
@@ -757,27 +940,6 @@
             if (hasLiquid) return { eq: "Crystallizer", icon: "💎", form: "Crystal" };
             if (hasEcstasy) return { eq: "Pill Press", icon: "💊", form: "Pill" };
             return { eq: "Mixer", icon: "🥣", form: "Powder" };
-        }
-
-        function setMode(mode) {
-            calcMode = mode;
-            const visBtn = document.getElementById('mode-visual');
-            const intBtn = document.getElementById('mode-internal');
-            
-            if (mode === 'visual') {
-                visBtn.className = "text-[10px] font-bold px-3 py-1.5 rounded-md bg-green-700 text-white shadow-lg transition-all transform scale-105 flex items-center gap-2";
-                visBtn.innerHTML = '<span class="w-2 h-2 rounded-full bg-white"></span> WEBSITE';
-                
-                intBtn.className = "text-[10px] font-bold px-3 py-1.5 rounded-md text-gray-500 hover:text-white transition-all flex items-center gap-2";
-                intBtn.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-900"></span> INTERNAL';
-            } else {
-                intBtn.className = "text-[10px] font-bold px-3 py-1.5 rounded-md bg-red-700 text-white shadow-lg transition-all transform scale-105 flex items-center gap-2";
-                intBtn.innerHTML = '<span class="w-2 h-2 rounded-full bg-white"></span> INTERNAL';
-                
-                visBtn.className = "text-[10px] font-bold px-3 py-1.5 rounded-md text-gray-500 hover:text-white transition-all flex items-center gap-2";
-                visBtn.innerHTML = '<span class="w-2 h-2 rounded-full bg-green-900"></span> WEBSITE';
-            }
-            updateCalculations();
         }
 
         function resetLab() {
@@ -810,6 +972,7 @@
             currentMix = recipe.items.map(i => ({...i}));
             renderMix();
             updateCalculations();
+            switchView('lab'); // Auto-switch to lab when loading
         }
 
         function renderRecipes() {
