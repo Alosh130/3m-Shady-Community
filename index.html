@@ -727,7 +727,7 @@
                 mixStr: 1.6,
                 tox: 4,
                 adct: 1.7,
-                cost: 4.29,
+                cost: 7,
                 color: '#ef4444',
                 form: 'powder'
             },
@@ -1719,6 +1719,7 @@
         }
 
         function updateCalculations() {
+            // Get stats from our standardize logic
             const stats = calculateStats();
 
             if (!stats || stats.mass === 0) {
@@ -1726,12 +1727,13 @@
                 return;
             }
 
+            // --- 1. VISUAL UPDATES ---
             const eqInfo = determineEquipment(currentMix);
             document.getElementById('eq-name').innerHTML =
                 `${eqInfo.eq} <span class="text-[10px] bg-gray-800 px-1.5 py-0.5 rounded text-gray-400 font-mono font-normal border border-gray-700 ml-2">${eqInfo.form}</span>`;
             document.getElementById('eq-icon').innerText = eqInfo.icon;
 
-            document.getElementById('total-mass').innerText = stats.mass;
+            document.getElementById('total-mass').innerText = Math.round(stats.mass);
             document.getElementById('val-str').innerText = stats.finalStr.toFixed(2);
             document.getElementById('val-add').innerText = stats.finalAdct.toFixed(2);
             document.getElementById('val-tox').innerText = stats.finalTox.toFixed(2);
@@ -1741,42 +1743,47 @@
             document.getElementById('base-str-diff').innerText =
                 `Base: ${stats.avgStr.toFixed(2)} (${sign}${diff.toFixed(2)})`;
 
-            // Financials
-            let saleableMass = 0;
-            currentMix.forEach(item => {
-                const data = ingredients.find(i => i.id === item.id);
-                if (data.saleable !== false && !item.isWet) {
-                    saleableMass += item.amount;
-                }
-            });
-
+            // --- 2. FINANCIALS (FIXED) ---
             const price = parseFloat(document.getElementById('street-price').value) || 0;
-            const revenue = price * saleableMass;
-            const profit = revenue - stats.cost;
-            const profitPerGram = stats.mass > 0 ? profit / stats.mass : 0;
-            const costPerGram = stats.cost / stats.mass;
-            const costPct = revenue > 0 ? Math.min((stats.cost / revenue) * 100, 100) : 100;
 
+            // Simple Logic: Sell EVERYTHING in the flask at the street price
+            const revenue = stats.mass * price;
+            const profit = revenue - stats.cost;
+
+            // Per Gram Stats
+            const profitPerGram = stats.mass > 0 ? profit / stats.mass : 0;
+            const costPerGram = stats.mass > 0 ? stats.cost / stats.mass : 0;
+
+            // Bar Width Logic
+            // If Revenue is $1000 and Cost is $200, Cost Bar is 20%, Profit Bar is 80%
+            let costPct = 0;
+            if (revenue > 0) {
+                costPct = (stats.cost / revenue) * 100;
+            } else if (stats.cost > 0) {
+                costPct = 100; // All cost, no revenue
+            }
+
+            // Clamp percentages for CSS
+            const safeCostPct = Math.max(0, Math.min(costPct, 100));
+            const safeProfitPct = Math.max(0, 100 - safeCostPct);
+
+            // Update UI
             document.getElementById('val-cost-batch').innerText = '$' + stats.cost.toFixed(0);
             document.getElementById('val-cost-gram').innerText = '($' + costPerGram.toFixed(2) + '/g)';
 
             document.getElementById('val-profit-batch').innerText = '$' + profit.toFixed(2);
             document.getElementById('val-profit-gram').innerText = '$' + profitPerGram.toFixed(2);
 
-            const safeCostPct = Math.max(0, Math.min(costPct, 100));
-            const safeProfitPct = Math.max(0, 100 - safeCostPct);
             document.getElementById('cost-bar').style.width = safeCostPct + '%';
             document.getElementById('profit-bar').style.width = safeProfitPct + '%';
 
-            // Warnings
+            // --- 3. WARNINGS ---
             const warnings = document.getElementById('warnings');
             warnings.innerHTML = '';
             if (stats.finalTox > 10) warnings.innerHTML +=
                 `<div class="text-[10px] text-red-200 bg-red-900/40 p-2 rounded border-l-2 border-red-500 flex items-center gap-2"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg> Lethal Toxicity (>10)</div>`;
-            if (stats.finalStr > (calcMode === 'visual' ? 12 : 25)) warnings.innerHTML +=
+            if (stats.finalStr > 25) warnings.innerHTML +=
                 `<div class="text-[10px] text-orange-200 bg-orange-900/40 p-2 rounded border-l-2 border-orange-500 flex items-center gap-2"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> Overdose Risk (High Str)</div>`;
-            if (saleableMass < stats.mass) warnings.innerHTML +=
-                `<div class="text-[10px] text-yellow-200 bg-yellow-900/40 p-2 rounded border-l-2 border-yellow-500 flex items-center gap-2">⚠️ ${Math.round(stats.mass - saleableMass)}g unsold Wet Weed</div>`;
 
             updateRadar(stats);
         }
