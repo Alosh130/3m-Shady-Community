@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DDS Architect v6.4 (Grow Op)</title>
-    
+    <title>DDS Architect v6.5 (Order Pro)</title>
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     <!-- Config -->
     <script>
@@ -38,7 +41,7 @@
                         tox: '#ef4444',
                         str: '#f59e0b',
                         adct: '#ec4899',
-                        psych: '#22d3ee', 
+                        psych: '#22d3ee',
                         profit: '#22c55e',
                         weed: '#22c55e',
                     }
@@ -48,63 +51,119 @@
     </script>
 
     <style>
-       body { background-color: #030712; color: #e5e7eb; }
-       
-       .scroller::-webkit-scrollbar { width: 6px; height: 6px; }
-       .scroller::-webkit-scrollbar-track { background: #111827; }
-       .scroller::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
-       .scroller::-webkit-scrollbar-thumb:hover { background: #4b5563; }
+        body {
+            background-color: #030712;
+            color: #e5e7eb;
+        }
 
-       .chart-container { position: relative; width: 100%; height: 180px; }
-        
-       .slider-thumb { -webkit-appearance: none; appearance: none; }
-       .slider-thumb::-webkit-slider-thumb {
-            appearance: none; width: 12px; height: 12px;
-            border-radius: 50%; background: #8b5cf6; cursor: pointer;
+        .scroller::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        .scroller::-webkit-scrollbar-track {
+            background: #111827;
+        }
+
+        .scroller::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 3px;
+        }
+
+        .scroller::-webkit-scrollbar-thumb:hover {
+            background: #4b5563;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 180px;
+        }
+
+        .slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .slider-thumb::-webkit-slider-thumb {
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #8b5cf6;
+            cursor: pointer;
             border: 2px solid #1f2937;
             box-shadow: 0 0 8px rgba(139, 92, 246, 0.6);
             transition: transform 0.1s;
         }
-       .slider-thumb::-webkit-slider-thumb:hover { transform: scale(1.2); }
-       
-       .glass-panel {
-            background: rgba(17, 24, 39, 0.6); backdrop-filter: blur(12px);
-            border: 1px solid rgba(75, 85, 99, 0.3); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-       }
 
-       input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-       
-       .hidden-section { display: none; }
+        .slider-thumb::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(75, 85, 99, 0.3);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .hidden-section {
+            display: none;
+        }
     </style>
 </head>
+
 <body class="h-screen flex flex-col font-sans selection:bg-accent selection:text-white overflow-hidden">
 
     <!-- Header -->
     <header class="border-b border-gray-800 bg-gray-950/80 backdrop-blur-md sticky top-0 z-50 flex-none">
         <div class="max-w-[1800px] mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-accent to-purple-900 flex items-center justify-center font-bold text-white shadow-lg shadow-accent/20 border border-white/10">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
+                <div
+                    class="w-9 h-9 rounded-lg bg-gradient-to-br from-accent to-purple-900 flex items-center justify-center font-bold text-white shadow-lg shadow-accent/20 border border-white/10">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                    </svg>
                 </div>
                 <div>
-                    <h1 class="text-lg font-bold tracking-tight text-white leading-none">DDS <span class="text-accent">Architect</span></h1>
-                    <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Grow Up v6.4</span>
+                    <h1 class="text-lg font-bold tracking-tight text-white leading-none">DDS <span
+                            class="text-accent">Architect</span></h1>
+                    <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Order Pro v6.5</span>
                 </div>
             </div>
 
             <div class="flex items-center gap-4">
                 <!-- Nav -->
                 <nav class="flex bg-gray-900 rounded-lg p-1 border border-gray-700">
-                    <button onclick="switchView('lab')" id="nav-lab" class="px-4 py-1.5 rounded-md text-[10px] font-bold text-white bg-gray-700 shadow-sm transition-all">LABORATORY</button>
-                    <button onclick="switchView('grow')" id="nav-grow" class="px-4 py-1.5 rounded-md text-[10px] font-bold text-gray-400 hover:text-white transition-all">GROW ROOM</button>
+                    <button onclick="switchView('lab')" id="nav-lab"
+                        class="px-4 py-1.5 rounded-md text-[10px] font-bold text-white bg-gray-700 shadow-sm transition-all">LABORATORY</button>
+                    <button onclick="switchView('grow')" id="nav-grow"
+                        class="px-4 py-1.5 rounded-md text-[10px] font-bold text-gray-400 hover:text-white transition-all">GROW
+                        ROOM</button>
+                    <button onclick="switchView('dist')" id="nav-dist"
+                        class="px-4 py-1.5 rounded-md text-[10px] font-bold text-gray-400 hover:text-white transition-all">
+                        <span>DISTRIBUTION</span>
+                        <span id="order-badge" class="hidden w-1.5 h-1.5 rounded-full bg-accent animate-pulse"></span>
+                    </button>
+
                 </nav>
 
                 <!-- Mode Selection -->
                 <div class="flex items-center bg-gray-900 rounded-lg p-1 border border-gray-700 shadow-inner">
-                    <button id="mode-visual" onclick="setMode('visual')" class="text-[10px] font-bold px-3 py-1.5 rounded-md bg-gray-700 text-white transition-all shadow-sm flex items-center gap-2">
+                    <button id="mode-visual" onclick="setMode('visual')"
+                        class="text-[10px] font-bold px-3 py-1.5 rounded-md bg-gray-700 text-white transition-all shadow-sm flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-green-400"></span> WEBSITE
                     </button>
-                    <button id="mode-internal" onclick="setMode('internal')" class="text-[10px] font-bold px-3 py-1.5 rounded-md text-gray-400 hover:text-white transition-all flex items-center gap-2">
+                    <button id="mode-internal" onclick="setMode('internal')"
+                        class="text-[10px] font-bold px-3 py-1.5 rounded-md text-gray-400 hover:text-white transition-all flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-red-900"></span> INTERNAL
                     </button>
                 </div>
@@ -113,30 +172,45 @@
     </header>
 
     <!-- === VIEW: LABORATORY === -->
-    <main id="view-lab" class="flex-grow p-4 lg:p-6 max-w-[1800px] mx-auto w-full overflow-hidden flex flex-col xl:flex-row gap-6">
-        
+    <main id="view-lab"
+        class="flex-grow p-4 lg:p-6 max-w-[1800px] mx-auto w-full overflow-hidden flex flex-col xl:flex-row gap-6">
+
         <!-- Left: Pantry -->
         <div class="xl:w-[340px] flex-none flex flex-col gap-4 h-full min-h-0">
             <div class="glass-panel rounded-xl flex flex-col h-full overflow-hidden shadow-2xl ring-1 ring-white/5">
                 <div class="p-4 border-b border-gray-700/50 bg-gray-900/30">
                     <div class="flex justify-between items-center mb-3">
                         <h2 class="text-xs font-bold uppercase tracking-widest text-gray-400">Pantry</h2>
-                        <span class="text-[9px] text-gray-500 font-mono bg-gray-800 px-2 py-0.5 rounded border border-gray-700">Bulk Costs</span>
+                        <span
+                            class="text-[9px] text-gray-500 font-mono bg-gray-800 px-2 py-0.5 rounded border border-gray-700">Bulk
+                            Costs</span>
                     </div>
                     <div class="relative">
-                        <input type="text" id="pantry-search" placeholder="Search..." 
+                        <input type="text" id="pantry-search" placeholder="Search..."
                             class="w-full bg-gray-950 border border-gray-700 rounded-lg py-2 pl-9 pr-3 text-xs text-white focus:outline-none focus:border-accent transition-all placeholder-gray-600"
                             onkeyup="searchPantry()">
-                        <svg class="w-3.5 h-3.5 absolute left-3 top-2.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <svg class="w-3.5 h-3.5 absolute left-3 top-2.5 text-gray-500" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
                     </div>
                 </div>
-                
+
                 <div class="px-4 pt-2">
                     <div class="flex p-1 gap-1 bg-gray-950 rounded-lg border border-gray-800 flex-wrap">
-                        <button class="flex-1 py-1.5 text-[10px] font-bold uppercase rounded hover:bg-gray-800 text-gray-400 transition-all active-tab bg-gray-800 text-white shadow-sm border border-gray-700" data-tab="dope" onclick="filterPantry('dope')">Drugs</button>
-                        <button class="flex-1 py-1.5 text-[10px] font-bold uppercase rounded hover:bg-gray-800 text-gray-400 transition-all border border-transparent" data-tab="active" onclick="filterPantry('active')">Additives</button>
-                        <button class="flex-1 py-1.5 text-[10px] font-bold uppercase rounded hover:bg-gray-800 text-gray-400 transition-all border border-transparent" data-tab="filler" onclick="filterPantry('filler')">Fillers</button>
-                        <button class="flex-1 py-1.5 text-[10px] font-bold uppercase rounded hover:bg-gray-800 text-gray-400 transition-all border border-transparent text-yellow-500" data-tab="premix" onclick="filterPantry('premix')">Premix</button>
+                        <button
+                            class="flex-1 py-1.5 text-[10px] font-bold uppercase rounded hover:bg-gray-800 text-gray-400 transition-all active-tab bg-gray-800 text-white shadow-sm border border-gray-700"
+                            data-tab="dope" onclick="filterPantry('dope')">Drugs</button>
+                        <button
+                            class="flex-1 py-1.5 text-[10px] font-bold uppercase rounded hover:bg-gray-800 text-gray-400 transition-all border border-transparent"
+                            data-tab="active" onclick="filterPantry('active')">Additives</button>
+                        <button
+                            class="flex-1 py-1.5 text-[10px] font-bold uppercase rounded hover:bg-gray-800 text-gray-400 transition-all border border-transparent"
+                            data-tab="filler" onclick="filterPantry('filler')">Fillers</button>
+                        <button
+                            class="flex-1 py-1.5 text-[10px] font-bold uppercase rounded hover:bg-gray-800 text-gray-400 transition-all border border-transparent text-yellow-500"
+                            data-tab="premix" onclick="filterPantry('premix')">Premix</button>
                     </div>
                 </div>
 
@@ -149,39 +223,56 @@
             <div class="glass-panel p-3 rounded-xl flex items-center justify-between flex-none">
                 <div class="flex items-center gap-4">
                     <div class="flex items-center gap-3 pl-2">
-                        <div class="w-10 h-10 rounded-lg bg-gray-800 border border-gray-700 flex items-center justify-center text-xl shadow-inner" id="eq-icon">🥣</div>
+                        <div class="w-10 h-10 rounded-lg bg-gray-800 border border-gray-700 flex items-center justify-center text-xl shadow-inner"
+                            id="eq-icon">🥣</div>
                         <div>
                             <div class="text-[10px] uppercase text-gray-500 font-bold tracking-wider">Equipment</div>
                             <div class="text-sm font-bold text-white flex items-center gap-2" id="eq-name">Mixer</div>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="flex items-center gap-6 pr-2">
                     <div class="text-right">
                         <div class="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Total Mass</div>
-                        <div class="text-xl font-mono font-bold text-white leading-none"><span id="total-mass">0</span><span class="text-sm text-gray-500 ml-1">g</span></div>
+                        <div class="text-xl font-mono font-bold text-white leading-none"><span
+                                id="total-mass">0</span><span class="text-sm text-gray-500 ml-1">g</span></div>
                     </div>
-                    <button onclick="savePremix()" class="group p-2 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 transition-all" title="Save as Premix">
-                        <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+                    <button onclick="savePremix()"
+                        class="group p-2 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 transition-all"
+                        title="Save as Premix">
+                        <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4">
+                            </path>
+                        </svg>
                     </button>
-                    <button onclick="resetLab()" class="group p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 transition-all" title="Empty Flask">
-                        <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    <button onclick="resetLab()"
+                        class="group p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 transition-all"
+                        title="Empty Flask">
+                        <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                            </path>
+                        </svg>
                     </button>
                 </div>
             </div>
 
             <div class="flex flex-row gap-4 h-full min-h-0">
                 <div class="w-16 glass-panel rounded-xl flex flex-col p-1.5 flex-none relative">
-                    <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gray-900 border border-gray-700 px-2 py-0.5 rounded text-[9px] text-gray-400 font-mono z-10 shadow-sm">MIX</div>
-                    <div class="w-full h-full bg-gray-950/50 rounded-lg overflow-hidden flex flex-col-reverse relative border border-gray-800" id="visual-beaker"></div>
+                    <div
+                        class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gray-900 border border-gray-700 px-2 py-0.5 rounded text-[9px] text-gray-400 font-mono z-10 shadow-sm">
+                        MIX</div>
+                    <div class="w-full h-full bg-gray-950/50 rounded-lg overflow-hidden flex flex-col-reverse relative border border-gray-800"
+                        id="visual-beaker"></div>
                 </div>
 
                 <div class="glass-panel rounded-xl flex-grow flex flex-col relative overflow-hidden shadow-2xl">
                     <div class="flex-grow overflow-y-auto scroller p-4 space-y-3" id="mix-container"></div>
                 </div>
             </div>
-            
+
             <!-- Detailed Batch Manifest -->
             <div class="h-1/3 glass-panel rounded-xl flex flex-col overflow-hidden min-h-0">
                 <div class="p-2 border-b border-gray-700/50 bg-gray-900/30 flex justify-between items-center">
@@ -190,7 +281,12 @@
                 <div class="overflow-y-auto scroller p-0">
                     <table class="w-full text-left text-[11px] text-gray-400">
                         <thead class="bg-gray-900/50 sticky top-0 font-bold uppercase text-gray-500">
-                            <tr><th class="pl-3 py-2">Item</th><th class="text-right">Mass</th><th class="text-right">%</th><th class="text-right pr-3">Cost</th></tr>
+                            <tr>
+                                <th class="pl-3 py-2">Item</th>
+                                <th class="text-right">Mass</th>
+                                <th class="text-right">%</th>
+                                <th class="text-right pr-3">Cost</th>
+                            </tr>
                         </thead>
                         <tbody id="manifest-body"></tbody>
                     </table>
@@ -221,7 +317,9 @@
                     <h3 class="text-xs font-bold text-gray-300 uppercase tracking-widest">Financials</h3>
                     <div class="flex items-center bg-gray-950 rounded border border-gray-700 px-2 py-1">
                         <span class="text-[9px] text-gray-500 mr-2">SALE $/g</span>
-                        <input type="number" id="street-price" value="10" class="bg-transparent border-none text-right text-xs text-white font-mono w-10 p-0 focus:ring-0" onchange="updateCalculations()">
+                        <input type="number" id="street-price" value="10"
+                            class="bg-transparent border-none text-right text-xs text-white font-mono w-10 p-0 focus:ring-0"
+                            onchange="updateCalculations()">
                     </div>
                 </div>
                 <div class="mb-4 text-center p-3 bg-gray-900/80 rounded-lg border border-gray-800">
@@ -259,8 +357,10 @@
     </main>
 
     <!-- === VIEW: GROW ROOM === -->
-    <main id="view-grow" class="hidden flex-grow p-4 lg:p-6 max-w-[1800px] mx-auto w-full overflow-hidden flex flex-col">
-        <div class="glass-panel p-6 rounded-xl border border-gray-700/50 bg-gray-900/40 shadow-2xl h-full flex flex-col">
+    <main id="view-grow"
+        class="hidden flex-grow p-4 lg:p-6 max-w-[1800px] mx-auto w-full overflow-hidden flex flex-col">
+        <div
+            class="glass-panel p-6 rounded-xl border border-gray-700/50 bg-gray-900/40 shadow-2xl h-full flex flex-col">
             <div class="flex justify-between items-center mb-6">
                 <div>
                     <h2 class="text-2xl font-bold text-white tracking-tight">Strain Database</h2>
@@ -281,55 +381,75 @@
             <!-- Tips Section -->
             <div class="bg-gray-900/60 rounded-xl p-4 border border-gray-800 mt-auto">
                 <h3 class="text-sm font-bold text-gray-300 uppercase mb-3 flex items-center gap-2">
-                    <svg class="w-4 h-4 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <svg class="w-4 h-4 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
                     Grower's Notes
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-gray-500">
-                    <p><strong>Dehydration:</strong> Plants lose health after ~15 hours without water. Total death occurs between 25-29 hours depending on strain.</p>
-                    <p><strong>Drying:</strong> Converting Wet to Dry reduces weight significantly (35-45% retention). Cost/gram essentially doubles during drying.</p>
-                    <p><strong>Yields:</strong> Values shown are per single seed/pot. Outdoor growing generally provides slightly higher health stability.</p>
+                    <p><strong>Dehydration:</strong> Plants lose health after ~15 hours without water. Total death
+                        occurs between 25-29 hours depending on strain.</p>
+                    <p><strong>Drying:</strong> Converting Wet to Dry reduces weight significantly (35-45% retention).
+                        Cost/gram essentially doubles during drying.</p>
+                    <p><strong>Yields:</strong> Values shown are per single seed/pot. Outdoor growing generally provides
+                        slightly higher health stability.</p>
                 </div>
             </div>
         </div>
     </main>
 
     <!-- WET WEED MODAL -->
-    <div id="wet-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+    <div id="wet-modal"
+        class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
         <div class="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-lg shadow-2xl modal-fade p-6 relative">
             <h3 class="text-lg font-bold text-white mb-1">Add Wet Marijuana</h3>
             <p class="text-xs text-gray-500 mb-4">Select a strain to auto-calculate production cost.</p>
-            
+
             <div class="grid grid-cols-2 gap-2 mb-6">
-                <button onclick="setStrainData('ghetto')" class="p-3 rounded border border-gray-700 hover:border-green-500/50 bg-gray-800/50 hover:bg-gray-800 text-left transition-all group">
-                    <div class="text-[10px] uppercase text-gray-500 font-bold group-hover:text-green-400">Ghetto Kush</div>
+                <button onclick="setStrainData('ghetto')"
+                    class="p-3 rounded border border-gray-700 hover:border-green-500/50 bg-gray-800/50 hover:bg-gray-800 text-left transition-all group">
+                    <div class="text-[10px] uppercase text-gray-500 font-bold group-hover:text-green-400">Ghetto Kush
+                    </div>
                     <div class="text-xs text-white">Cost: $45 / 205g</div>
                 </button>
-                <button onclick="setStrainData('stoner')" class="p-3 rounded border border-gray-700 hover:border-purple-500/50 bg-gray-800/50 hover:bg-gray-800 text-left transition-all group">
-                    <div class="text-[10px] uppercase text-gray-500 font-bold group-hover:text-purple-400">Stoner Haze</div>
+                <button onclick="setStrainData('stoner')"
+                    class="p-3 rounded border border-gray-700 hover:border-purple-500/50 bg-gray-800/50 hover:bg-gray-800 text-left transition-all group">
+                    <div class="text-[10px] uppercase text-gray-500 font-bold group-hover:text-purple-400">Stoner Haze
+                    </div>
                     <div class="text-xs text-white">Cost: $45 / 322g</div>
                 </button>
-                <button onclick="setStrainData('firecracker')" class="p-3 rounded border border-gray-700 hover:border-red-500/50 bg-gray-800/50 hover:bg-gray-800 text-left transition-all group">
-                    <div class="text-[10px] uppercase text-gray-500 font-bold group-hover:text-red-400">Firecracker</div>
+                <button onclick="setStrainData('firecracker')"
+                    class="p-3 rounded border border-gray-700 hover:border-red-500/50 bg-gray-800/50 hover:bg-gray-800 text-left transition-all group">
+                    <div class="text-[10px] uppercase text-gray-500 font-bold group-hover:text-red-400">Firecracker
+                    </div>
                     <div class="text-xs text-white">Cost: $40 / 312g</div>
                 </button>
-                <button onclick="setStrainData('bongbreaker')" class="p-3 rounded border border-gray-700 hover:border-blue-500/50 bg-gray-800/50 hover:bg-gray-800 text-left transition-all group">
-                    <div class="text-[10px] uppercase text-gray-500 font-bold group-hover:text-blue-400">Bong Breaker</div>
+                <button onclick="setStrainData('bongbreaker')"
+                    class="p-3 rounded border border-gray-700 hover:border-blue-500/50 bg-gray-800/50 hover:bg-gray-800 text-left transition-all group">
+                    <div class="text-[10px] uppercase text-gray-500 font-bold group-hover:text-blue-400">Bong Breaker
+                    </div>
                     <div class="text-xs text-white">Cost: $40 / 305g</div>
                 </button>
 
-                <button onclick="setStrainData('ak420')" class="p-3 rounded border border-gray-700 hover:border-teal-500/50 bg-gray-800/50 hover:bg-gray-800 text-left transition-all group">
+                <button onclick="setStrainData('ak420')"
+                    class="p-3 rounded border border-gray-700 hover:border-teal-500/50 bg-gray-800/50 hover:bg-gray-800 text-left transition-all group">
                     <div class="text-[10px] uppercase text-gray-500 font-bold group-hover:text-teal-400">AK-420</div>
                     <div class="text-xs text-white">Cost: $30 / 176g</div>
                 </button>
-                <button onclick="setStrainData('dubai')" class="p-3 rounded border border-gray-700 hover:border-amber-500/50 bg-gray-800/50 hover:bg-gray-800 text-left transition-all group">
-                    <div class="text-[10px] uppercase text-gray-500 font-bold group-hover:text-amber-400">Dubai Sativa</div>
+                <button onclick="setStrainData('dubai')"
+                    class="p-3 rounded border border-gray-700 hover:border-amber-500/50 bg-gray-800/50 hover:bg-gray-800 text-left transition-all group">
+                    <div class="text-[10px] uppercase text-gray-500 font-bold group-hover:text-amber-400">Dubai Sativa
+                    </div>
                     <div class="text-xs text-white">Cost: $35 / 220g</div>
                 </button>
-                <button onclick="setStrainData('skyscraper')" class="p-3 rounded border border-gray-700 hover:border-sky-500/50 bg-gray-800/50 hover:bg-gray-800 text-left transition-all group">
+                <button onclick="setStrainData('skyscraper')"
+                    class="p-3 rounded border border-gray-700 hover:border-sky-500/50 bg-gray-800/50 hover:bg-gray-800 text-left transition-all group">
                     <div class="text-[10px] uppercase text-gray-500 font-bold group-hover:text-sky-400">Skyscraper</div>
                     <div class="text-xs text-white">Cost: $35 / 250g</div>
                 </button>
-                <button onclick="setStrainData('brainfk')" class="p-3 rounded border border-gray-700 hover:border-pink-500/50 bg-gray-800/50 hover:bg-gray-800 text-left transition-all group">
+                <button onclick="setStrainData('brainfk')"
+                    class="p-3 rounded border border-gray-700 hover:border-pink-500/50 bg-gray-800/50 hover:bg-gray-800 text-left transition-all group">
                     <div class="text-[10px] uppercase text-gray-500 font-bold group-hover:text-pink-400">Brainf**k</div>
                     <div class="text-xs text-white">Cost: $30 / 192g</div>
                 </button>
@@ -339,14 +459,17 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-[10px] uppercase text-gray-400 font-bold mb-1">Seed Cost ($)</label>
-                        <input type="number" id="seed-cost" value="40" class="w-full bg-gray-950 border border-gray-700 rounded p-2 text-white font-mono focus:border-green-500 outline-none">
+                        <input type="number" id="seed-cost" value="40"
+                            class="w-full bg-gray-950 border border-gray-700 rounded p-2 text-white font-mono focus:border-green-500 outline-none">
                     </div>
                     <div>
-                        <label class="block text-[10px] uppercase text-gray-400 font-bold mb-1">Harvest Yield (g)</label>
-                        <input type="number" id="harvest-yield" value="305" class="w-full bg-gray-950 border border-gray-700 rounded p-2 text-white font-mono focus:border-green-500 outline-none">
+                        <label class="block text-[10px] uppercase text-gray-400 font-bold mb-1">Harvest Yield
+                            (g)</label>
+                        <input type="number" id="harvest-yield" value="305"
+                            class="w-full bg-gray-950 border border-gray-700 rounded p-2 text-white font-mono focus:border-green-500 outline-none">
                     </div>
                 </div>
-                
+
                 <div class="p-3 bg-gray-800 rounded border border-gray-700 flex justify-between items-center">
                     <span class="text-[10px] text-gray-400 uppercase">Calculated Cost Basis</span>
                     <span class="text-xl font-mono text-green-400" id="calc-cost-display">$0.13/g</span>
@@ -354,75 +477,721 @@
             </div>
 
             <div class="flex gap-2 mt-6">
-                <button onclick="closeWetModal()" class="flex-1 py-3 rounded border border-gray-700 text-gray-400 hover:text-white hover:bg-gray-800 text-xs font-bold transition-all">Cancel</button>
-                <button onclick="confirmWetAdd()" class="flex-1 py-3 rounded bg-green-700 text-white hover:bg-green-600 text-xs font-bold transition-all shadow-lg shadow-green-900/20">Add to Flask</button>
+                <button onclick="closeWetModal()"
+                    class="flex-1 py-3 rounded border border-gray-700 text-gray-400 hover:text-white hover:bg-gray-800 text-xs font-bold transition-all">Cancel</button>
+                <button onclick="confirmWetAdd()"
+                    class="flex-1 py-3 rounded bg-green-700 text-white hover:bg-green-600 text-xs font-bold transition-all shadow-lg shadow-green-900/20">Add
+                    to Flask</button>
             </div>
         </div>
     </div>
+
+    <main id="view-dist"
+        class="hidden flex-grow p-4 lg:p-6 max-w-[1800px] mx-auto w-full overflow-hidden flex flex-col gap-6">
+
+        <div class="glass-panel p-4 rounded-xl flex items-end gap-4 border border-gray-700/50 bg-gray-900/40">
+            <div class="flex-grow grid grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-[10px] uppercase text-gray-500 font-bold mb-1">Drug Base</label>
+                    <select id="order-base"
+                        class="w-full bg-gray-950 border border-gray-700 rounded p-2 text-xs text-white focus:border-accent outline-none"
+                        onchange="recommendRecipe()">
+                        <option value="">Select Base...</option>
+                        <option value="amphetamine">Amphetamine</option>
+                        <option value="cocaine">Cocaine</option>
+                        <option value="heroin">Heroin</option>
+                        <option value="ecstasy">Ecstasy</option>
+                        <option value="marijuana">Marijuana</option>
+                        <option value="meth">Crystal Meth</option>
+                        <option value="lsd">LSD</option>
+                        <option value="Mushrooms">Mushrooms</option>
+                        <option value="dmt">DMT</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[10px] uppercase text-gray-500 font-bold mb-1">Recommended Cut</label>
+                    <select id="order-recipe" disabled
+                        class="w-full bg-gray-900 border border-gray-800 rounded p-2 text-xs text-accent font-bold opacity-100 cursor-not-allowed outline-none shadow-inner">
+                        <option value="pure">Pure Product (100%)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[10px] uppercase text-gray-500 font-bold mb-1">Order Size (g)</label>
+                    <input type="number" id="order-amount" placeholder="0"
+                        class="w-full bg-gray-950 border border-gray-700 rounded p-2 text-xs text-white focus:border-accent outline-none font-mono">
+                </div>
+            </div>
+            <button onclick="addOrder()"
+                class="h-[34px] px-6 bg-accent hover:bg-accent/80 text-white text-xs font-bold rounded shadow-lg shadow-accent/20 transition-all uppercase flex items-center gap-2">
+                <span>Add Order</span>
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+            </button>
+        </div>
+
+        <div class="flex-grow flex gap-6 min-h-0">
+            <div class="w-2/3 glass-panel rounded-xl flex flex-col overflow-hidden">
+                <div class="p-3 border-b border-gray-700/50 bg-gray-900/30 flex justify-between items-center">
+                    <h2 class="text-xs font-bold uppercase tracking-widest text-gray-400">Active Orders Queue</h2>
+                    <button onclick="clearOrders()"
+                        class="text-[10px] text-red-400 hover:text-red-300 font-bold uppercase">Clear All</button>
+                </div>
+                <div class="flex-grow overflow-y-auto scroller p-0">
+                    <table class="w-full text-left text-xs text-gray-400">
+                        <thead class="bg-gray-900/50 sticky top-0 font-bold uppercase text-gray-500 text-[10px]">
+                            <tr>
+                                <th class="pl-4 py-3">Drug Base</th>
+                                <th>Recipe</th>
+                                <th>Packaging</th>
+                                <th class="text-right">Amount</th>
+                                <th class="text-right pr-4">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-list"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="w-1/3 flex flex-col gap-4">
+                <div
+                    class="bg-gray-800/50 border border-gray-700 rounded-xl p-4 relative overflow-hidden group h-full flex flex-col">
+                    <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <svg class="w-16 h-16 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+                    </div>
+                    <h3 class="text-xs font-bold uppercase text-accent mb-3">Total Packaging Manifest</h3>
+
+                    <div class="grid grid-cols-2 gap-4 mb-3 flex-none border-b border-gray-700 pb-2">
+                        <div>
+                            <div class="text-[9px] text-gray-500 uppercase font-bold">Total Weight</div>
+                            <div class="text-xl font-mono text-white font-bold" id="dist-total-weight">0g</div>
+                        </div>
+                        <div>
+                            <div class="text-[9px] text-gray-500 uppercase font-bold">Total Slots</div>
+                            <div class="text-xl font-mono text-blue-400 font-bold" id="dist-total-slots">0</div>
+                        </div>
+                    </div>
+
+                    <div class="overflow-y-auto scroller flex-grow space-y-2" id="cutting-manifest-list">
+                        <div class="text-[10px] text-gray-600 italic text-center mt-4">No active orders</div>
+                    </div>
+                </div>
+
+                <div class="glass-panel flex-grow rounded-xl overflow-hidden flex flex-col">
+                    <div class="p-3 border-b border-gray-700/50 bg-gray-900/30">
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400">Total Production Needs
+                        </h3>
+                    </div>
+                    <div class="p-3 overflow-y-auto scroller h-40 flex-grow" id="shopping-list">
+                        <div class="text-center text-[10px] text-gray-600 italic mt-4">No active orders</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
 
     <!-- LOGIC -->
     <script>
         // --- 1. DATA DEFINITIONS ---
         const strainsData = {
             // --- Original Strains ---
-            ghetto: { name: "Ghetto Kush", cost: 45, wet: 205, dry: 73.8, time: 78, wetRatio: 2.62, dryRatio: 0.95, dryRate: 36, death: 28, color: "text-green-400", border: "border-green-500/30" },
-            stoner: { name: "Stoner Haze", cost: 45, wet: 322, dry: 112.7, time: 108, wetRatio: 2.98, dryRatio: 1.04, dryRate: 35, death: 28, color: "text-purple-400", border: "border-purple-500/30" },
-            firecracker: { name: "Firecracker", cost: 40, wet: 312, dry: 124.8, time: 100, wetRatio: 3.12, dryRatio: 1.25, dryRate: 40, death: 25, color: "text-red-400", border: "border-red-500/30" },
-            bongbreaker: { name: "Bong Breaker", cost: 40, wet: 305, dry: 137.25, time: 96, wetRatio: 3.39, dryRatio: 1.53, dryRate: 45, death: 29, color: "text-blue-400", border: "border-blue-500/30" },
-            
+            ghetto: {
+                name: "Ghetto Kush",
+                cost: 45,
+                wet: 205,
+                dry: 73.8,
+                time: 78,
+                wetRatio: 2.62,
+                dryRatio: 0.95,
+                dryRate: 36,
+                death: 28,
+                color: "text-green-400",
+                border: "border-green-500/30"
+            },
+            stoner: {
+                name: "Stoner Haze",
+                cost: 45,
+                wet: 322,
+                dry: 112.7,
+                time: 108,
+                wetRatio: 2.98,
+                dryRatio: 1.04,
+                dryRate: 35,
+                death: 28,
+                color: "text-purple-400",
+                border: "border-purple-500/30"
+            },
+            firecracker: {
+                name: "Firecracker",
+                cost: 40,
+                wet: 312,
+                dry: 124.8,
+                time: 100,
+                wetRatio: 3.12,
+                dryRatio: 1.25,
+                dryRate: 40,
+                death: 25,
+                color: "text-red-400",
+                border: "border-red-500/30"
+            },
+            bongbreaker: {
+                name: "Bong Breaker",
+                cost: 40,
+                wet: 305,
+                dry: 137.25,
+                time: 96,
+                wetRatio: 3.39,
+                dryRatio: 1.53,
+                dryRate: 45,
+                death: 29,
+                color: "text-blue-400",
+                border: "border-blue-500/30"
+            },
+
             // --- New Strains ---
-            ak420: { name: "AK-420", cost: 30, wet: 176, dry: 91.52, time: 167, wetRatio: 1.05, dryRatio: 0.55, dryRate: 52, death: 28, color: "text-teal-400", border: "border-teal-500/30" },
-            dubai: { name: "Dubai Sativa", cost: 35, wet: 220, dry: 110, time: 183, wetRatio: 1.20, dryRatio: 0.60, dryRate: 50, death: 28, color: "text-amber-400", border: "border-amber-500/30" },
-            skyscraper: { name: "Skyscraper", cost: 35, wet: 250, dry: 125, time: 185, wetRatio: 1.35, dryRatio: 0.68, dryRate: 50, death: 28, color: "text-sky-400", border: "border-sky-500/30" },
-            brainfk: { name: "Brainf**k", cost: 30, wet: 192, dry: 90.24, time: 176, wetRatio: 1.09, dryRatio: 0.53, dryRate: 47, death: 28, color: "text-pink-400", border: "border-pink-500/30" }
+            ak420: {
+                name: "AK-420",
+                cost: 30,
+                wet: 176,
+                dry: 91.52,
+                time: 167,
+                wetRatio: 1.05,
+                dryRatio: 0.55,
+                dryRate: 52,
+                death: 28,
+                color: "text-teal-400",
+                border: "border-teal-500/30"
+            },
+            dubai: {
+                name: "Dubai Sativa",
+                cost: 35,
+                wet: 220,
+                dry: 110,
+                time: 183,
+                wetRatio: 1.20,
+                dryRatio: 0.60,
+                dryRate: 50,
+                death: 28,
+                color: "text-amber-400",
+                border: "border-amber-500/30"
+            },
+            skyscraper: {
+                name: "Skyscraper",
+                cost: 35,
+                wet: 250,
+                dry: 125,
+                time: 185,
+                wetRatio: 1.35,
+                dryRatio: 0.68,
+                dryRate: 50,
+                death: 28,
+                color: "text-sky-400",
+                border: "border-sky-500/30"
+            },
+            brainfk: {
+                name: "Brainf**k",
+                cost: 30,
+                wet: 192,
+                dry: 90.24,
+                time: 176,
+                wetRatio: 1.09,
+                dryRatio: 0.53,
+                dryRate: 47,
+                death: 28,
+                color: "text-pink-400",
+                border: "border-pink-500/30"
+            }
         };
 
         const ingredients = [
             // DOPE (Unified)
-            { id: 'ecstasy', name: 'Ecstasy', type: 'dope', str: 3.14, mixStr: 1.3, tox: 3.58, adct: 2.10, cost: 6.94, color: '#a855f7', form: 'pill' },
-            { id: 'amphetamine', name: 'Amphetamine', type: 'dope', str: 2.5, mixStr: 1.6, tox: 4, adct: 1.7, cost: 7.00, color: '#ef4444', form: 'powder' },
-            { id: 'cocaine', name: 'Cocaine', type: 'dope', str: 4.0, mixStr: 2.0, tox: 5, adct: 3.0, cost: 25.00, color: '#f97316', form: 'powder' },
-            { id: 'heroin', name: 'Heroin', type: 'dope', str: 3.5, mixStr: 2.0, tox: 6.0, adct: 4.0, cost: 18.00, color: '#7e22ce', form: 'powder' },
-            { id: 'meth', name: 'Crystal Meth', type: 'dope', str: 3.0, mixStr: 2.4, tox: 5.5, adct: 3.0, cost: 9.00, color: '#3b82f6', form: 'crystal' },
-            { id: 'marijuana', name: 'Marijuana (Dry)', type: 'dope', str: 2.0, mixStr: 1.0, tox: 0.5, adct: 0.8, cost: 5.00, color: '#22c55e', form: 'plant' },
-            { id: 'wet_weed', name: 'Marijuana (Wet)', type: 'dope', str: 1.5, mixStr: 1.0, tox: 1.0, adct: 0.5, cost: 0.00, color: '#14532d', form: 'plant', custom: true, saleable: false },
-            
-            { id: 'lsd', name: 'LSD', type: 'dope', str: 5.0, mixStr: 2.0, tox: 1.5, adct: 1.2, cost: 20.00, color: '#22d3ee', form: 'blotter' },
-            { id: 'shrooms', name: 'Mushrooms', type: 'dope', str: 2.5, mixStr: 1.1, tox: 0.5, adct: 0.5, cost: 10.00, color: '#a16207', form: 'plant' },
-            { id: 'dmt', name: 'DMT', type: 'dope', str: 7.0, mixStr: 2.2, tox: 5.0, adct: 2.0, cost: 30.00, color: '#fbbf24', form: 'crystal' },
+            {
+                id: 'ecstasy',
+                name: 'Ecstasy',
+                type: 'dope',
+                str: 3.14,
+                mixStr: 1.3,
+                tox: 3.58,
+                adct: 2.10,
+                cost: 6.94,
+                color: '#a855f7',
+                form: 'pill'
+            },
+            {
+                id: 'amphetamine',
+                name: 'Amphetamine',
+                type: 'dope',
+                str: 2.5,
+                mixStr: 1.6,
+                tox: 4,
+                adct: 1.7,
+                cost: 7.00,
+                color: '#ef4444',
+                form: 'powder'
+            },
+            {
+                id: 'cocaine',
+                name: 'Cocaine',
+                type: 'dope',
+                str: 4.0,
+                mixStr: 2.0,
+                tox: 5,
+                adct: 3.0,
+                cost: 25.00,
+                color: '#f97316',
+                form: 'powder'
+            },
+            {
+                id: 'heroin',
+                name: 'Heroin',
+                type: 'dope',
+                str: 3.5,
+                mixStr: 2.0,
+                tox: 6.0,
+                adct: 4.0,
+                cost: 18.00,
+                color: '#7e22ce',
+                form: 'powder'
+            },
+            {
+                id: 'meth',
+                name: 'Crystal Meth',
+                type: 'dope',
+                str: 3.0,
+                mixStr: 2.4,
+                tox: 5.5,
+                adct: 3.0,
+                cost: 9.00,
+                color: '#3b82f6',
+                form: 'crystal'
+            },
+            {
+                id: 'marijuana',
+                name: 'Marijuana (Dry)',
+                type: 'dope',
+                str: 2.0,
+                mixStr: 1.0,
+                tox: 0.5,
+                adct: 0.8,
+                cost: 5.00,
+                color: '#22c55e',
+                form: 'plant'
+            },
+            {
+                id: 'wet_weed',
+                name: 'Marijuana (Wet)',
+                type: 'dope',
+                str: 1.5,
+                mixStr: 1.0,
+                tox: 1.0,
+                adct: 0.5,
+                cost: 0.00,
+                color: '#14532d',
+                form: 'plant',
+                custom: true,
+                saleable: false
+            },
+
+            {
+                id: 'lsd',
+                name: 'LSD',
+                type: 'dope',
+                str: 5.0,
+                mixStr: 2.0,
+                tox: 1.5,
+                adct: 1.2,
+                cost: 20.00,
+                color: '#22d3ee',
+                form: 'blotter'
+            },
+            {
+                id: 'shrooms',
+                name: 'Mushrooms',
+                type: 'dope',
+                str: 2.5,
+                mixStr: 1.1,
+                tox: 0.5,
+                adct: 0.5,
+                cost: 10.00,
+                color: '#a16207',
+                form: 'plant'
+            },
+            {
+                id: 'dmt',
+                name: 'DMT',
+                type: 'dope',
+                str: 7.0,
+                mixStr: 2.2,
+                tox: 5.0,
+                adct: 2.0,
+                cost: 30.00,
+                color: '#fbbf24',
+                form: 'crystal'
+            },
 
             // ACTIVE
-            { id: 'fentanyl', name: 'Fentanyl', type: 'active', str: 12.0, mixStr: 2.5, tox: 15, adct: 10.0, cost: 15.00, color: '#be123c', form: 'powder' },
-            { id: 'viagra', name: 'Viagra', type: 'active', str: 2.0, mixStr: 1.6, tox: 3, adct: 7.0, cost: 4.67, color: '#ec4899', form: 'pill' },
-            { id: 'nebilin', name: 'Nebilin', type: 'active', str: 3.0, mixStr: 1.5, tox: 4, adct: 2.0, cost: 6.00, color: '#6366f1', form: 'liquid' },
-            { id: 'acetone', name: 'Acetone', type: 'active', str: 4.0, mixStr: 3.0, tox: 25, adct: 1.0, cost: 0.60, color: '#06b6d4', form: 'liquid' }, 
-            
+            {
+                id: 'fentanyl',
+                name: 'Fentanyl',
+                type: 'active',
+                str: 12.0,
+                mixStr: 2.5,
+                tox: 15,
+                adct: 10.0,
+                cost: 15.00,
+                color: '#be123c',
+                form: 'powder'
+            },
+            {
+                id: 'viagra',
+                name: 'Viagra',
+                type: 'active',
+                str: 2.0,
+                mixStr: 1.6,
+                tox: 3,
+                adct: 7.0,
+                cost: 4.67,
+                color: '#ec4899',
+                form: 'pill'
+            },
+            {
+                id: 'nebilin',
+                name: 'Nebilin',
+                type: 'active',
+                str: 3.0,
+                mixStr: 1.5,
+                tox: 4,
+                adct: 2.0,
+                cost: 6.00,
+                color: '#6366f1',
+                form: 'liquid'
+            },
+            {
+                id: 'acetone',
+                name: 'Acetone',
+                type: 'active',
+                str: 4.0,
+                mixStr: 3.0,
+                tox: 25,
+                adct: 1.0,
+                cost: 0.60,
+                color: '#06b6d4',
+                form: 'liquid'
+            },
+
             // PHARMA
-            { id: 'ibuprofen_gas', name: 'Ibuprofen (Gas)', type: 'active', str: 2.0, mixStr: 1.25, tox: 12, adct: 1.0, cost: 2.50, color: '#9d174d', form: 'pill' },
-            { id: 'ibuprofen_pharm', name: 'Ibuprofen (Pharm)', type: 'active', str: 1.0, mixStr: 1.25, tox: 2, adct: 1.0, cost: 2.50, color: '#fbcfe8', form: 'pill' },
-            { id: 'paracetamol', name: 'Paracetamol', type: 'active', str: 1.0, mixStr: 1.1, tox: 2, adct: 1.0, cost: 2.00, color: '#fb7185', form: 'pill' },
-            
+            {
+                id: 'ibuprofen_gas',
+                name: 'Ibuprofen (Gas)',
+                type: 'active',
+                str: 2.0,
+                mixStr: 1.25,
+                tox: 12,
+                adct: 1.0,
+                cost: 2.50,
+                color: '#9d174d',
+                form: 'pill'
+            },
+            {
+                id: 'ibuprofen_pharm',
+                name: 'Ibuprofen (Pharm)',
+                type: 'active',
+                str: 1.0,
+                mixStr: 1.25,
+                tox: 2,
+                adct: 1.0,
+                cost: 2.50,
+                color: '#fbcfe8',
+                form: 'pill'
+            },
+            {
+                id: 'paracetamol',
+                name: 'Paracetamol',
+                type: 'active',
+                str: 1.0,
+                mixStr: 1.1,
+                tox: 2,
+                adct: 1.0,
+                cost: 2.00,
+                color: '#fb7185',
+                form: 'pill'
+            },
+
             // FILLERS
-            { id: 'sugar', name: 'Sugar', type: 'filler', str: 0, mixStr: 1.0, tox: 0.2, adct: 0, cost: 0.50, color: '#f3f4f6', form: 'powder' }, 
-            { id: 'baking_soda', name: 'Baking Soda', type: 'filler', str: 0, mixStr: 0.9, tox: 0.1, adct: 0, cost: 0.67, color: '#9ca3af', form: 'powder' }, 
-            { id: 'salt', name: 'Salt', type: 'filler', str: 0.5, mixStr: 1.0, tox: 2.0, adct: 0, cost: 0.20, color: '#d1d5db', form: 'powder' },
-            { id: 'washing', name: 'Washing Pwdr', type: 'filler', str: 0, mixStr: 0.8, tox: 5.0, adct: 0, cost: 0.40, color: '#64748b', form: 'powder' },
+            {
+                id: 'sugar',
+                name: 'Sugar',
+                type: 'filler',
+                str: 0,
+                mixStr: 1.0,
+                tox: 0.2,
+                adct: 0,
+                cost: 0.50,
+                color: '#f3f4f6',
+                form: 'powder'
+            },
+            {
+                id: 'baking_soda',
+                name: 'Baking Soda',
+                type: 'filler',
+                str: 0,
+                mixStr: 0.9,
+                tox: 0.1,
+                adct: 0,
+                cost: 0.67,
+                color: '#9ca3af',
+                form: 'powder'
+            },
+            {
+                id: 'salt',
+                name: 'Salt',
+                type: 'filler',
+                str: 0.5,
+                mixStr: 1.0,
+                tox: 2.0,
+                adct: 0,
+                cost: 0.20,
+                color: '#d1d5db',
+                form: 'powder'
+            },
+            {
+                id: 'washing',
+                name: 'Washing Pwdr',
+                type: 'filler',
+                str: 0,
+                mixStr: 0.8,
+                tox: 5.0,
+                adct: 0,
+                cost: 0.40,
+                color: '#64748b',
+                form: 'powder'
+            },
         ];
 
-        const recipes = [
-            {name: "E-Juice", items: [{id: 'ecstasy', amount: 90}, {id: 'amphetamine', amount: 6}, {id: 'viagra', amount: 3}, {id: 'baking_soda', amount: 6}, {id: 'sugar', amount: 15}], desc: "Profit: $507. Verified 2.98 Tox.", tags: ["Profit", "Pill"]},
-            {name: "SodaAmp", items: [{id: 'amphetamine', amount: 20}, {id: 'baking_soda', amount: 6}], desc: "Basic 77% Cut. Cheap and effective.", tags: ["Amp"]},
-            {name: "WhiteAmp", items: [{id: 'amphetamine', amount: 24}, {id: 'sugar', amount: 6}], desc: "80% Purity. Clean look.", tags: ["Amp"]},
-            {name: "BlueAmp", items: [{id: 'amphetamine', amount: 20}, {id: 'sugar', amount: 4}, {id: 'ibuprofen_pharm', amount: 2}], desc: "77% Purity with Ibuprofen kick.", tags: ["Amp"]},
-            {name: "Quantom AMP", items: [{id: 'amphetamine', amount: 24}, {id: 'ibuprofen_pharm', amount: 4}, {id: 'sugar', amount: 2}], desc: "High Pharma mix.", tags: ["Amp"]},
-            {name: "SweetAmp", items: [{id: 'amphetamine', amount: 30}, {id: 'sugar', amount: 8}, {id: 'viagra', amount: 2}], desc: "75% Purity. Viagra for addiction.", tags: ["Amp"]},
-            {name: "White Reign", items: [{id: 'amphetamine', amount: 225}, {id: 'viagra', amount: 25}, {id: 'marijuana', amount: 49}, {id: 'fentanyl', amount: 1}], desc: "Advanced mix using Pre-Mix logic.", tags: ["Mega"]},
-            {name: "Boba Fett", items: [{id: 'amphetamine', amount: 200}, {id: 'paracetamol', amount: 5}, {id: 'viagra', amount: 10}, {id: 'baking_soda', amount: 5}, {id: 'sugar', amount: 30}], desc: "80% Amp party mix.", tags: ["Mega"]},
-            {name: "Speed Galore", items: [{id: 'amphetamine', amount: 225}, {id: 'nebilin', amount: 25}, {id: 'cocaine', amount: 10}, {id: 'ecstasy', amount: 10}, {id: 'sugar', amount: 25}, {id: 'fentanyl', amount: 5}], desc: "Kitchen sink mix. Very complex.", tags: ["Mega"]},
-            {name: "Sweet Tooth", items: [{id: 'amphetamine', amount: 200}, {id: 'sugar', amount: 20}, {id: 'salt', amount: 20}, {id: 'baking_soda', amount: 10}], desc: "80% Amp. Salty and Sweet.", tags: ["Amp"]},
-            {name: "Super Amp 1.0", items: [{id: 'amphetamine', amount: 833}, {id: 'baking_soda', amount: 44}, {id: 'viagra', amount: 90}, {id: 'lsd', amount: 33}], desc: "Massive 1kg batch. High LSD kick.", tags: ["Mega"]},
-            {name: "Coke/Suge 9/1", items: [{id: 'cocaine', amount: 90}, {id: 'sugar', amount: 10}], desc: "Verified Stats.", tags: ["Standard"]},
-            {name: "Fentastic", items: [{id: 'heroin', amount: 200}, {id: 'fentanyl', amount: 12}, {id: 'paracetamol', amount: 8}, {id: 'sugar', amount: 15}, {id: 'acetone', amount: 1}], desc: "Extremely potent.", tags: ["Deadly"]}
+        const recipes = [{
+                name: "E-Juice",
+                items: [{
+                    id: 'ecstasy',
+                    amount: 90
+                }, {
+                    id: 'amphetamine',
+                    amount: 6
+                }, {
+                    id: 'viagra',
+                    amount: 3
+                }, {
+                    id: 'baking_soda',
+                    amount: 6
+                }, {
+                    id: 'sugar',
+                    amount: 15
+                }],
+                desc: "Profit: $507. Verified 2.98 Tox.",
+                tags: ["Profit", "Pill"]
+            },
+            {
+                name: "SodaAmp",
+                items: [{
+                    id: 'amphetamine',
+                    amount: 20
+                }, {
+                    id: 'baking_soda',
+                    amount: 6
+                }],
+                desc: "Basic 77% Cut. Cheap and effective.",
+                tags: ["Amp"]
+            },
+            {
+                name: "WhiteAmp",
+                items: [{
+                    id: 'amphetamine',
+                    amount: 24
+                }, {
+                    id: 'sugar',
+                    amount: 6
+                }],
+                desc: "80% Purity. Clean look.",
+                tags: ["Amp"]
+            },
+            {
+                name: "BlueAmp",
+                items: [{
+                    id: 'amphetamine',
+                    amount: 20
+                }, {
+                    id: 'sugar',
+                    amount: 4
+                }, {
+                    id: 'ibuprofen_pharm',
+                    amount: 2
+                }],
+                desc: "77% Purity with Ibuprofen kick.",
+                tags: ["Amp"]
+            },
+            {
+                name: "Quantom AMP",
+                items: [{
+                    id: 'amphetamine',
+                    amount: 24
+                }, {
+                    id: 'ibuprofen_pharm',
+                    amount: 4
+                }, {
+                    id: 'sugar',
+                    amount: 2
+                }],
+                desc: "High Pharma mix.",
+                tags: ["Amp"]
+            },
+            {
+                name: "SweetAmp",
+                items: [{
+                    id: 'amphetamine',
+                    amount: 30
+                }, {
+                    id: 'sugar',
+                    amount: 8
+                }, {
+                    id: 'viagra',
+                    amount: 2
+                }],
+                desc: "75% Purity. Viagra for addiction.",
+                tags: ["Amp"]
+            },
+            {
+                name: "White Reign",
+                items: [{
+                    id: 'amphetamine',
+                    amount: 225
+                }, {
+                    id: 'viagra',
+                    amount: 25
+                }, {
+                    id: 'marijuana',
+                    amount: 49
+                }, {
+                    id: 'fentanyl',
+                    amount: 1
+                }],
+                desc: "Advanced mix using Pre-Mix logic.",
+                tags: ["Mega"]
+            },
+            {
+                name: "Boba Fett",
+                items: [{
+                    id: 'amphetamine',
+                    amount: 200
+                }, {
+                    id: 'paracetamol',
+                    amount: 5
+                }, {
+                    id: 'viagra',
+                    amount: 10
+                }, {
+                    id: 'baking_soda',
+                    amount: 5
+                }, {
+                    id: 'sugar',
+                    amount: 30
+                }],
+                desc: "80% Amp party mix.",
+                tags: ["Mega"]
+            },
+            {
+                name: "Speed Galore",
+                items: [{
+                    id: 'amphetamine',
+                    amount: 225
+                }, {
+                    id: 'nebilin',
+                    amount: 25
+                }, {
+                    id: 'cocaine',
+                    amount: 10
+                }, {
+                    id: 'ecstasy',
+                    amount: 10
+                }, {
+                    id: 'sugar',
+                    amount: 25
+                }, {
+                    id: 'fentanyl',
+                    amount: 5
+                }],
+                desc: "Kitchen sink mix. Very complex.",
+                tags: ["Mega"]
+            },
+            {
+                name: "Sweet Tooth",
+                items: [{
+                    id: 'amphetamine',
+                    amount: 200
+                }, {
+                    id: 'sugar',
+                    amount: 20
+                }, {
+                    id: 'salt',
+                    amount: 20
+                }, {
+                    id: 'baking_soda',
+                    amount: 10
+                }],
+                desc: "80% Amp. Salty and Sweet.",
+                tags: ["Amp"]
+            },
+            {
+                name: "Super Amp 1.0",
+                items: [{
+                    id: 'amphetamine',
+                    amount: 833
+                }, {
+                    id: 'baking_soda',
+                    amount: 44
+                }, {
+                    id: 'viagra',
+                    amount: 90
+                }, {
+                    id: 'lsd',
+                    amount: 33
+                }],
+                desc: "Massive 1kg batch. High LSD kick.",
+                tags: ["Mega"]
+            },
+            {
+                name: "Coke/Suge 9/1",
+                items: [{
+                    id: 'cocaine',
+                    amount: 90
+                }, {
+                    id: 'sugar',
+                    amount: 10
+                }],
+                desc: "Verified Stats.",
+                tags: ["Standard"]
+            },
+            {
+                name: "Fentastic",
+                items: [{
+                    id: 'heroin',
+                    amount: 200
+                }, {
+                    id: 'fentanyl',
+                    amount: 12
+                }, {
+                    id: 'paracetamol',
+                    amount: 8
+                }, {
+                    id: 'sugar',
+                    amount: 15
+                }, {
+                    id: 'acetone',
+                    amount: 1
+                }],
+                desc: "Extremely potent.",
+                tags: ["Deadly"]
+            }
         ];
 
         // STATE VARIABLES
@@ -454,15 +1223,21 @@
             const labView = document.getElementById('view-lab');
             const growView = document.getElementById('view-grow');
 
-            if(view === 'lab') {
-                labBtn.classList.replace('text-gray-400', 'text-white'); labBtn.classList.add('bg-gray-700', 'shadow-sm');
-                growBtn.classList.replace('text-white', 'text-gray-400'); growBtn.classList.remove('bg-gray-700', 'shadow-sm');
-                labView.classList.remove('hidden'); labView.classList.add('flex');
+            if (view === 'lab') {
+                labBtn.classList.replace('text-gray-400', 'text-white');
+                labBtn.classList.add('bg-gray-700', 'shadow-sm');
+                growBtn.classList.replace('text-white', 'text-gray-400');
+                growBtn.classList.remove('bg-gray-700', 'shadow-sm');
+                labView.classList.remove('hidden');
+                labView.classList.add('flex');
                 growView.classList.add('hidden');
             } else {
-                growBtn.classList.replace('text-gray-400', 'text-white'); growBtn.classList.add('bg-gray-700', 'shadow-sm');
-                labBtn.classList.replace('text-white', 'text-gray-400'); labBtn.classList.remove('bg-gray-700', 'shadow-sm');
-                growView.classList.remove('hidden'); growView.classList.add('flex');
+                growBtn.classList.replace('text-gray-400', 'text-white');
+                growBtn.classList.add('bg-gray-700', 'shadow-sm');
+                labBtn.classList.replace('text-white', 'text-gray-400');
+                labBtn.classList.remove('bg-gray-700', 'shadow-sm');
+                growView.classList.remove('hidden');
+                growView.classList.add('flex');
                 labView.classList.add('hidden');
             }
         }
@@ -471,11 +1246,12 @@
         function renderGrowGrid() {
             const grid = document.getElementById('grow-grid');
             grid.innerHTML = '';
-            
+
             Object.keys(strainsData).forEach(key => {
                 const s = strainsData[key];
                 const card = document.createElement('div');
-                card.className = `p-5 rounded-xl bg-gray-900/50 border ${s.border} relative group hover:bg-gray-800 transition-all`;
+                card.className =
+                    `p-5 rounded-xl bg-gray-900/50 border ${s.border} relative group hover:bg-gray-800 transition-all`;
                 card.innerHTML = `
                     <div class="flex justify-between items-start mb-4">
                         <h3 class="text-lg font-bold text-white tracking-tight">${s.name}</h3>
@@ -519,14 +1295,16 @@
         // --- WET WEED LOGIC ---
         function setStrainData(key) {
             const s = strainsData[key];
-            if(s) {
+            if (s) {
                 document.getElementById('seed-cost').value = s.cost;
                 document.getElementById('harvest-yield').value = s.wet;
                 updateModalCalc();
             }
         }
-        
-        function closeWetModal() { document.getElementById('wet-modal').classList.add('hidden'); }
+
+        function closeWetModal() {
+            document.getElementById('wet-modal').classList.add('hidden');
+        }
 
         function updateModalCalc() {
             const cost = parseFloat(document.getElementById('seed-cost').value) || 0;
@@ -539,15 +1317,15 @@
             const cost = parseFloat(document.getElementById('seed-cost').value) || 0;
             const yieldVal = parseFloat(document.getElementById('harvest-yield').value) || 1;
             const dynamicCost = cost / yieldVal;
-            
+
             // Push with special flag
-            currentMix.push({ 
-                id: 'wet_weed', 
-                amount: 10, 
+            currentMix.push({
+                id: 'wet_weed',
+                amount: 10,
                 dynamicCost: dynamicCost,
-                isWet: true 
+                isWet: true
             });
-            
+
             closeWetModal();
             renderMix();
             updateCalculations();
@@ -555,7 +1333,10 @@
 
         // --- PREMIX LOGIC (v6.1) ---
         function savePremix() {
-            if (currentMix.length === 0) { alert("Empty!"); return; }
+            if (currentMix.length === 0) {
+                alert("Empty!");
+                return;
+            }
             const name = prompt("Name this premix:");
             if (!name) return;
             const totalMass = currentMix.reduce((a, b) => a + b.amount, 0);
@@ -565,18 +1346,23 @@
                 dynamicCost: item.dynamicCost, // Preserve wet weed cost
                 isWet: item.isWet
             }));
-            savedPremixes.push({ id: 'premix_' + Date.now(), name, composition, color: '#fbbf24' });
+            savedPremixes.push({
+                id: 'premix_' + Date.now(),
+                name,
+                composition,
+                color: '#fbbf24'
+            });
             localStorage.setItem('dds_premixes_v2', JSON.stringify(savedPremixes));
-            
+
             const activeTab = document.querySelector('.active-tab');
-            if(activeTab && activeTab.dataset.tab === 'premix') filterPantry('premix');
+            if (activeTab && activeTab.dataset.tab === 'premix') filterPantry('premix');
         }
 
         function loadPremixes() {
             try {
                 const saved = localStorage.getItem('dds_premixes_v2');
                 if (saved) savedPremixes = JSON.parse(saved);
-            } catch(e) {}
+            } catch (e) {}
         }
 
         function addPremixToFlask(premix) {
@@ -584,19 +1370,27 @@
             premix.composition.forEach(comp => {
                 const amount = comp.ratio * amountToAdd;
                 if (comp.id === 'wet_weed') {
-                    currentMix.push({ id: comp.id, amount, dynamicCost: comp.dynamicCost, isWet: true });
+                    currentMix.push({
+                        id: comp.id,
+                        amount,
+                        dynamicCost: comp.dynamicCost,
+                        isWet: true
+                    });
                 } else {
                     const existing = currentMix.find(i => i.id === comp.id && !i.isWet);
                     if (existing) existing.amount += amount;
-                    else currentMix.push({ id: comp.id, amount });
+                    else currentMix.push({
+                        id: comp.id,
+                        amount
+                    });
                 }
             });
             renderMix();
             updateCalculations();
         }
-        
+
         function clearPremixes() {
-            if(confirm("Delete all saved premixes?")) {
+            if (confirm("Delete all saved premixes?")) {
                 savedPremixes = [];
                 localStorage.removeItem('dds_premixes_v2');
                 filterPantry('premix');
@@ -608,16 +1402,20 @@
             calcMode = mode;
             const visBtn = document.getElementById('mode-visual');
             const intBtn = document.getElementById('mode-internal');
-            
+
             if (mode === 'visual') {
-                visBtn.classList.replace('text-gray-400', 'bg-gray-700'); visBtn.classList.replace('hover:text-white', 'text-white');
+                visBtn.classList.replace('text-gray-400', 'bg-gray-700');
+                visBtn.classList.replace('hover:text-white', 'text-white');
                 visBtn.classList.add('shadow-sm');
-                intBtn.classList.replace('bg-red-900/50', 'text-gray-400'); intBtn.classList.replace('text-red-200', 'hover:text-white');
+                intBtn.classList.replace('bg-red-900/50', 'text-gray-400');
+                intBtn.classList.replace('text-red-200', 'hover:text-white');
                 intBtn.classList.remove('shadow-sm');
             } else {
-                intBtn.classList.replace('text-gray-400', 'bg-red-900/50'); intBtn.classList.replace('hover:text-white', 'text-red-200');
+                intBtn.classList.replace('text-gray-400', 'bg-red-900/50');
+                intBtn.classList.replace('hover:text-white', 'text-red-200');
                 intBtn.classList.add('shadow-sm');
-                visBtn.classList.replace('bg-gray-700', 'text-gray-400'); visBtn.classList.replace('text-white', 'hover:text-white');
+                visBtn.classList.replace('bg-gray-700', 'text-gray-400');
+                visBtn.classList.replace('text-white', 'hover:text-white');
                 visBtn.classList.remove('shadow-sm');
             }
             updateCalculations();
@@ -630,13 +1428,13 @@
                 el.classList.add('text-gray-400', 'border-transparent');
             });
             const activeBtn = document.querySelector(`[data-tab="${type}"]`);
-            if(activeBtn) {
+            if (activeBtn) {
                 activeBtn.classList.remove('text-gray-400', 'border-transparent');
                 activeBtn.classList.add('bg-gray-800', 'text-white', 'shadow-sm', 'border-gray-700');
             }
             const clearBtn = document.getElementById('clear-premixes');
             if (type === 'premix' && clearBtn) clearBtn.classList.remove('hidden');
-            else if(clearBtn) clearBtn.classList.add('hidden');
+            else if (clearBtn) clearBtn.classList.add('hidden');
 
             initPantry(type);
         }
@@ -645,10 +1443,10 @@
             const term = document.getElementById('pantry-search').value.toLowerCase();
             const list = document.getElementById('pantry-list');
             list.innerHTML = '';
-            
+
             const filteredIngs = ingredients.filter(i => i.name.toLowerCase().includes(term));
             filteredIngs.forEach(item => renderPantryItem(item, list));
-            
+
             const filteredPremixes = savedPremixes.filter(p => p.name.toLowerCase().includes(term));
             filteredPremixes.forEach(item => renderPremixItem(item, list));
         }
@@ -656,9 +1454,10 @@
         function initPantry(type) {
             const list = document.getElementById('pantry-list');
             list.innerHTML = '';
-            
+
             if (type === 'premix') {
-                if (savedPremixes.length === 0) list.innerHTML = `<div class="text-xs text-gray-500 text-center p-6 italic">No saved premixes.<br>Create a mix and click the Save icon.</div>`;
+                if (savedPremixes.length === 0) list.innerHTML =
+                    `<div class="text-xs text-gray-500 text-center p-6 italic">No saved premixes.<br>Create a mix and click the Save icon.</div>`;
                 else savedPremixes.forEach(item => renderPremixItem(item, list));
             } else {
                 const filtered = ingredients.filter(i => {
@@ -671,9 +1470,10 @@
 
         function renderPantryItem(item, container) {
             const row = document.createElement('div');
-            row.className = "flex items-center justify-between p-2 rounded-lg hover:bg-gray-800/80 cursor-pointer group transition-all border border-transparent hover:border-gray-700/50";
+            row.className =
+                "flex items-center justify-between p-2 rounded-lg hover:bg-gray-800/80 cursor-pointer group transition-all border border-transparent hover:border-gray-700/50";
             row.onclick = () => {
-                if(item.custom) {
+                if (item.custom) {
                     document.getElementById('wet-modal').classList.remove('hidden');
                     updateModalCalc();
                 } else {
@@ -698,7 +1498,8 @@
 
         function renderPremixItem(item, container) {
             const row = document.createElement('div');
-            row.className = "flex items-center justify-between p-2 rounded-lg hover:bg-gray-800/80 cursor-pointer group transition-all border border-transparent hover:border-yellow-500/30";
+            row.className =
+                "flex items-center justify-between p-2 rounded-lg hover:bg-gray-800/80 cursor-pointer group transition-all border border-transparent hover:border-yellow-500/30";
             row.onclick = () => addPremixToFlask(item);
             row.innerHTML = `
                 <div class="flex items-center gap-3">
@@ -716,7 +1517,10 @@
         // --- 6. FLASK OPERATIONS ---
         function addToMix(id) {
             const existing = currentMix.find(i => i.id === id);
-            if (!existing) currentMix.push({ id, amount: 10 });
+            if (!existing) currentMix.push({
+                id,
+                amount: 10
+            });
             renderMix();
             updateCalculations();
         }
@@ -733,13 +1537,13 @@
                 let v = parseFloat(val);
                 if (isNaN(v) || v < 0) v = 0;
                 item.amount = v;
-                
+
                 const slider = document.querySelector(`#slider-${index}`);
                 // const input = document.querySelector(`#input-${index}`);  <-- DELETE THIS LINE
-                
-                if(slider) slider.value = v;
+
+                if (slider) slider.value = v;
                 // if(input) input.value = Math.round(v * 100) / 100;    <-- DELETE THIS LINE (It blocks typing decimals)
-                
+
                 updateCalculations();
                 updateVisualBeaker();
                 updateManifestTable();
@@ -748,7 +1552,7 @@
 
         function renderMix() {
             const container = document.getElementById('mix-container');
-            
+
             if (currentMix.length === 0) {
                 container.innerHTML = `
                     <div class="h-full flex flex-col items-center justify-center text-gray-600 opacity-60">
@@ -764,10 +1568,12 @@
             currentMix.forEach((item, index) => {
                 const data = ingredients.find(i => i.id === item.id);
                 const el = document.createElement('div');
-                el.className = "bg-gray-800/40 border border-gray-700/50 rounded-lg p-3 group hover:border-gray-600 transition-colors";
-                
+                el.className =
+                    "bg-gray-800/40 border border-gray-700/50 rounded-lg p-3 group hover:border-gray-600 transition-colors";
+
                 let costLabel = '';
-                if(item.isWet) costLabel = `<span class="text-[9px] text-green-500 ml-2">(${item.dynamicCost.toFixed(2)}$/g)</span>`;
+                if (item.isWet) costLabel =
+                    `<span class="text-[9px] text-green-500 ml-2">(${item.dynamicCost.toFixed(2)}$/g)</span>`;
 
                 el.innerHTML = `
                     <div class="flex justify-between items-center mb-2">
@@ -807,7 +1613,7 @@
                 const data = ingredients.find(i => i.id === item.id);
                 const pct = (item.amount / total) * 100;
                 if (pct < 1) return;
-                
+
                 const layer = document.createElement('div');
                 layer.style.height = `${pct}%`;
                 layer.style.backgroundColor = data.color;
@@ -826,7 +1632,7 @@
             const tbody = document.getElementById('manifest-body');
             tbody.innerHTML = '';
             const totalMass = currentMix.reduce((a, b) => a + b.amount, 0);
-            
+
             if (totalMass === 0) {
                 tbody.innerHTML = `<tr><td colspan="4" class="text-center text-gray-600 italic py-4">No data</td></tr>`;
                 return;
@@ -837,7 +1643,7 @@
                 const pct = (item.amount / totalMass) * 100;
                 const costPerG = item.isWet ? item.dynamicCost : data.cost;
                 const cost = item.amount * costPerG;
-                
+
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td class="pl-3 font-medium text-gray-300 py-1">${data.name}</td>
@@ -853,7 +1659,12 @@
         function calculateStats() {
             if (currentMix.length === 0) return null;
 
-            let totalMass = 0, wStr = 0, wMixStr = 0, wTox = 0, wAdct = 0, totalCost = 0;
+            let totalMass = 0,
+                wStr = 0,
+                wMixStr = 0,
+                wTox = 0,
+                wAdct = 0,
+                totalCost = 0;
             let maxAmt = 0;
             let mainIngId = null;
 
@@ -861,16 +1672,16 @@
             currentMix.forEach(item => {
                 const data = ingredients.find(i => i.id === item.id);
                 totalMass += item.amount;
-                
+
                 const costPerG = item.isWet ? item.dynamicCost : data.cost;
                 totalCost += (item.amount * costPerG);
-                
+
                 if (item.amount > maxAmt) {
                     maxAmt = item.amount;
                     mainIngId = item.id;
                 }
             });
-            
+
             if (totalMass === 0) return null;
 
             // Pass 2
@@ -887,44 +1698,54 @@
             let multiplier;
             if (calcMode === 'visual') {
                 const mainIng = ingredients.find(i => i.id === mainIngId);
-                const baseMixStr = mainIng ? mainIng.mixStr : 2.0; 
-                multiplier = wMixStr / baseMixStr; 
+                const baseMixStr = mainIng ? mainIng.mixStr : 2.0;
+                multiplier = wMixStr / baseMixStr;
             } else {
-                multiplier = wMixStr; 
+                multiplier = wMixStr;
             }
 
             const finalStr = wStr * multiplier;
             const finalAdct = wAdct * multiplier;
 
-            return { mass: totalMass, cost: totalCost, avgStr: wStr, avgMixStr: wMixStr, finalStr, finalTox: wTox, finalAdct };
+            return {
+                mass: totalMass,
+                cost: totalCost,
+                avgStr: wStr,
+                avgMixStr: wMixStr,
+                finalStr,
+                finalTox: wTox,
+                finalAdct
+            };
         }
 
         function updateCalculations() {
             const stats = calculateStats();
-            
+
             if (!stats || stats.mass === 0) {
                 resetUI();
                 return;
             }
 
             const eqInfo = determineEquipment(currentMix);
-            document.getElementById('eq-name').innerHTML = `${eqInfo.eq} <span class="text-[10px] bg-gray-800 px-1.5 py-0.5 rounded text-gray-400 font-mono font-normal border border-gray-700 ml-2">${eqInfo.form}</span>`;
+            document.getElementById('eq-name').innerHTML =
+                `${eqInfo.eq} <span class="text-[10px] bg-gray-800 px-1.5 py-0.5 rounded text-gray-400 font-mono font-normal border border-gray-700 ml-2">${eqInfo.form}</span>`;
             document.getElementById('eq-icon').innerText = eqInfo.icon;
 
             document.getElementById('total-mass').innerText = stats.mass;
             document.getElementById('val-str').innerText = stats.finalStr.toFixed(2);
             document.getElementById('val-add').innerText = stats.finalAdct.toFixed(2);
             document.getElementById('val-tox').innerText = stats.finalTox.toFixed(2);
-            
+
             const diff = stats.finalStr - stats.avgStr;
             const sign = diff >= 0 ? "+" : "";
-            document.getElementById('base-str-diff').innerText = `Base: ${stats.avgStr.toFixed(2)} (${sign}${diff.toFixed(2)})`;
+            document.getElementById('base-str-diff').innerText =
+                `Base: ${stats.avgStr.toFixed(2)} (${sign}${diff.toFixed(2)})`;
 
             // Financials
             let saleableMass = 0;
             currentMix.forEach(item => {
                 const data = ingredients.find(i => i.id === item.id);
-                if(data.saleable !== false && !item.isWet) {
+                if (data.saleable !== false && !item.isWet) {
                     saleableMass += item.amount;
                 }
             });
@@ -935,13 +1756,13 @@
             const profitPerGram = stats.mass > 0 ? profit / stats.mass : 0;
             const costPerGram = stats.cost / stats.mass;
             const costPct = revenue > 0 ? Math.min((stats.cost / revenue) * 100, 100) : 100;
-            
+
             document.getElementById('val-cost-batch').innerText = '$' + stats.cost.toFixed(0);
             document.getElementById('val-cost-gram').innerText = '($' + costPerGram.toFixed(2) + '/g)';
-            
+
             document.getElementById('val-profit-batch').innerText = '$' + profit.toFixed(2);
             document.getElementById('val-profit-gram').innerText = '$' + profitPerGram.toFixed(2);
-            
+
             const safeCostPct = Math.max(0, Math.min(costPct, 100));
             const safeProfitPct = Math.max(0, 100 - safeCostPct);
             document.getElementById('cost-bar').style.width = safeCostPct + '%';
@@ -950,9 +1771,12 @@
             // Warnings
             const warnings = document.getElementById('warnings');
             warnings.innerHTML = '';
-            if (stats.finalTox > 10) warnings.innerHTML += `<div class="text-[10px] text-red-200 bg-red-900/40 p-2 rounded border-l-2 border-red-500 flex items-center gap-2"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg> Lethal Toxicity (>10)</div>`;
-            if (stats.finalStr > (calcMode === 'visual' ? 12 : 25)) warnings.innerHTML += `<div class="text-[10px] text-orange-200 bg-orange-900/40 p-2 rounded border-l-2 border-orange-500 flex items-center gap-2"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> Overdose Risk (High Str)</div>`;
-            if (saleableMass < stats.mass) warnings.innerHTML += `<div class="text-[10px] text-yellow-200 bg-yellow-900/40 p-2 rounded border-l-2 border-yellow-500 flex items-center gap-2">⚠️ ${Math.round(stats.mass - saleableMass)}g unsold Wet Weed</div>`;
+            if (stats.finalTox > 10) warnings.innerHTML +=
+                `<div class="text-[10px] text-red-200 bg-red-900/40 p-2 rounded border-l-2 border-red-500 flex items-center gap-2"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg> Lethal Toxicity (>10)</div>`;
+            if (stats.finalStr > (calcMode === 'visual' ? 12 : 25)) warnings.innerHTML +=
+                `<div class="text-[10px] text-orange-200 bg-orange-900/40 p-2 rounded border-l-2 border-orange-500 flex items-center gap-2"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> Overdose Risk (High Str)</div>`;
+            if (saleableMass < stats.mass) warnings.innerHTML +=
+                `<div class="text-[10px] text-yellow-200 bg-yellow-900/40 p-2 rounded border-l-2 border-yellow-500 flex items-center gap-2">⚠️ ${Math.round(stats.mass - saleableMass)}g unsold Wet Weed</div>`;
 
             updateRadar(stats);
         }
@@ -963,9 +1787,21 @@
                 const i = ingredients.find(x => x.id === m.id);
                 return i.id === 'acetone' || i.id === 'nebilin' || i.form === 'liquid';
             });
-            if (hasLiquid) return { eq: "Crystallizer", icon: "💎", form: "Crystal" };
-            if (hasEcstasy) return { eq: "Pill Press", icon: "💊", form: "Pill" };
-            return { eq: "Mixer", icon: "🥣", form: "Powder" };
+            if (hasLiquid) return {
+                eq: "Crystallizer",
+                icon: "💎",
+                form: "Crystal"
+            };
+            if (hasEcstasy) return {
+                eq: "Pill Press",
+                icon: "💊",
+                form: "Pill"
+            };
+            return {
+                eq: "Mixer",
+                icon: "🥣",
+                form: "Powder"
+            };
         }
 
         function resetLab() {
@@ -986,7 +1822,8 @@
             document.getElementById('val-profit-gram').innerText = '$0.00';
             document.getElementById('warnings').innerHTML = '';
             document.getElementById('visual-beaker').innerHTML = '';
-            document.getElementById('manifest-body').innerHTML = `<tr><td colspan="4" class="text-center text-gray-600 italic py-4">No data</td></tr>`;
+            document.getElementById('manifest-body').innerHTML =
+                `<tr><td colspan="4" class="text-center text-gray-600 italic py-4">No data</td></tr>`;
             if (radarChart) {
                 radarChart.data.datasets[0].data = [0, 0, 0, 0];
                 radarChart.update();
@@ -995,7 +1832,9 @@
 
         function loadRecipe(index) {
             const recipe = recipes[index];
-            currentMix = recipe.items.map(i => ({...i}));
+            currentMix = recipe.items.map(i => ({
+                ...i
+            }));
             renderMix();
             updateCalculations();
             switchView('lab'); // Auto-switch to lab when loading
@@ -1005,9 +1844,11 @@
             const list = document.getElementById('recipe-list');
             recipes.forEach((r, idx) => {
                 const el = document.createElement('div');
-                el.className = "p-3 rounded-lg bg-gray-950/50 hover:bg-gray-800 border border-gray-800 hover:border-accent/50 cursor-pointer group transition-all";
+                el.className =
+                    "p-3 rounded-lg bg-gray-950/50 hover:bg-gray-800 border border-gray-800 hover:border-accent/50 cursor-pointer group transition-all";
                 el.onclick = () => loadRecipe(idx);
-                const tagColor = r.tags[0] === 'Premium' ? 'text-accent' : r.tags[0] === 'Profit' ? 'text-green-400' : 'text-gray-500';
+                const tagColor = r.tags[0] === 'Premium' ? 'text-accent' : r.tags[0] === 'Profit' ?
+                    'text-green-400' : 'text-gray-500';
                 el.innerHTML = `
                     <div class="flex justify-between items-start mb-1">
                         <h3 class="text-xs font-bold text-gray-300 group-hover:text-white">${r.name}</h3>
@@ -1043,25 +1884,360 @@
                     maintainAspectRatio: false,
                     scales: {
                         r: {
-                            angleLines: { color: 'rgba(75, 85, 99, 0.3)' },
-                            grid: { color: 'rgba(75, 85, 99, 0.3)' },
-                            pointLabels: { font: { size: 10, family: 'JetBrains Mono' }, color: '#9ca3af' },
-                            suggestedMin: 0, suggestedMax: 10, ticks: { display: false, maxTicksLimit: 5 }
+                            angleLines: {
+                                color: 'rgba(75, 85, 99, 0.3)'
+                            },
+                            grid: {
+                                color: 'rgba(75, 85, 99, 0.3)'
+                            },
+                            pointLabels: {
+                                font: {
+                                    size: 10,
+                                    family: 'JetBrains Mono'
+                                },
+                                color: '#9ca3af'
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 10,
+                            ticks: {
+                                display: false,
+                                maxTicksLimit: 5
+                            }
                         }
                     },
-                    plugins: { legend: { display: false } }
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
                 }
             });
         }
 
         function updateRadar(stats) {
             if (!radarChart) return;
-            const mixVis = (stats.avgMixStr - 1) * 5; 
+            const mixVis = (stats.avgMixStr - 1) * 5;
             const strVis = calcMode === 'visual' ? stats.finalStr * 1.5 : stats.finalStr / 2;
             const adctVis = calcMode === 'visual' ? stats.finalAdct * 2 : stats.finalAdct / 4;
-            radarChart.data.datasets[0].data = [Math.min(stats.finalTox, 10), Math.min(strVis, 15), Math.min(adctVis, 10), mixVis];
+            radarChart.data.datasets[0].data = [Math.min(stats.finalTox, 10), Math.min(strVis, 15), Math.min(adctVis,
+                10), mixVis];
             radarChart.update();
+        }
+
+        // --- 9. ORDER MANAGEMENT & PACKAGING OPTIMIZATION ---
+        let orders = [];
+
+        // Game Constraints
+        const packageSizes = [1000, 500, 100, 50, 20, 10, 5, 3, 2, 1];
+
+        const stackLimits = {
+            1000: 1,
+            500: 1,
+            100: 2,
+            50: 3,
+            20: 3,
+            10: 4,
+            5: 4,
+            3: 6,
+            2: 10,
+            1: 10
+        };
+
+        function addOrder() {
+            // REMOVED: const client = document.getElementById('order-client').value;
+            const base = document.getElementById('order-base').value;
+            const recipeIdx = document.getElementById('order-recipe').value;
+            const amount = parseFloat(document.getElementById('order-amount').value);
+
+            if (!base || isNaN(amount) || amount <= 0) {
+                alert("Please select a drug and enter a valid amount.");
+                return;
+            }
+
+            const packConfig = calculatePackageConfig(amount);
+
+            orders.push({
+                id: Date.now(),
+                base,
+                recipeIdx,
+                amount,
+                packConfig
+            });
+
+            // UI Reset
+            document.getElementById('order-amount').value = '';
+            // REMOVED: document.getElementById('order-client').value = '';
+            renderOrders();
+        }
+
+        function calculatePackageConfig(grams) {
+            let remaining = grams;
+            let config = {};
+
+            // Special Edge Case Optimizations for Stacking
+            // The game prefers 2x2g (1 slot) over 1x3g + 1x1g (2 slots)
+            if (remaining % 10 === 4) {
+                config[2] = 2;
+                remaining -= 4;
+            } else if (remaining % 10 === 6) {
+                // 6g -> 2x3g (1 slot) vs 5g+1g (2 slots)
+                config[3] = 2;
+                remaining -= 6;
+            } else if (remaining % 10 === 9) {
+                // 9g -> 3x3g (1 slot) vs 5+3+1 (3 slots) or 5+2+2 (2 slots)
+                // Actually 3x3 is best for slot efficiency
+                config[3] = 3;
+                remaining -= 9;
+            }
+
+            // Standard Greedy for the rest
+            packageSizes.forEach(size => {
+                if (remaining >= size) {
+                    const count = Math.floor(remaining / size);
+                    config[size] = (config[size] || 0) + count;
+                    remaining = Number((remaining % size).toFixed(2)); // Fix float precision
+                }
+            });
+
+            // If there's a decimal remainder (like 0.5g), we can't pack it (Game logic usually floors or rounds)
+            // For now, we assume integers as per user request "x.xx possible" 
+            // but the packaging only supports [1...1000]. 
+            // If user enters 204.5, we pack 204 and ignore 0.5 or treat as waste.
+
+            return config;
+        }
+
+        function recommendRecipe() {
+            const base = document.getElementById('order-base').value;
+            const select = document.getElementById('order-recipe');
+
+            // 1. Reset options and add Pure
+            select.innerHTML = '<option value="pure">Pure Product (100%)</option>';
+
+            if (!base) return;
+
+            // 2. Find and add other recipes (Visual only - they appear in list but won't be selected)
+            const relevant = recipes.map((r, idx) => ({
+                ...r,
+                idx
+            })).filter(r =>
+                r.items.some(i => i.id === base)
+            );
+
+            relevant.sort((a, b) => {
+                const tagScore = (t) => t === 'Profit' ? 3 : t === 'Amp' ? 2 : 1;
+                return tagScore(b.tags[0]) - tagScore(a.tags[0]);
+            });
+
+            relevant.forEach(r => {
+                const opt = document.createElement('option');
+                opt.value = r.idx;
+                opt.innerText = `Best Cut: ${r.name} (${r.tags[0]})`;
+                select.appendChild(opt);
+            });
+
+            // 3. CRITICAL: Force the selection to remain "Pure"
+            // This overrides any auto-selection logic
+            select.value = 'pure';
+        }
+
+        function renderOrders() {
+            const tbody = document.getElementById('orders-list');
+            tbody.innerHTML = '';
+
+            let globalPackCounts = {};
+            let shoppingList = {};
+            let cuttingManifest = {};
+
+            if (orders.length === 0) {
+                tbody.innerHTML =
+                    `<tr><td colspan="5" class="text-center text-gray-600 italic py-6 text-[10px]">No active orders. Add one above.</td></tr>`;
+                updateDistCalc({}, {});
+                document.getElementById('shopping-list').innerHTML =
+                    '<div class="text-center text-[10px] text-gray-600 italic mt-4">No active orders</div>';
+                document.getElementById('order-badge').classList.add('hidden');
+                return;
+            }
+
+            document.getElementById('order-badge').classList.remove('hidden');
+
+            orders.forEach((o, index) => {
+                // 1. Shopping List Logic
+                if (o.recipeIdx !== 'pure') {
+                    const r = recipes[o.recipeIdx];
+                    const totalParts = r.items.reduce((a, b) => a + b.amount, 0);
+                    r.items.forEach(item => {
+                        const amountNeeded = (item.amount / totalParts) * o.amount;
+                        shoppingList[item.id] = (shoppingList[item.id] || 0) + amountNeeded;
+                    });
+                } else {
+                    shoppingList[o.base] = (shoppingList[o.base] || 0) + o.amount;
+                }
+
+                // 2. Data Aggregation
+                Object.entries(o.packConfig).forEach(([size, count]) => {
+                    globalPackCounts[size] = (globalPackCounts[size] || 0) + count;
+                });
+
+                if (!cuttingManifest[o.base]) cuttingManifest[o.base] = {};
+                Object.entries(o.packConfig).forEach(([size, count]) => {
+                    cuttingManifest[o.base][size] = (cuttingManifest[o.base][size] || 0) + count;
+                });
+
+                // 3. Render Row (No Price Column)
+                let recipeName = o.recipeIdx !== 'pure' ? recipes[o.recipeIdx].name : "Pure Product";
+
+                const baseIng = ingredients.find(i => i.id === o.base);
+                const baseName = baseIng ? baseIng.name : o.base;
+                const baseColor = baseIng ? baseIng.color : '#9ca3af';
+
+                const packString = Object.entries(o.packConfig)
+                    .sort((a, b) => b[0] - a[0])
+                    .map(([size, count]) =>
+                        `<span class="bg-gray-800 border border-gray-600 px-1.5 py-0.5 rounded text-[9px] text-gray-300 font-mono">${count}x${size}g</span>`
+                        )
+                    .join(' ');
+
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-gray-800 hover:bg-gray-800/30 transition-colors";
+                tr.innerHTML = `
+                    <td class="pl-4 py-3">
+                        <div class="font-bold text-xs flex items-center gap-2" style="color: ${baseColor}">
+                            <div class="w-1.5 h-1.5 rounded-full" style="background-color: ${baseColor}"></div>
+                            ${baseName}
+                        </div>
+                    </td>
+                    <td class="text-gray-400 text-[10px] font-mono">${recipeName}</td>
+                    <td class="text-accent flex flex-wrap gap-1 items-center py-3">${packString}</td>
+                    <td class="text-right font-mono text-white text-xs pr-4">${o.amount}g</td>
+                    <td class="text-right pr-4">
+                        <button onclick="removeOrder(${index})" class="text-gray-600 hover:text-red-400 text-[10px] uppercase font-bold">X</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            updateDistCalc(globalPackCounts, cuttingManifest);
+            renderShoppingList(shoppingList);
+        }
+
+        function removeOrder(index) {
+            orders.splice(index, 1);
+            renderOrders();
+        }
+
+        function clearOrders() {
+            if (confirm("Clear all active orders?")) {
+                orders = [];
+                renderOrders();
+            }
+        }
+
+        function updateDistCalc(globalPacks, manifestData) {
+            // 1. Calculate Totals
+            let totalSlots = 0;
+            let totalWeight = 0;
+
+            Object.entries(globalPacks).forEach(([size, count]) => {
+                const limit = stackLimits[size] || 1;
+                totalSlots += Math.ceil(count / limit);
+                totalWeight += (size * count);
+            });
+
+            document.getElementById('dist-total-weight').innerText = totalWeight + 'g';
+            document.getElementById('dist-total-slots').innerText = totalSlots;
+
+            // 2. Render The List (Drug: 2x20g / 1x10g...)
+            const container = document.getElementById('cutting-manifest-list');
+            container.innerHTML = '';
+
+            if (Object.keys(manifestData).length === 0) {
+                container.innerHTML =
+                    `<div class="text-[10px] text-gray-600 italic text-center mt-4">No active orders</div>`;
+                return;
+            }
+
+            Object.keys(manifestData).forEach(baseId => {
+                const packs = manifestData[baseId];
+
+                // Get pretty name and color
+                const ingInfo = ingredients.find(i => i.id === baseId);
+                const displayName = ingInfo ? ingInfo.name : baseId.charAt(0).toUpperCase() + baseId.slice(1);
+                const displayColor = ingInfo ? ingInfo.color : '#fff';
+
+                // Format string: "2x20g / 1x10g"
+                const packString = Object.entries(packs)
+                    .sort((a, b) => parseFloat(b[0]) - parseFloat(a[0])) // Sort by size descending
+                    .map(([size, count]) => `<span class="text-white font-mono">${count}x${size}g</span>`)
+                    .join('<span class="text-gray-600 mx-1">/</span>');
+
+                const row = document.createElement('div');
+                row.className = "bg-gray-950/50 p-2 rounded border border-gray-800";
+                row.innerHTML = `
+                    <div class="text-[10px] uppercase font-bold mb-1 flex items-center gap-2" style="color: ${displayColor}">
+                        <div class="w-2 h-2 rounded-full" style="background-color: ${displayColor}"></div>
+                        ${displayName}
+                    </div>
+                    <div class="text-xs text-gray-400 leading-relaxed pl-4">
+                        ${packString}
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function renderShoppingList(list) {
+            const container = document.getElementById('shopping-list');
+            container.innerHTML = '';
+
+            Object.keys(list).sort().forEach(key => {
+                const amount = list[key];
+                const ing = ingredients.find(i => i.id === key);
+                const name = ing ? ing.name : key;
+                const color = ing ? ing.color : '#fff';
+
+                const row = document.createElement('div');
+                row.className = "flex justify-between items-center mb-2 text-xs border-b border-gray-800 pb-1";
+                row.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <div class="w-1.5 h-1.5 rounded-full" style="background-color: ${color}"></div>
+                        <span class="text-gray-300">${name}</span>
+                    </div>
+                    <span class="font-mono font-bold text-white">${amount.toFixed(1)}g</span>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        // --- Navigation Logic ---
+        const originalSwitchView = switchView;
+        switchView = function (view) {
+            const distBtn = document.getElementById('nav-dist');
+            const distView = document.getElementById('view-dist');
+
+            distBtn.classList.replace('text-white', 'text-gray-400');
+            distBtn.classList.remove('bg-gray-700', 'shadow-sm');
+            distView.classList.add('hidden');
+
+            if (view === 'dist') {
+                document.getElementById('nav-lab').classList.replace('text-white', 'text-gray-400');
+                document.getElementById('nav-lab').classList.remove('bg-gray-700', 'shadow-sm');
+                document.getElementById('view-lab').classList.add('hidden');
+                document.getElementById('view-lab').classList.remove('flex');
+
+                document.getElementById('nav-grow').classList.replace('text-white', 'text-gray-400');
+                document.getElementById('nav-grow').classList.remove('bg-gray-700', 'shadow-sm');
+                document.getElementById('view-grow').classList.add('hidden');
+
+                distBtn.classList.replace('text-gray-400', 'text-white');
+                distBtn.classList.add('bg-gray-700', 'shadow-sm');
+                distView.classList.remove('hidden');
+                distView.classList.add('flex');
+            } else {
+                originalSwitchView(view);
+            }
         }
     </script>
 </body>
+
 </html>
