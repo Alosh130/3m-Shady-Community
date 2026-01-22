@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDS Architect v5.9 (Mega Pack)</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Config -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        gray: {
+                            850: '#1f2937',
+                            900: '#111827',
+                            950: '#030712',
+                        },
+                        accent: {
+                            DEFAULT: '#8b5cf6', // Violet
+                            glow: '#a78bfa',
+                            dim: 'rgba(139, 92, 246, 0.1)',
+                        },
+                        tox: '#ef4444',
+                        str: '#f59e0b',
+                        adct: '#ec4899',
+                        psych: '#22d3ee',
+                        profit: '#22c55e',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #030712;
+            color: #e5e7eb;
+        }
+
+        .scroller::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        .scroller::-webkit-scrollbar-track {
+            background: #111827;
+        }
+
+        .scroller::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 3px;
+        }
+
+        .scroller::-webkit-scrollbar-thumb:hover {
+            background: #4b5563;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 180px;
+        }
+
+        .slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .slider-thumb::-webkit-slider-thumb {
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #8b5cf6;
+            cursor: pointer;
+            border: 2px solid #1f2937;
+            box-shadow: 0 0 8px rgba(139, 92, 246, 0.6);
+            transition: transform 0.1s;
+        }
+
+        .slider-thumb::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(75, 85, 99, 0.3);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body class="h-screen flex flex-col font-sans selection:bg-accent selection:text-white overflow-hidden">
+
+    <!-- Header -->
+    <header class="border-b border-gray-800 bg-gray-950/80 backdrop-blur-md sticky top-0 z-50 flex-none">
+        <div class="max-w-[1800px] mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-9 h-9 rounded-lg bg-gradient-to-br from-accent to-purple-900 flex items-center justify-center font-bold text-white shadow-lg shadow-accent/20 border border-white/10">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                        </svg>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight text-white leading-none">DDS <span
+                            class="text-accent">Architect</span></h1>
+                    <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Mega Pack v5.9</span>
+                </div>
+            </div>
+
+            <div class="flex items-center bg-gray-900 rounded-lg p-1 border border-gray-700 shadow-inner">
+                <button id="mode-visual" onclick="setMode('visual')"
+                    class="text-[10px] font-bold px-3 py-1.5 rounded-md bg-gray-700 text-white transition-all shadow-sm flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-green-400"></span> WEBSITE
+                </button>
+                <button id="mode-internal" onclick="setMode('internal')"
+                    class="text-[10px] font-bold px-3 py-1.5 rounded-md text-gray-400 hover:text-white transition-all flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-red-900"></span> INTERNAL
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow p-4 lg:p-6 max-w-[1800px] mx-auto w-full overflow-hidden flex flex-col xl:flex-row gap-6">
+
+        <!-- Left: Pantry -->
+        <div class="xl:w-[340px] flex-none flex flex-col gap-4 h-full min-h-0">
+            <div class="glass-panel rounded-xl flex flex-col h-full overflow-hidden shadow-2xl ring-1 ring-white/5">
+                <div class="p-4 border-b border-gray-700/50 bg-gray-900/30">
+                    <div class="flex justify-between items-center mb-3">
+                        <h2 class="text-xs font-bold uppercase tracking-widest text-gray-400">Pantry</h2>
+                    </div>
+                    <div class="relative">
+                        <input type="text" id="pantry-search" placeholder="Search..."
+                            class="w-full bg-gray-950 border border-gray-700 rounded-lg py-2 pl-9 pr-3 text-xs text-white focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all placeholder-gray-600"
+                            onkeyup="searchPantry()">
+                        <svg class="w-3.5 h-3.5 absolute left-3 top-2.5 text-gray-500" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="px-4 pt-2">
+                    <div class="flex p-1 gap-1 bg-gray-950 rounded-lg border border-gray-800 flex-wrap">
+                        <button
+                            class="flex-1 py-1.5 text-[10px] font-bold uppercase rounded hover:bg-gray-800 text-gray-400 transition-all active-tab bg-gray-800 text-white shadow-sm border border-gray-700"
+                            data-tab="dope" onclick="filterPantry('dope')">Drugs</button>
+                        <button
+                            class="flex-1 py-1.5 text-[10px] font-bold uppercase rounded hover:bg-gray-800 text-gray-400 transition-all border border-transparent"
+                            data-tab="active" onclick="filterPantry('active')">Additives</button>
+                        <button
+                            class="flex-1 py-1.5 text-[10px] font-bold uppercase rounded hover:bg-gray-800 text-gray-400 transition-all border border-transparent"
+                            data-tab="filler" onclick="filterPantry('filler')">Fillers</button>
+                    </div>
+                </div>
+
+                <div id="pantry-list" class="flex-grow overflow-y-auto scroller p-2 space-y-1"></div>
+            </div>
+        </div>
+
+        <!-- Center: Flask -->
+        <div class="flex-grow flex flex-col gap-4 h-full min-h-0 min-w-0">
+
+            <div class="glass-panel p-3 rounded-xl flex items-center justify-between flex-none">
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-3 pl-2">
+                        <div class="w-10 h-10 rounded-lg bg-gray-800 border border-gray-700 flex items-center justify-center text-xl shadow-inner"
+                            id="eq-icon">🥣</div>
+                        <div>
+                            <div class="text-[10px] uppercase text-gray-500 font-bold tracking-wider">Equipment</div>
+                            <div class="text-sm font-bold text-white flex items-center gap-2" id="eq-name">Mixer</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-6 pr-2">
+                    <div class="text-right">
+                        <div class="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Total Mass</div>
+                        <div class="text-xl font-mono font-bold text-white leading-none"><span
+                                id="total-mass">0</span><span class="text-sm text-gray-500 ml-1">g</span></div>
+                    </div>
+                    <button onclick="resetLab()"
+                        class="group p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 transition-all"
+                        title="Empty Flask">
+                        <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex flex-row gap-4 h-full min-h-0">
+                <div class="w-16 glass-panel rounded-xl flex flex-col p-1.5 flex-none relative">
+                    <div
+                        class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gray-900 border border-gray-700 px-2 py-0.5 rounded text-[9px] text-gray-400 font-mono z-10 shadow-sm">
+                        MIX</div>
+                    <div class="w-full h-full bg-gray-950/50 rounded-lg overflow-hidden flex flex-col-reverse relative border border-gray-800"
+                        id="visual-beaker"></div>
+                </div>
+
+                <div class="glass-panel rounded-xl flex-grow flex flex-col relative overflow-hidden shadow-2xl">
+                    <div class="flex-grow overflow-y-auto scroller p-4 space-y-3" id="mix-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Analytics -->
+        <div class="xl:w-[360px] flex-none flex flex-col gap-4 h-full min-h-0 overflow-y-auto scroller pr-1">
+
+            <div id="warnings" class="space-y-2 flex-none"></div>
+
+            <div class="grid grid-cols-3 gap-2 flex-none">
+                <div class="stat-card p-3 rounded-xl group relative overflow-hidden">
+                    <div class="text-[9px] text-gray-400 uppercase font-bold">Strength</div>
+                    <div class="text-2xl font-mono font-bold text-str tracking-tight" id="val-str">0.00</div>
+                    <div class="absolute bottom-1 right-2 text-[8px] text-gray-600 font-mono" id="base-str-diff"></div>
+                </div>
+                <div class="stat-card p-3 rounded-xl group relative overflow-hidden">
+                    <div class="text-[9px] text-gray-400 uppercase font-bold">Addiction</div>
+                    <div class="text-2xl font-mono font-bold text-adct tracking-tight" id="val-add">0.00</div>
+                </div>
+                <div class="stat-card p-3 rounded-xl group relative overflow-hidden">
+                    <div class="text-[9px] text-gray-400 uppercase font-bold">Tox</div>
+                    <div class="text-2xl font-mono font-bold text-gray-300 tracking-tight" id="val-tox">0.00</div>
+                </div>
+            </div>
+
+            <!-- Financials -->
+            <div class="stat-card p-4 rounded-xl flex-none bg-gray-900/50 border border-gray-700">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xs font-bold text-gray-300 uppercase tracking-widest">Financials</h3>
+                    <div class="flex items-center bg-gray-950 rounded border border-gray-700 px-2 py-1">
+                        <span class="text-[9px] text-gray-500 mr-2">SALE $/g</span>
+                        <input type="number" id="street-price" value="10"
+                            class="bg-transparent border-none text-right text-xs text-white font-mono w-10 p-0 focus:ring-0"
+                            onchange="updateCalculations()">
+                    </div>
+                </div>
+
+                <div class="mb-4 text-center p-3 bg-gray-900/80 rounded-lg border border-gray-800">
+                    <div class="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Total Profit (Batch)</div>
+                    <div class="text-3xl font-mono font-bold text-green-400 leading-none" id="val-profit-batch">$0</div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 text-xs font-mono mb-2">
+                    <div>
+                        <div class="text-[9px] text-gray-500 uppercase mb-1">Total Cost</div>
+                        <div class="text-sm font-mono font-bold text-red-300" id="val-cost-batch">$0</div>
+                        <div class="text-[9px] text-gray-600 mt-0.5" id="val-cost-gram">($0.00/g)</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-[9px] text-gray-500 uppercase mb-1">Profit / Gram</div>
+                        <div class="text-lg font-mono font-bold text-green-400" id="val-profit-gram">$0.00</div>
+                    </div>
+                </div>
+
+                <div class="h-1.5 bg-gray-800 rounded-full overflow-hidden flex w-full">
+                    <div id="cost-bar" class="bg-red-500/40 h-full" style="width: 0%"></div>
+                    <div id="profit-bar" class="bg-green-500/40 h-full" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="stat-card p-4 rounded-xl flex-none">
+                <div class="chart-container h-[160px]">
+                    <canvas id="radarChart"></canvas>
+                </div>
+            </div>
+
+            <div class="glass-panel flex-grow rounded-xl overflow-hidden flex flex-col min-h-[150px]">
+                <div class="p-3 border-b border-gray-700/50 bg-gray-900/30">
+                    <h2 class="text-xs font-bold uppercase tracking-widest text-gray-400">Recipes</h2>
+                </div>
+                <div class="overflow-y-auto scroller p-2 space-y-2" id="recipe-list"></div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- LOGIC -->
+    <script>
+        // --- CALIBRATED INGREDIENTS ---
+        const ingredients = [
+            // DOPE (Unified)
+            {
+                id: 'ecstasy',
+                name: 'Ecstasy',
+                type: 'dope',
+                str: 3.14,
+                mixStr: 1.3,
+                tox: 3.58,
+                adct: 2.10,
+                cost: 6.94,
+                color: '#a855f7',
+                form: 'pill'
+            },
+            {
+                id: 'amphetamine',
+                name: 'Amphetamine',
+                type: 'dope',
+                str: 2.5,
+                mixStr: 1.6,
+                tox: 4,
+                adct: 1.7,
+                cost: 7.00,
+                color: '#ef4444',
+                form: 'powder'
+            },
+            {
+                id: 'cocaine',
+                name: 'Cocaine',
+                type: 'dope',
+                str: 4.0,
+                mixStr: 2.0,
+                tox: 5,
+                adct: 3.0,
+                cost: 25.00,
+                color: '#f97316',
+                form: 'powder'
+            },
+            {
+                id: 'heroin',
+                name: 'Heroin',
+                type: 'dope',
+                str: 3.5,
+                mixStr: 2.0,
+                tox: 6.0,
+                adct: 4.0,
+                cost: 18.00,
+                color: '#7e22ce',
+                form: 'powder'
+            },
+            {
+                id: 'meth',
+                name: 'Crystal Meth',
+                type: 'dope',
+                str: 3.0,
+                mixStr: 2.4,
+                tox: 5.5,
+                adct: 3.0,
+                cost: 9.00,
+                color: '#3b82f6',
+                form: 'crystal'
+            },
+            {
+                id: 'marijuana',
+                name: 'Marijuana',
+                type: 'dope',
+                str: 2.0,
+                mixStr: 1.0,
+                tox: 0.5,
+                adct: 0.8,
+                cost: 5.00,
+                color: '#22c55e',
+                form: 'plant'
+            },
+            {
+                id: 'lsd',
+                name: 'LSD',
+                type: 'dope',
+                str: 5.0,
+                mixStr: 2.0,
+                tox: 1.5,
+                adct: 1.2,
+                cost: 20.00,
+                color: '#22d3ee',
+                form: 'blotter'
+            },
+            {
+                id: 'shrooms',
+                name: 'Mushrooms',
+                type: 'dope',
+                str: 2.5,
+                mixStr: 1.1,
+                tox: 0.5,
+                adct: 0.5,
+                cost: 10.00,
+                color: '#a16207',
+                form: 'plant'
+            },
+            {
+                id: 'dmt',
+                name: 'DMT',
+                type: 'dope',
+                str: 7.0,
+                mixStr: 2.2,
+                tox: 5.0,
+                adct: 2.0,
+                cost: 30.00,
+                color: '#fbbf24',
+                form: 'crystal'
+            },
+
+            // ACTIVE
+            {
+                id: 'fentanyl',
+                name: 'Fentanyl',
+                type: 'active',
+                str: 12.0,
+                mixStr: 2.5,
+                tox: 15,
+                adct: 10.0,
+                cost: 15.00,
+                color: '#be123c',
+                form: 'powder'
+            },
+            {
+                id: 'viagra',
+                name: 'Viagra',
+                type: 'active',
+                str: 2.0,
+                mixStr: 1.6,
+                tox: 3,
+                adct: 7.0,
+                cost: 4.67,
+                color: '#ec4899',
+                form: 'pill'
+            },
+            {
+                id: 'nebilin',
+                name: 'Nebilin',
+                type: 'active',
+                str: 3.0,
+                mixStr: 1.5,
+                tox: 4,
+                adct: 2.0,
+                cost: 6.00,
+                color: '#6366f1',
+                form: 'liquid'
+            },
+            {
+                id: 'acetone',
+                name: 'Acetone',
+                type: 'active',
+                str: 4.0,
+                mixStr: 3.0,
+                tox: 25,
+                adct: 1.0,
+                cost: 0.60,
+                color: '#06b6d4',
+                form: 'liquid'
+            },
+
+            // PHARMA
+            {
+                id: 'ibuprofen_gas',
+                name: 'Ibuprofen (Gas)',
+                type: 'active',
+                str: 2.0,
+                mixStr: 1.25,
+                tox: 12,
+                adct: 1.0,
+                cost: 2.50,
+                color: '#9d174d',
+                form: 'pill'
+            },
+            {
+                id: 'ibuprofen_pharm',
+                name: 'Ibuprofen (Pharm)',
+                type: 'active',
+                str: 1.0,
+                mixStr: 1.25,
+                tox: 2,
+                adct: 1.0,
+                cost: 2.50,
+                color: '#fbcfe8',
+                form: 'pill'
+            },
+            {
+                id: 'paracetamol',
+                name: 'Paracetamol',
+                type: 'active',
+                str: 1.0,
+                mixStr: 1.1,
+                tox: 2,
+                adct: 1.0,
+                cost: 2.00,
+                color: '#fb7185',
+                form: 'pill'
+            },
+
+            // FILLERS
+            {
+                id: 'sugar',
+                name: 'Sugar',
+                type: 'filler',
+                str: 0,
+                mixStr: 1.0,
+                tox: 0.2,
+                adct: 0,
+                cost: 0.50,
+                color: '#f3f4f6',
+                form: 'powder'
+            },
+            {
+                id: 'baking_soda',
+                name: 'Baking Soda',
+                type: 'filler',
+                str: 0,
+                mixStr: 0.9,
+                tox: 0.1,
+                adct: 0,
+                cost: 0.67,
+                color: '#9ca3af',
+                form: 'powder'
+            },
+            {
+                id: 'salt',
+                name: 'Salt',
+                type: 'filler',
+                str: 0.5,
+                mixStr: 1.0,
+                tox: 2.0,
+                adct: 0,
+                cost: 0.20,
+                color: '#d1d5db',
+                form: 'powder'
+            },
+            {
+                id: 'washing',
+                name: 'Washing Pwdr',
+                type: 'filler',
+                str: 0,
+                mixStr: 0.8,
+                tox: 5.0,
+                adct: 0,
+                cost: 0.40,
+                color: '#64748b',
+                form: 'powder'
+            },
+        ];
+
+        // RECIPES
+        const recipes = [{
+                name: "E-Juice",
+                items: [{
+                    id: 'ecstasy',
+                    amount: 90
+                }, {
+                    id: 'amphetamine',
+                    amount: 6
+                }, {
+                    id: 'viagra',
+                    amount: 3
+                }, {
+                    id: 'baking_soda',
+                    amount: 6
+                }, {
+                    id: 'sugar',
+                    amount: 15
+                }],
+                desc: "120g Batch. Profit: ~$507.",
+                tags: ["Pill"]
+            },
+            {
+                name: "SodaAmp",
+                items: [{
+                    id: 'amphetamine',
+                    amount: 20
+                }, {
+                    id: 'baking_soda',
+                    amount: 6
+                }],
+                desc: "Basic 77% Cut. Cheap and effective.",
+                tags: ["Amp"]
+            },
+            {
+                name: "WhiteAmp",
+                items: [{
+                    id: 'amphetamine',
+                    amount: 24
+                }, {
+                    id: 'sugar',
+                    amount: 6
+                }],
+                desc: "80% Purity. Clean look.",
+                tags: ["Amp"]
+            },
+            {
+                name: "BlueAmp",
+                items: [{
+                    id: 'amphetamine',
+                    amount: 10
+                }, {
+                    id: 'sugar',
+                    amount: 2
+                }, {
+                    id: 'ibuprofen_gas',
+                    amount: 1
+                }],
+                desc: "77% Purity with Ibuprofen kick.",
+                tags: ["Amp"]
+            },
+            {
+                name: "Quantom AMP",
+                items: [{
+                    id: 'amphetamine',
+                    amount: 24
+                }, {
+                    id: 'ibuprofen_pharm',
+                    amount: 4
+                }, {
+                    id: 'sugar',
+                    amount: 2
+                }],
+                desc: "High Pharma mix.",
+                tags: ["Amp"]
+            },
+            {
+                name: "SweetAmp",
+                items: [{
+                    id: 'amphetamine',
+                    amount: 30
+                }, {
+                    id: 'sugar',
+                    amount: 8
+                }, {
+                    id: 'viagra',
+                    amount: 2
+                }],
+                desc: "75% Purity. Viagra for addiction.",
+                tags: ["Amp"]
+            },
+            {
+                name: "White Reign",
+                // Pre-Mix: 100g V, 196g MJ, 4g Fent. Target 75g.
+                // 75g of PreMix = 25g V, 49g MJ, 1g Fent.
+                items: [{
+                    id: 'amphetamine',
+                    amount: 225
+                }, {
+                    id: 'viagra',
+                    amount: 25
+                }, {
+                    id: 'marijuana',
+                    amount: 49
+                }, {
+                    id: 'fentanyl',
+                    amount: 1
+                }],
+                desc: "Advanced mix using Pre-Mix logic.",
+                tags: ["Mega"]
+            },
+            {
+                name: "Boba Fett",
+                items: [{
+                    id: 'amphetamine',
+                    amount: 200
+                }, {
+                    id: 'paracetamol',
+                    amount: 5
+                }, {
+                    id: 'viagra',
+                    amount: 10
+                }, {
+                    id: 'baking_soda',
+                    amount: 5
+                }, {
+                    id: 'sugar',
+                    amount: 30
+                }],
+                desc: "80% Amp party mix.",
+                tags: ["Mega"]
+            },
+            {
+                name: "Speed Galore",
+                items: [{
+                    id: 'amphetamine',
+                    amount: 225
+                }, {
+                    id: 'nebilin',
+                    amount: 25
+                }, {
+                    id: 'cocaine',
+                    amount: 10
+                }, {
+                    id: 'ecstasy',
+                    amount: 10
+                }, {
+                    id: 'sugar',
+                    amount: 25
+                }, {
+                    id: 'fentanyl',
+                    amount: 5
+                }],
+                desc: "Kitchen sink mix. Very complex.",
+                tags: ["Mega"]
+            },
+            {
+                name: "Sweet Tooth",
+                items: [{
+                    id: 'amphetamine',
+                    amount: 200
+                }, {
+                    id: 'sugar',
+                    amount: 20
+                }, {
+                    id: 'salt',
+                    amount: 20
+                }, {
+                    id: 'baking_soda',
+                    amount: 10
+                }],
+                desc: "80% Amp. Salty and Sweet.",
+                tags: ["Amp"]
+            },
+            {
+                name: "Super Amp 1.0",
+                items: [{
+                    id: 'amphetamine',
+                    amount: 833
+                }, {
+                    id: 'baking_soda',
+                    amount: 44
+                }, {
+                    id: 'viagra',
+                    amount: 90
+                }, {
+                    id: 'lsd',
+                    amount: 33
+                }],
+                desc: "Massive 1kg batch. High LSD kick.",
+                tags: ["Mega"]
+            },
+            {
+                name: "Coke/Suge 9/1",
+                items: [{
+                    id: 'cocaine',
+                    amount: 90
+                }, {
+                    id: 'sugar',
+                    amount: 10
+                }],
+                desc: "Standard cut.",
+                tags: ["Standard"]
+            },
+            {
+                name: "Fentastic",
+                items: [{
+                    id: 'heroin',
+                    amount: 200
+                }, {
+                    id: 'fentanyl',
+                    amount: 12
+                }, {
+                    id: 'paracetamol',
+                    amount: 8
+                }, {
+                    id: 'sugar',
+                    amount: 15
+                }, {
+                    id: 'acetone',
+                    amount: 1
+                }],
+                desc: "Extremely potent.",
+                tags: ["Deadly"]
+            }
+        ];
+
+        let currentMix = [];
+        let radarChart = null;
+        let calcMode = 'visual';
+
+        // --- INIT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initPantry('dope');
+            renderRecipes();
+            renderMix();
+            initChart();
+            updateCalculations();
+        });
+
+        // --- CALCULATION MODE ---
+        function setMode(mode) {
+            calcMode = mode;
+            const visBtn = document.getElementById('mode-visual');
+            const intBtn = document.getElementById('mode-internal');
+
+            if (mode === 'visual') {
+                visBtn.classList.replace('text-gray-400', 'bg-gray-700');
+                visBtn.classList.replace('hover:text-white', 'text-white');
+                visBtn.classList.add('shadow-sm');
+                intBtn.classList.replace('bg-red-900/50', 'text-gray-400');
+                intBtn.classList.replace('text-red-200', 'hover:text-white');
+                intBtn.classList.remove('shadow-sm');
+            } else {
+                intBtn.classList.replace('text-gray-400', 'bg-red-900/50');
+                intBtn.classList.replace('hover:text-white', 'text-red-200');
+                intBtn.classList.add('shadow-sm');
+                visBtn.classList.replace('bg-gray-700', 'text-gray-400');
+                visBtn.classList.replace('text-white', 'hover:text-white');
+                visBtn.classList.remove('shadow-sm');
+            }
+            updateCalculations();
+        }
+
+        // --- PANTRY ---
+        function filterPantry(type) {
+            document.querySelectorAll('[data-tab]').forEach(el => {
+                el.classList.remove('bg-gray-800', 'text-white', 'shadow-sm', 'border-gray-700');
+                el.classList.add('text-gray-400', 'border-transparent');
+            });
+            const activeBtn = document.querySelector(`[data-tab="${type}"]`);
+            activeBtn.classList.remove('text-gray-400', 'border-transparent');
+            activeBtn.classList.add('bg-gray-800', 'text-white', 'shadow-sm', 'border-gray-700');
+            initPantry(type);
+        }
+
+        function searchPantry() {
+            const term = document.getElementById('pantry-search').value.toLowerCase();
+            const list = document.getElementById('pantry-list');
+            list.innerHTML = '';
+            const filtered = ingredients.filter(i => i.name.toLowerCase().includes(term));
+            filtered.forEach(item => renderPantryItem(item, list));
+        }
+
+        function initPantry(type) {
+            const list = document.getElementById('pantry-list');
+            list.innerHTML = '';
+            const filtered = ingredients.filter(i => {
+                if (type === 'active') return ['active', 'solvent'].includes(i.type);
+                return i.type === type;
+            });
+            filtered.forEach(item => renderPantryItem(item, list));
+        }
+
+        function renderPantryItem(item, container) {
+            const row = document.createElement('div');
+            row.className =
+                "flex items-center justify-between p-2 rounded-lg hover:bg-gray-800/80 cursor-pointer group transition-all border border-transparent hover:border-gray-700/50";
+            row.onclick = () => addToMix(item.id);
+            row.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <div class="w-1.5 h-8 rounded-full shadow-[0_0_8px_currentColor]" style="color: ${item.color}; background-color: ${item.color}"></div>
+                    <div>
+                        <div class="text-xs font-bold text-gray-200 group-hover:text-white transition-colors">${item.name}</div>
+                        <div class="text-[10px] text-gray-500 font-mono flex gap-2">
+                            <span class="text-str">S:${item.str}</span>
+                            <span class="text-accent">M:${item.mixStr}</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="w-6 h-6 rounded bg-gray-900 text-gray-500 hover:text-white hover:bg-accent flex items-center justify-center text-sm font-bold opacity-0 group-hover:opacity-100 transition-all shadow-lg">+</button>
+            `;
+            container.appendChild(row);
+        }
+
+        // --- MIX OPS ---
+        function addToMix(id) {
+            const existing = currentMix.find(i => i.id === id);
+            if (!existing) currentMix.push({
+                id,
+                amount: 10
+            });
+            renderMix();
+            updateCalculations();
+        }
+
+        function removeFromMix(id) {
+            currentMix = currentMix.filter(i => i.id !== id);
+            renderMix();
+            updateCalculations();
+        }
+
+        function updateAmount(id, val) {
+            const item = currentMix.find(i => i.id === id);
+            if (item) {
+                let v = parseInt(val);
+                if (isNaN(v) || v < 0) v = 0;
+                item.amount = v;
+
+                const slider = document.querySelector(`#slider-${id}`);
+                const input = document.querySelector(`#input-${id}`);
+                if (slider) slider.value = v;
+                if (input) input.value = v;
+
+                updateCalculations();
+                updateVisualBeaker();
+            }
+        }
+
+        function renderMix() {
+            const container = document.getElementById('mix-container');
+
+            if (currentMix.length === 0) {
+                container.innerHTML = `
+                    <div class="h-full flex flex-col items-center justify-center text-gray-600 opacity-60">
+                        <svg class="w-12 h-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                        <p class="text-xs font-medium">Add ingredients to start</p>
+                    </div>`;
+                updateVisualBeaker();
+                return;
+            }
+
+            container.innerHTML = '';
+            currentMix.forEach(item => {
+                const data = ingredients.find(i => i.id === item.id);
+                const el = document.createElement('div');
+                el.className =
+                    "bg-gray-800/40 border border-gray-700/50 rounded-lg p-3 group hover:border-gray-600 transition-colors";
+                el.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full shadow-[0_0_5px_currentColor]" style="color: ${data.color}; background-color: ${data.color}"></div>
+                            <span class="text-xs font-bold text-gray-200">${data.name}</span>
+                        </div>
+                        <button onclick="removeFromMix('${item.id}')" class="text-gray-600 hover:text-red-400 text-[10px] font-bold transition-colors uppercase tracking-wider">Remove</button>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <input type="range" min="0" max="1000" value="${item.amount}" id="slider-${item.id}"
+                            class="flex-grow h-1 bg-gray-900 rounded-lg cursor-pointer slider-thumb"
+                            oninput="updateAmount('${item.id}', this.value)">
+                        <div class="relative">
+                            <input type="number" value="${item.amount}" id="input-${item.id}"
+                                class="w-14 bg-gray-900 border border-gray-700 rounded px-1 py-0.5 text-right text-xs font-mono text-accent font-bold focus:ring-1 focus:ring-accent focus:outline-none focus:border-accent transition-all"
+                                oninput="updateAmount('${item.id}', this.value)">
+                            <span class="absolute right-5 top-1/2 -translate-y-1/2 text-[9px] text-gray-600 pointer-events-none">g</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(el);
+            });
+            updateVisualBeaker();
+        }
+
+        function updateVisualBeaker() {
+            const beaker = document.getElementById('visual-beaker');
+            beaker.innerHTML = '';
+            const total = currentMix.reduce((a, b) => a + b.amount, 0);
+            if (total === 0) return;
+
+            currentMix.forEach(item => {
+                const data = ingredients.find(i => i.id === item.id);
+                const pct = (item.amount / total) * 100;
+                if (pct < 1) return;
+                const layer = document.createElement('div');
+                layer.style.height = `${pct}%`;
+                layer.style.backgroundColor = data.color;
+                layer.className = "w-full transition-all duration-300 relative group";
+                layer.innerHTML = `
+                    <div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                    <div class="absolute left-full ml-1 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-[9px] px-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap z-20 pointer-events-none border border-gray-700">
+                        ${data.name} (${Math.round(pct)}%)
+                    </div>
+                `;
+                beaker.appendChild(layer);
+            });
+        }
+
+        // --- SMART MATH CORE ---
+        function calculateStats() {
+            if (currentMix.length === 0) return null;
+
+            let totalMass = 0,
+                wStr = 0,
+                wMixStr = 0,
+                wTox = 0,
+                wAdct = 0,
+                totalCost = 0;
+            let maxAmt = 0;
+            let mainIngId = null;
+
+            // Pass 1: Totals & Identify Main
+            currentMix.forEach(item => {
+                const data = ingredients.find(i => i.id === item.id);
+                totalMass += item.amount;
+                totalCost += (item.amount * data.cost);
+
+                if (item.amount > maxAmt) {
+                    maxAmt = item.amount;
+                    mainIngId = item.id;
+                }
+            });
+
+            if (totalMass === 0) return null;
+
+            // Pass 2: Weighted Averages
+            currentMix.forEach(item => {
+                const data = ingredients.find(i => i.id === item.id);
+                const ratio = item.amount / totalMass;
+                wStr += data.str * ratio;
+                wMixStr += data.mixStr * ratio;
+                wTox += data.tox * ratio;
+                wAdct += data.adct * ratio;
+            });
+
+            // Logic: Calculate Multiplier
+            let multiplier;
+            if (calcMode === 'visual') {
+                // Determine base mixStr from main ingredient
+                const mainIng = ingredients.find(i => i.id === mainIngId);
+                const baseMixStr = mainIng ? mainIng.mixStr : 2.0;
+                multiplier = wMixStr / baseMixStr;
+            } else {
+                multiplier = wMixStr; // Raw multiplication
+            }
+
+            const finalStr = wStr * multiplier;
+            const finalAdct = wAdct * multiplier;
+
+            return {
+                mass: totalMass,
+                cost: totalCost,
+                avgStr: wStr,
+                avgMixStr: wMixStr,
+                finalStr,
+                finalTox: wTox,
+                finalAdct
+            };
+        }
+
+        function updateCalculations() {
+            const stats = calculateStats();
+
+            if (!stats || stats.mass === 0) {
+                resetUI();
+                return;
+            }
+
+            const eqInfo = determineEquipment(currentMix);
+            document.getElementById('eq-name').innerHTML =
+                `${eqInfo.eq} <span class="text-[10px] bg-gray-800 px-1.5 py-0.5 rounded text-gray-400 font-mono font-normal border border-gray-700 ml-2">${eqInfo.form}</span>`;
+            document.getElementById('eq-icon').innerText = eqInfo.icon;
+
+            document.getElementById('total-mass').innerText = stats.mass;
+            document.getElementById('val-str').innerText = stats.finalStr.toFixed(2);
+            document.getElementById('val-add').innerText = stats.finalAdct.toFixed(2);
+            document.getElementById('val-tox').innerText = stats.finalTox.toFixed(2);
+
+            const diff = stats.finalStr - stats.avgStr;
+            const sign = diff >= 0 ? "+" : "";
+            document.getElementById('base-str-diff').innerText =
+                `Base: ${stats.avgStr.toFixed(2)} (${sign}${diff.toFixed(2)})`;
+
+            const price = parseFloat(document.getElementById('street-price').value) || 0;
+            const revenue = price * stats.mass;
+            const profit = revenue - stats.cost;
+            const profitPerGram = profit / stats.mass;
+            const costPerGram = stats.cost / stats.mass;
+            const costPct = Math.min((stats.cost / revenue) * 100, 100);
+
+            document.getElementById('val-cost-batch').innerText = '$' + stats.cost.toFixed(0);
+            document.getElementById('val-cost-gram').innerText = '($' + costPerGram.toFixed(2) + '/g)';
+
+            document.getElementById('val-profit-batch').innerText = '$' + profit.toFixed(2);
+            document.getElementById('val-profit-gram').innerText = '$' + profitPerGram.toFixed(2);
+
+            const safeCostPct = Math.max(0, Math.min(costPct, 100));
+            const safeProfitPct = Math.max(0, 100 - safeCostPct);
+            document.getElementById('cost-bar').style.width = safeCostPct + '%';
+            document.getElementById('profit-bar').style.width = safeProfitPct + '%';
+
+            const warnings = document.getElementById('warnings');
+            warnings.innerHTML = '';
+            if (stats.finalTox > 10) warnings.innerHTML +=
+                `<div class="text-[10px] text-red-200 bg-red-900/40 p-2 rounded border-l-2 border-red-500 flex items-center gap-2"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg> Lethal Toxicity (>10)</div>`;
+            if (stats.finalStr > (calcMode === 'visual' ? 12 : 25)) warnings.innerHTML +=
+                `<div class="text-[10px] text-orange-200 bg-orange-900/40 p-2 rounded border-l-2 border-orange-500 flex items-center gap-2"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> Overdose Risk (High Str)</div>`;
+
+            updateRadar(stats);
+        }
+
+        function determineEquipment(mix) {
+            const hasEcstasy = mix.some(m => m.id === 'ecstasy');
+            const hasLiquid = mix.some(m => {
+                const i = ingredients.find(x => x.id === m.id);
+                return i.id === 'acetone' || i.id === 'nebilin' || i.form === 'liquid';
+            });
+            if (hasLiquid) return {
+                eq: "Crystallizer",
+                icon: "💎",
+                form: "Crystal"
+            };
+            if (hasEcstasy) return {
+                eq: "Pill Press",
+                icon: "💊",
+                form: "Pill"
+            };
+            return {
+                eq: "Mixer",
+                icon: "🥣",
+                form: "Powder"
+            };
+        }
+
+        function resetLab() {
+            currentMix = [];
+            renderMix();
+            updateCalculations();
+        }
+
+        function resetUI() {
+            document.getElementById('total-mass').innerText = '0';
+            document.getElementById('val-str').innerText = '0.00';
+            document.getElementById('val-add').innerText = '0.00';
+            document.getElementById('val-tox').innerText = '0.00';
+            document.getElementById('base-str-diff').innerText = '';
+            document.getElementById('val-cost-batch').innerText = '$0';
+            document.getElementById('val-cost-gram').innerText = '($0.00/g)';
+            document.getElementById('val-profit-batch').innerText = '$0';
+            document.getElementById('val-profit-gram').innerText = '$0.00';
+            document.getElementById('warnings').innerHTML = '';
+            document.getElementById('visual-beaker').innerHTML = '';
+            if (radarChart) {
+                radarChart.data.datasets[0].data = [0, 0, 0, 0];
+                radarChart.update();
+            }
+        }
+
+        function loadRecipe(index) {
+            const recipe = recipes[index];
+            currentMix = recipe.items.map(i => ({
+                ...i
+            }));
+            renderMix();
+            updateCalculations();
+        }
+
+        function renderRecipes() {
+            const list = document.getElementById('recipe-list');
+            recipes.forEach((r, idx) => {
+                const el = document.createElement('div');
+                el.className =
+                    "p-3 rounded-lg bg-gray-950/50 hover:bg-gray-800 border border-gray-800 hover:border-accent/50 cursor-pointer group transition-all";
+                el.onclick = () => loadRecipe(idx);
+
+                const tagColor = r.tags[0] === 'Premium' ? 'text-accent' : r.tags[0] === 'Profit' ?
+                    'text-green-400' : 'text-gray-500';
+
+                el.innerHTML = `
+                    <div class="flex justify-between items-start mb-1">
+                        <h3 class="text-xs font-bold text-gray-300 group-hover:text-white">${r.name}</h3>
+                        <span class="text-[9px] uppercase font-bold ${tagColor}">${r.tags[0]}</span>
+                    </div>
+                    <div class="flex flex-wrap gap-1 mt-2 opacity-60 group-hover:opacity-100 transition-opacity">
+                        ${r.items.slice(0, 3).map(i => `<span class="text-[9px] bg-gray-900 px-1.5 py-0.5 rounded text-gray-400 border border-gray-700">${ingredients.find(x=>x.id===i.id).name}</span>`).join('')}
+                    </div>
+                `;
+                list.appendChild(el);
+            });
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            radarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Toxicity', 'Strength', 'Addiction', 'Mix Multiplier'],
+                    datasets: [{
+                        label: 'Profile',
+                        data: [0, 0, 0, 0],
+                        backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                        borderColor: '#8b5cf6',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#1f2937',
+                        pointBorderColor: '#8b5cf6',
+                        pointHoverBackgroundColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                color: 'rgba(75, 85, 99, 0.3)'
+                            },
+                            grid: {
+                                color: 'rgba(75, 85, 99, 0.3)'
+                            },
+                            pointLabels: {
+                                font: {
+                                    size: 10,
+                                    family: 'JetBrains Mono'
+                                },
+                                color: '#9ca3af'
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 10,
+                            ticks: {
+                                display: false,
+                                maxTicksLimit: 5
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateRadar(stats) {
+            if (!radarChart) return;
+            const mixVis = (stats.avgMixStr - 1) * 5;
+            const strVis = calcMode === 'visual' ? stats.finalStr * 1.5 : stats.finalStr / 2;
+            const adctVis = calcMode === 'visual' ? stats.finalAdct * 2 : stats.finalAdct / 4;
+
+            radarChart.data.datasets[0].data = [Math.min(stats.finalTox, 10), Math.min(strVis, 15), Math.min(adctVis,
+                10), mixVis];
+            radarChart.update();
+        }
+    </script>
+</body>
+
+</html>
