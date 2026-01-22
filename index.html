@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DDS Architect v6.3 (Grow Op)</title>
+    <title>DDS Architect v6.4 (Grow Op)</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -88,7 +88,7 @@
                 </div>
                 <div>
                     <h1 class="text-lg font-bold tracking-tight text-white leading-none">DDS <span class="text-accent">Architect</span></h1>
-                    <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Grow Up v6.3</span>
+                    <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Grow Up v6.4</span>
                 </div>
             </div>
 
@@ -735,9 +735,10 @@
                 item.amount = v;
                 
                 const slider = document.querySelector(`#slider-${index}`);
-                const input = document.querySelector(`#input-${index}`);
+                // const input = document.querySelector(`#input-${index}`);  <-- DELETE THIS LINE
+                
                 if(slider) slider.value = v;
-                if(input) input.value = Math.round(v * 100) / 100;
+                // if(input) input.value = Math.round(v * 100) / 100;    <-- DELETE THIS LINE (It blocks typing decimals)
                 
                 updateCalculations();
                 updateVisualBeaker();
@@ -780,13 +781,14 @@
                         <input type="range" min="0" max="1000" value="${item.amount}" id="slider-${index}"
                             class="flex-grow h-1 bg-gray-900 rounded-lg cursor-pointer slider-thumb"
                             oninput="updateAmount(${index}, this.value)">
+                        
                         <div class="relative">
-                            <input type="number" value="${Math.round(item.amount * 100) / 100}" id="input-${index}"
-                                class="w-14 bg-gray-900 border border-gray-700 rounded px-1 py-0.5 text-right text-xs font-mono text-accent font-bold focus:ring-1 focus:ring-accent focus:outline-none focus:border-accent transition-all"
+                            <input type="number" value="${Math.round(item.amount * 100) / 100}" id="input-${index}" step="0.01"
+                                class="w-16 bg-gray-900 border border-gray-700 rounded pl-2 pr-5 py-0.5 text-right text-xs font-mono text-accent font-bold focus:ring-1 focus:ring-accent focus:outline-none focus:border-accent transition-all"
                                 oninput="updateAmount(${index}, this.value)">
-                            <span class="absolute right-5 top-1/2 -translate-y-1/2 text-[9px] text-gray-600 pointer-events-none">g</span>
+                            <span class="absolute right-1.5 top-1/2 -translate-y-1/2 text-[9px] text-gray-500 font-bold pointer-events-none">g</span>
                         </div>
-                    </div>
+                        </div>
                 `;
                 container.appendChild(el);
             });
@@ -909,7 +911,7 @@
             document.getElementById('eq-name').innerHTML = `${eqInfo.eq} <span class="text-[10px] bg-gray-800 px-1.5 py-0.5 rounded text-gray-400 font-mono font-normal border border-gray-700 ml-2">${eqInfo.form}</span>`;
             document.getElementById('eq-icon').innerText = eqInfo.icon;
 
-            document.getElementById('total-mass').innerText = Math.round(stats.mass);
+            document.getElementById('total-mass').innerText = stats.mass;
             document.getElementById('val-str').innerText = stats.finalStr.toFixed(2);
             document.getElementById('val-add').innerText = stats.finalAdct.toFixed(2);
             document.getElementById('val-tox').innerText = stats.finalTox.toFixed(2);
