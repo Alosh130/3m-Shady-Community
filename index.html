@@ -1570,14 +1570,19 @@
         function updateAmount(index, val) {
             const item = currentMix[index];
             if (item) {
-                let v = parseFloat(val);
-                if (isNaN(v) || v < 0) v = 0;
-                item.amount = v;
+                if(item.id === 'acetone'){
+                    item.amount = 1;
+                }else{
+                    let v = parseFloat(val);
+                    if (isNaN(v) || v < 0) v = 0;
+                    item.amount = v;
+                }
+                
 
                 const slider = document.querySelector(`#slider-${index}`);
                 // const input = document.querySelector(`#input-${index}`); // Keep commented out to allow typing
 
-                if (slider) slider.value = v;
+                if (slider) slider.value = item.amount;
                 // if(input) input.value = ... // Keep commented out
 
                 // --- NEW LOGIC: Update ALL Ratio Badges ---
@@ -1634,7 +1639,7 @@
                 // Initial Calc
                 const ratio = totalMass > 0 ? (item.amount / totalMass) * 100 : 0;
                 const ratioColor = ratio > 70 ? 'text-green-400' : 'text-gray-500';
-
+                const isAcetone = item.id === 'acetone';
                 el.innerHTML = `
                     <div class="flex justify-between items-center mb-2">
                         <div class="flex items-center gap-2">
@@ -1731,12 +1736,17 @@
 
             // Pass 1: Sum Mass & Cost
             currentMix.forEach(item => {
-                const data = ingredients.find(i => i.id === item.id);
-                if (!data) return;
+            const data = ingredients.find(i => i.id === item.id);
+            if (!data) return;
 
+            // NEW WEIGHT LOGIC: Skip acetone in total mass calculation
+            if (item.id !== 'acetone') {
                 totalMass += item.amount;
-                const costPerG = item.isWet ? item.dynamicCost : data.cost;
-                totalCost += (item.amount * costPerG);
+            }
+
+            // Still include the cost of the acetone used
+            const costPerG = item.isWet ? item.dynamicCost : data.cost;
+            totalCost += (item.amount * costPerG);
             });
 
             if (totalMass === 0) return null;
