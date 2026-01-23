@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DDS Architect v6.8 (Premix Fix)</title>
+    <title>DDS Architect v6.9 (Comparing Addition)</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -170,7 +170,7 @@
                 <div>
                     <h1 class="text-lg font-bold tracking-tight text-white leading-none">DDS <span
                             class="text-accent">Architect</span></h1>
-                    <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Premix Fix v6.8</span>
+                    <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Comparing Addition v6.9</span>
                 </div>
             </div>
 
@@ -311,25 +311,49 @@
             </div>
 
             <div class="xl:w-[360px] flex-none flex flex-col gap-4 h-full min-h-0 overflow-y-auto scroller pr-1">
-                <div id="warnings" class="space-y-2 flex-none"></div>
                 
-                <div class="grid grid-cols-3 gap-2 flex-none">
-                    <div class="stat-card p-3 rounded-xl group relative overflow-hidden">
-                        <div class="text-[9px] text-gray-400 uppercase font-bold">Strength</div>
-                        <div class="text-2xl font-mono font-bold text-str tracking-tight" id="val-str">0.00</div>
-                        <div class="absolute bottom-1 right-2 text-[8px] text-gray-600 font-mono" id="base-str-diff"></div>
+                <div id="warnings" class="space-y-2 flex-none"></div>
+
+                <div class="rounded-xl p-4 shadow-xl backdrop-blur-md mb-4">
+                    
+                    <div class="grid grid-cols-3 gap-2 text-center mb-3">
+                        <div>
+                            <div class="text-[10px] text-gray-500 uppercase font-bold mb-1">Strength</div>
+                            <div class="text-2xl font-mono font-bold text-str leading-none" id="val-str">0.00</div>
+                        </div>
+                        <div>
+                            <div class="text-[10px] text-gray-500 uppercase font-bold mb-1">Addict</div>
+                            <div class="text-2xl font-mono font-bold text-adct leading-none" id="val-add">0.00</div>
+                        </div>
+                        <div>
+                            <div class="text-[10px] text-gray-500 uppercase font-bold mb-1">Tox</div>
+                            <div class="text-2xl font-mono font-bold text-gray-300 leading-none" id="val-tox">0.00</div>
+                        </div>
                     </div>
-                    <div class="stat-card p-3 rounded-xl group relative overflow-hidden">
-                        <div class="text-[9px] text-gray-400 uppercase font-bold">Addiction</div>
-                        <div class="text-2xl font-mono font-bold text-adct tracking-tight" id="val-add">0.00</div>
+
+                    <div class="flex items-center gap-2 my-2">
+                        <div class="h-px bg-gray-800 flex-grow"></div>
+                        <span class="text-[9px] font-bold text-gray-600 uppercase tracking-widest">Vs Base Ingredient</span>
+                        <div class="h-px bg-gray-800 flex-grow"></div>
                     </div>
-                    <div class="stat-card p-3 rounded-xl group relative overflow-hidden">
-                        <div class="text-[9px] text-gray-400 uppercase font-bold">Tox</div>
-                        <div class="text-2xl font-mono font-bold text-gray-300 tracking-tight" id="val-tox">0.00</div>
+
+                    <div class="grid grid-cols-3 gap-2 text-center">
+                        <div class="flex flex-col items-center justify-center">
+                            <div class="text-[9px] text-gray-500 font-mono mb-0.5" id="info-str">Base: -</div>
+                            <div class="text-lg font-mono font-bold" id="pct-str">-%</div>
+                        </div>
+                        <div class="flex flex-col items-center justify-center">
+                            <div class="text-[9px] text-gray-500 font-mono mb-0.5" id="info-add">Base: -</div>
+                            <div class="text-lg font-mono font-bold" id="pct-add">-%</div>
+                        </div>
+                        <div class="flex flex-col items-center justify-center">
+                            <div class="text-[9px] text-gray-500 font-mono mb-0.5" id="info-tox">Base: -</div>
+                            <div class="text-lg font-mono font-bold" id="pct-tox">-%</div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="stat-card p-4 rounded-xl flex-none bg-gray-900/50 border border-gray-700">
+                <div class="stat-card p-4 rounded-xl flex-none bg-gray-900/50 border border-gray-700 shadow-lg">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-xs font-bold text-gray-300 uppercase tracking-widest">Financials</h3>
                         <div class="flex items-center bg-gray-950 rounded border border-gray-700 px-2 py-1">
@@ -337,33 +361,34 @@
                             <input type="number" id="street-price" value="10" class="bg-transparent border-none text-right text-xs text-white font-mono w-10 p-0 focus:ring-0" onchange="updateCalculations()">
                         </div>
                     </div>
-                    <div class="mb-4 text-center p-3 bg-gray-900/80 rounded-lg border border-gray-800">
-                        <div class="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Total Profit (Batch)</div>
-                        <div class="text-3xl font-mono font-bold text-green-400 leading-none" id="val-profit-batch">$0</div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4 text-xs font-mono mb-2">
-                        <div>
-                            <div class="text-[9px] text-gray-500 uppercase mb-1">Total Cost</div>
-                            <div class="text-sm font-mono font-bold text-red-300" id="val-cost-batch">$0</div>
-                            <div class="text-[9px] text-gray-600 mt-0.5" id="val-cost-gram">($0.00/g)</div>
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <div class="bg-gray-950/80 p-2 rounded-lg border border-gray-800 text-center group hover:border-green-500/30 transition-colors">
+                            <div class="text-[9px] text-gray-500 uppercase mb-0.5">Total Profit</div>
+                            <div class="text-lg font-mono font-bold text-green-400 group-hover:text-green-300" id="val-profit-batch">$0</div>
                         </div>
-                        <div class="text-right">
-                            <div class="text-[9px] text-gray-500 uppercase mb-1">Profit / Gram</div>
-                            <div class="text-lg font-mono font-bold text-green-400" id="val-profit-gram">$0.00</div>
+                        <div class="bg-gray-950/80 p-2 rounded-lg border border-gray-800 text-center group hover:border-green-500/30 transition-colors">
+                            <div class="text-[9px] text-gray-500 uppercase mb-0.5">Profit / g</div>
+                            <div class="text-lg font-mono font-bold text-green-400 group-hover:text-green-300" id="val-profit-gram">$0.00</div>
                         </div>
                     </div>
+
+                    <div class="flex justify-between text-[10px] text-gray-500 font-mono mb-1.5 px-1">
+                        <span id="val-cost-batch">Cost: $0</span>
+                        <span id="val-cost-gram">($0.00/g)</span>
+                    </div>
+
                     <div class="h-1.5 bg-gray-800 rounded-full overflow-hidden flex w-full">
-                        <div id="cost-bar" class="bg-red-500/40 h-full" style="width: 0%"></div>
-                        <div id="profit-bar" class="bg-green-500/40 h-full" style="width: 0%"></div>
+                        <div id="cost-bar" class="bg-red-500/50 h-full transition-all duration-500" style="width: 0%"></div>
+                        <div id="profit-bar" class="bg-green-500/50 h-full transition-all duration-500" style="width: 0%"></div>
                     </div>
                 </div>
 
-                <div class="stat-card p-4 rounded-xl flex-none">
-                    <div class="chart-container h-[160px]">
+                <div class="stat-card p-4 rounded-xl flex-none bg-gray-900/30 border border-gray-700/50">
+                    <div class="chart-container h-[140px]">
                         <canvas id="radarChart"></canvas>
                     </div>
                 </div>
-
                 <div class="glass-panel flex-grow rounded-xl overflow-hidden flex flex-col min-h-[150px]">
                     <div class="p-3 border-b border-gray-700/50 bg-gray-900/30 flex flex-col gap-2">
                         <h2 class="text-xs font-bold uppercase tracking-widest text-gray-400">Recipes</h2>
@@ -1886,7 +1911,6 @@
         }
 
         function updateCalculations() {
-            // Get stats from our standardize logic
             const stats = calculateStats();
 
             if (!stats || stats.mass === 0) {
@@ -1894,64 +1918,101 @@
                 return;
             }
 
-            // --- 1. VISUAL UPDATES ---
+            // --- 1. EQUIPMENT & MASS ---
             const eqInfo = determineEquipment(currentMix);
-            document.getElementById('eq-name').innerHTML =
-                `${eqInfo.eq} <span class="text-[10px] bg-gray-800 px-1.5 py-0.5 rounded text-gray-400 font-mono font-normal border border-gray-700 ml-2">${eqInfo.form}</span>`;
+            document.getElementById('eq-name').innerHTML = `${eqInfo.eq} <span class="text-[10px] bg-gray-800 px-1.5 py-0.5 rounded text-gray-400 font-mono font-normal border border-gray-700 ml-2">${eqInfo.form}</span>`;
             document.getElementById('eq-icon').innerText = eqInfo.icon;
-
             document.getElementById('total-mass').innerText = Math.round(stats.mass);
+
+            // --- 2. ROW 1: ABSOLUTE STATS ---
             document.getElementById('val-str').innerText = stats.finalStr.toFixed(2);
             document.getElementById('val-add').innerText = stats.finalAdct.toFixed(2);
             document.getElementById('val-tox').innerText = stats.finalTox.toFixed(2);
 
-            const diff = stats.finalStr - stats.avgStr;
-            const sign = diff >= 0 ? "+" : "";
-            document.getElementById('base-str-diff').innerText =
-                `Base: ${stats.avgStr.toFixed(2)} (${sign}${diff.toFixed(2)})`;
+            // --- 3. ROW 2: BASE CONTEXT & PERCENTAGE ---
+            let baseStats = { str: 0, tox: 0, adct: 0 };
+            
+            if (currentMix.length > 0) {
+                const heaviestItem = currentMix.reduce((prev, current) => 
+                    (prev.amount > current.amount) ? prev : current
+                );
 
-            // --- 2. FINANCIALS (FIXED) ---
-            const price = parseFloat(document.getElementById('street-price').value) || 0;
-
-            // Simple Logic: Sell EVERYTHING in the flask at the street price
-            const revenue = stats.mass * price;
-            const profit = revenue - stats.cost;
-
-            // Per Gram Stats
-            const profitPerGram = stats.mass > 0 ? profit / stats.mass : 0;
-            const costPerGram = stats.mass > 0 ? stats.cost / stats.mass : 0;
-
-            // Bar Width Logic
-            // If Revenue is $1000 and Cost is $200, Cost Bar is 20%, Profit Bar is 80%
-            let costPct = 0;
-            if (revenue > 0) {
-                costPct = (stats.cost / revenue) * 100;
-            } else if (stats.cost > 0) {
-                costPct = 100; // All cost, no revenue
+                if (heaviestItem.isPremix && heaviestItem.stats) {
+                    baseStats = heaviestItem.stats;
+                } else {
+                    const ing = ingredients.find(i => i.id === heaviestItem.id);
+                    if (ing) baseStats = { str: ing.str, tox: ing.tox, adct: ing.adct };
+                }
             }
 
-            // Clamp percentages for CSS
+            const updateStatsRow = (pctId, infoId, currentVal, baseVal, type) => {
+                const elPct = document.getElementById(pctId);
+                const elInfo = document.getElementById(infoId);
+                
+                if (!baseVal || baseVal === 0) {
+                    elPct.innerText = "-%";
+                    elPct.className = "text-lg font-mono font-bold text-gray-600";
+                    elInfo.innerText = "Base: -";
+                    return;
+                }
+
+                // 1. Calculate Percentage (The Big Number)
+                const pct = (currentVal / baseVal) * 100;
+                elPct.innerText = `${pct.toFixed(0)}%`;
+
+                // 2. Calculate Impact Diff (The Small Number)
+                const diff = currentVal - baseVal;
+                const sign = diff > 0 ? "+" : "";
+                
+                // Color for the small impact number
+                const diffColor = (diff > 0) ? "text-gray-400" : "text-gray-500";
+                
+                // Format: "Base: 2.00 (+0.40)"
+                elInfo.innerHTML = `${baseVal.toFixed(2)} <span class="${diffColor}">(${sign}${diff.toFixed(2)})</span>`;
+
+                // 3. Color Logic for Percentage
+                let isGood = (type === 'tox') ? (pct < 100) : (pct > 100);
+                
+                if (pct.toFixed(0) === "100") {
+                    elPct.className = "text-lg font-mono font-bold text-gray-500"; // Neutral
+                } else if (isGood) {
+                    elPct.className = "text-lg font-mono font-bold text-green-400"; // Green
+                } else {
+                    elPct.className = "text-lg font-mono font-bold text-red-400"; // Red
+                }
+            };
+
+            updateStatsRow('pct-str', 'info-str', stats.finalStr, baseStats.str, 'str');
+            updateStatsRow('pct-add', 'info-add', stats.finalAdct, baseStats.adct, 'add');
+            updateStatsRow('pct-tox', 'info-tox', stats.finalTox, baseStats.tox, 'tox');
+
+            // --- 4. FINANCIALS ---
+            const price = parseFloat(document.getElementById('street-price').value) || 0;
+            const revenue = stats.mass * price;
+            const profit = revenue - stats.cost;
+            const profitPerGram = stats.mass > 0 ? profit / stats.mass : 0;
+
+            let costPct = 0;
+            if (revenue > 0) costPct = (stats.cost / revenue) * 100;
+            else if (stats.cost > 0) costPct = 100;
+
             const safeCostPct = Math.max(0, Math.min(costPct, 100));
             const safeProfitPct = Math.max(0, 100 - safeCostPct);
 
-            // Update UI
-            document.getElementById('val-cost-batch').innerText = '$' + stats.cost.toFixed(0);
-            document.getElementById('val-cost-gram').innerText = '($' + costPerGram.toFixed(2) + '/g)';
-
             document.getElementById('val-profit-batch').innerText = '$' + profit.toFixed(2);
             document.getElementById('val-profit-gram').innerText = '$' + profitPerGram.toFixed(2);
+            document.getElementById('val-cost-batch').innerText = 'Cost: $' + stats.cost.toFixed(0);
+            document.getElementById('val-cost-gram').innerText = '($' + (stats.mass > 0 ? stats.cost / stats.mass : 0).toFixed(2) + '/g)';
 
             document.getElementById('cost-bar').style.width = safeCostPct + '%';
             document.getElementById('profit-bar').style.width = safeProfitPct + '%';
 
-            // --- 3. WARNINGS ---
+            // --- 5. WARNINGS ---
             const warnings = document.getElementById('warnings');
             warnings.innerHTML = '';
-            if (stats.finalTox > 10) warnings.innerHTML +=
-                `<div class="text-[10px] text-red-200 bg-red-900/40 p-2 rounded border-l-2 border-red-500 flex items-center gap-2"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg> Lethal Toxicity (>10)</div>`;
-            if (stats.finalStr > 25) warnings.innerHTML +=
-                `<div class="text-[10px] text-orange-200 bg-orange-900/40 p-2 rounded border-l-2 border-orange-500 flex items-center gap-2"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> Overdose Risk (High Str)</div>`;
-
+            if (stats.finalTox > 10) warnings.innerHTML += `<div class="text-[10px] text-red-200 bg-red-900/40 p-2 rounded border-l-2 border-red-500 flex items-center gap-2">⚠️ Lethal Toxicity (>10)</div>`;
+            if (stats.finalStr > 25) warnings.innerHTML += `<div class="text-[10px] text-orange-200 bg-orange-900/40 p-2 rounded border-l-2 border-orange-500 flex items-center gap-2">⚠️ Overdose Risk (High Str)</div>`;
+            
             updateRadar(stats);
         }
 
