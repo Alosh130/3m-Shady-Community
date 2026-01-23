@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DDS Architect v6.7 (Premixes Up To Fixes)</title>
+    <title>DDS Architect v6.8 (Premix Fix)</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -170,7 +170,7 @@
                 <div>
                     <h1 class="text-lg font-bold tracking-tight text-white leading-none">DDS <span
                             class="text-accent">Architect</span></h1>
-                    <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Premixes Up To Fixes v6.7</span>
+                    <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Premix Fix v6.8</span>
                 </div>
             </div>
 
@@ -377,107 +377,46 @@
                     <div class="overflow-y-auto scroller p-2 space-y-2" id="recipe-list"></div>
                 </div>
             </div>
-
         </div>
     </main>
 
-    <!-- WET WEED MODAL -->
-    <div id="wet-modal"
-        class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
-        <div class="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-lg shadow-2xl modal-fade p-6 relative">
-            <h3 class="text-lg font-bold text-white mb-1">Add Wet Marijuana</h3>
-            <p class="text-xs text-gray-500 mb-4">Select a strain to auto-calculate production cost.</p>
-
-            <div class="grid grid-cols-2 gap-2 mb-6">
-                <button onclick="setStrainData('ghetto')"
-                    class="p-3 rounded border border-gray-700 hover:border-green-500/50 bg-gray-800/50 hover:bg-gray-800 text-left transition-all group">
-                    <div class="text-[10px] uppercase text-gray-500 font-bold group-hover:text-green-400">Ghetto Kush
-                    </div>
-                    <div class="text-xs text-white">Cost: $45 / 205g</div>
-                </button>
-                <button onclick="setStrainData('stoner')"
-                    class="p-3 rounded border border-gray-700 hover:border-purple-500/50 bg-gray-800/50 hover:bg-gray-800 text-left transition-all group">
-                    <div class="text-[10px] uppercase text-gray-500 font-bold group-hover:text-purple-400">Stoner Haze
-                    </div>
-                    <div class="text-xs text-white">Cost: $45 / 322g</div>
-                </button>
-                <button onclick="setStrainData('firecracker')"
-                    class="p-3 rounded border border-gray-700 hover:border-red-500/50 bg-gray-800/50 hover:bg-gray-800 text-left transition-all group">
-                    <div class="text-[10px] uppercase text-gray-500 font-bold group-hover:text-red-400">Firecracker
-                    </div>
-                    <div class="text-xs text-white">Cost: $40 / 312g</div>
-                </button>
-                <button onclick="setStrainData('bongbreaker')"
-                    class="p-3 rounded border border-gray-700 hover:border-blue-500/50 bg-gray-800/50 hover:bg-gray-800 text-left transition-all group">
-                    <div class="text-[10px] uppercase text-gray-500 font-bold group-hover:text-blue-400">Bong Breaker
-                    </div>
-                    <div class="text-xs text-white">Cost: $40 / 305g</div>
-                </button>
-
-                <button onclick="setStrainData('ak420')"
-                    class="p-3 rounded border border-gray-700 hover:border-teal-500/50 bg-gray-800/50 hover:bg-gray-800 text-left transition-all group">
-                    <div class="text-[10px] uppercase text-gray-500 font-bold group-hover:text-teal-400">AK-420</div>
-                    <div class="text-xs text-white">Cost: $30 / 176g</div>
-                </button>
-                <button onclick="setStrainData('dubai')"
-                    class="p-3 rounded border border-gray-700 hover:border-amber-500/50 bg-gray-800/50 hover:bg-gray-800 text-left transition-all group">
-                    <div class="text-[10px] uppercase text-gray-500 font-bold group-hover:text-amber-400">Dubai Sativa
-                    </div>
-                    <div class="text-xs text-white">Cost: $35 / 220g</div>
-                </button>
-                <button onclick="setStrainData('skyscraper')"
-                    class="p-3 rounded border border-gray-700 hover:border-sky-500/50 bg-gray-800/50 hover:bg-gray-800 text-left transition-all group">
-                    <div class="text-[10px] uppercase text-gray-500 font-bold group-hover:text-sky-400">Skyscraper</div>
-                    <div class="text-xs text-white">Cost: $35 / 250g</div>
-                </button>
-                <button onclick="setStrainData('brainfk')"
-                    class="p-3 rounded border border-gray-700 hover:border-pink-500/50 bg-gray-800/50 hover:bg-gray-800 text-left transition-all group">
-                    <div class="text-[10px] uppercase text-gray-500 font-bold group-hover:text-pink-400">Brainf**k</div>
-                    <div class="text-xs text-white">Cost: $30 / 192g</div>
-                </button>
-            </div>
-
-            <div class="space-y-4 border-t border-gray-800 pt-4">
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-[10px] uppercase text-gray-400 font-bold mb-1">Seed Cost ($)</label>
-                        <input type="number" id="seed-cost" value="40"
-                            class="w-full bg-gray-950 border border-gray-700 rounded p-2 text-white font-mono focus:border-green-500 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] uppercase text-gray-400 font-bold mb-1">Harvest Yield
-                            (g)</label>
-                        <input type="number" id="harvest-yield" value="305"
-                            class="w-full bg-gray-950 border border-gray-700 rounded p-2 text-white font-mono focus:border-green-500 outline-none">
-                    </div>
+    <main id="view-grow" class="hidden flex-grow p-4 lg:p-6 max-w-[1800px] mx-auto w-full overflow-hidden flex flex-col">
+        <div class="glass-panel p-6 rounded-xl border border-gray-700/50 bg-gray-900/40 shadow-2xl h-full flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-white tracking-tight">Strain Database</h2>
+                    <p class="text-sm text-gray-400 mt-1">Growth times, yields, and drying efficiency.</p>
                 </div>
-
-                <div class="p-3 bg-gray-800 rounded border border-gray-700 flex justify-between items-center">
-                    <span class="text-[10px] text-gray-400 uppercase">Calculated Cost Basis</span>
-                    <span class="text-xl font-mono text-green-400" id="calc-cost-display">$0.13/g</span>
+                <div class="flex items-center gap-2 bg-gray-800/50 px-4 py-2 rounded-lg border border-gray-700">
+                    <span class="text-xs text-gray-500 uppercase font-bold">Watering:</span>
+                    <span class="text-xs text-blue-400 font-mono">Every 10-15 Hours (All Strains)</span>
                 </div>
             </div>
 
-            <div class="flex gap-2 mt-6">
-                <button onclick="closeWetModal()"
-                    class="flex-1 py-3 rounded border border-gray-700 text-gray-400 hover:text-white hover:bg-gray-800 text-xs font-bold transition-all">Cancel</button>
-                <button onclick="confirmWetAdd()"
-                    class="flex-1 py-3 rounded bg-green-700 text-white hover:bg-green-600 text-xs font-bold transition-all shadow-lg shadow-green-900/20">Add
-                    to Flask</button>
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+                <div id="grow-grid" class="contents"></div>
+            </div>
+
+            <div class="bg-gray-900/60 rounded-xl p-4 border border-gray-800 mt-auto">
+                <h3 class="text-sm font-bold text-gray-300 uppercase mb-3 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Grower's Notes
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-gray-500">
+                    <p><strong>Dehydration:</strong> Plants lose health after ~15 hours without water. Total death occurs between 25-29 hours depending on strain.</p>
+                    <p><strong>Drying:</strong> Converting Wet to Dry reduces weight significantly (35-45% retention). Cost/gram essentially doubles during drying.</p>
+                    <p><strong>Yields:</strong> Values shown are per single seed/pot. Outdoor growing generally provides slightly higher health stability.</p>
+                </div>
             </div>
         </div>
-    </div>
+    </main>
 
-    <main id="view-dist"
-        class="hidden flex-grow p-4 lg:p-6 max-w-[1800px] mx-auto w-full overflow-hidden flex flex-col gap-6">
-
+    <main id="view-dist" class="hidden flex-grow p-4 lg:p-6 max-w-[1800px] mx-auto w-full overflow-hidden flex flex-col gap-6">
         <div class="glass-panel p-4 rounded-xl flex items-end gap-4 border border-gray-700/50 bg-gray-900/40">
             <div class="flex-grow grid grid-cols-3 gap-4">
                 <div>
                     <label class="block text-[10px] uppercase text-gray-500 font-bold mb-1">Drug Base</label>
-                    <select id="order-base"
-                        class="w-full bg-gray-950 border border-gray-700 rounded p-2 text-xs text-white focus:border-accent outline-none"
-                        onchange="recommendRecipe()">
+                    <select id="order-base" class="w-full bg-gray-950 border border-gray-700 rounded p-2 text-xs text-white focus:border-accent outline-none" onchange="recommendRecipe()">
                         <option value="">Select Base...</option>
                         <option value="amphetamine">Amphetamine</option>
                         <option value="cocaine">Cocaine</option>
@@ -492,22 +431,25 @@
                 </div>
                 <div>
                     <label class="block text-[10px] uppercase text-gray-500 font-bold mb-1">Recommended Cut</label>
-                    <select id="order-recipe" disabled
-                        class="w-full bg-gray-900 border border-gray-800 rounded p-2 text-xs text-accent font-bold opacity-100 cursor-not-allowed outline-none shadow-inner">
+                    <select id="order-recipe" disabled class="w-full bg-gray-900 border border-gray-800 rounded p-2 text-xs text-accent font-bold opacity-100 cursor-not-allowed outline-none shadow-inner">
                         <option value="pure">Pure Product (100%)</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-[10px] uppercase text-gray-500 font-bold mb-1">Order Size (g)</label>
-                    <input type="number" id="order-amount" placeholder="0"
-                        class="w-full bg-gray-950 border border-gray-700 rounded p-2 text-xs text-white focus:border-accent outline-none font-mono">
+                    <div class="flex justify-between items-end mb-1">
+                        <label class="block text-[10px] uppercase text-gray-500 font-bold">Order Size (g)</label>
+                        <div class="flex gap-1">
+                            <button onclick="document.getElementById('order-amount').value = 50" class="text-[9px] bg-gray-800 text-gray-400 px-1.5 rounded hover:text-white border border-gray-700">50</button>
+                            <button onclick="document.getElementById('order-amount').value = 100" class="text-[9px] bg-gray-800 text-gray-400 px-1.5 rounded hover:text-white border border-gray-700">100</button>
+                            <button onclick="document.getElementById('order-amount').value = 500" class="text-[9px] bg-gray-800 text-gray-400 px-1.5 rounded hover:text-white border border-gray-700">500</button>
+                        </div>
+                    </div>
+                    <input type="number" id="order-amount" placeholder="0" class="w-full bg-gray-950 border border-gray-700 rounded p-2 text-xs text-white focus:border-accent outline-none font-mono">
                 </div>
             </div>
-            <button onclick="addOrder()"
-                class="h-[34px] px-6 bg-accent hover:bg-accent/80 text-white text-xs font-bold rounded shadow-lg shadow-accent/20 transition-all uppercase flex items-center gap-2">
+            <button onclick="addOrder()" class="h-[34px] px-6 bg-accent hover:bg-accent/80 text-white text-xs font-bold rounded shadow-lg shadow-accent/20 transition-all uppercase flex items-center gap-2">
                 <span>Add Order</span>
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
             </button>
         </div>
 
@@ -515,8 +457,7 @@
             <div class="w-2/3 glass-panel rounded-xl flex flex-col overflow-hidden">
                 <div class="p-3 border-b border-gray-700/50 bg-gray-900/30 flex justify-between items-center">
                     <h2 class="text-xs font-bold uppercase tracking-widest text-gray-400">Active Orders Queue</h2>
-                    <button onclick="clearOrders()"
-                        class="text-[10px] text-red-400 hover:text-red-300 font-bold uppercase">Clear All</button>
+                    <button onclick="clearOrders()" class="text-[10px] text-red-400 hover:text-red-300 font-bold uppercase">Clear All</button>
                 </div>
                 <div class="flex-grow overflow-y-auto scroller p-0">
                     <table class="w-full text-left text-xs text-gray-400">
@@ -535,12 +476,9 @@
             </div>
 
             <div class="w-1/3 flex flex-col gap-4">
-                <div
-                    class="bg-gray-800/50 border border-gray-700 rounded-xl p-4 relative overflow-hidden group h-full flex flex-col">
+                <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4 relative overflow-hidden group h-full flex flex-col">
                     <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <svg class="w-16 h-16 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+                        <svg class="w-16 h-16 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
                     </div>
                     <h3 class="text-xs font-bold uppercase text-accent mb-3">Total Packaging Manifest</h3>
 
@@ -562,8 +500,7 @@
 
                 <div class="glass-panel flex-grow rounded-xl overflow-hidden flex flex-col">
                     <div class="p-3 border-b border-gray-700/50 bg-gray-900/30">
-                        <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400">Total Production Needs
-                        </h3>
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400">Total Production Needs</h3>
                     </div>
                     <div class="p-3 overflow-y-auto scroller h-40 flex-grow" id="shopping-list">
                         <div class="text-center text-[10px] text-gray-600 italic mt-4">No active orders</div>
@@ -1200,29 +1137,36 @@
         });
 
         // --- NAVIGATION ---
+        // --- UNIFIED NAVIGATION ---
         function switchView(view) {
-            // UI States
-            const labBtn = document.getElementById('nav-lab');
-            const growBtn = document.getElementById('nav-grow');
-            const labView = document.getElementById('view-lab');
-            const growView = document.getElementById('view-grow');
+            // 1. Define Views & Buttons
+            const views = {
+                lab: document.getElementById('view-lab'),
+                grow: document.getElementById('view-grow'),
+                dist: document.getElementById('view-dist')
+            };
+            const btns = {
+                lab: document.getElementById('nav-lab'),
+                grow: document.getElementById('nav-grow'),
+                dist: document.getElementById('nav-dist')
+            };
 
-            if (view === 'lab') {
-                labBtn.classList.replace('text-gray-400', 'text-white');
-                labBtn.classList.add('bg-gray-700', 'shadow-sm');
-                growBtn.classList.replace('text-white', 'text-gray-400');
-                growBtn.classList.remove('bg-gray-700', 'shadow-sm');
-                labView.classList.remove('hidden');
-                labView.classList.add('flex');
-                growView.classList.add('hidden');
-            } else {
-                growBtn.classList.replace('text-gray-400', 'text-white');
-                growBtn.classList.add('bg-gray-700', 'shadow-sm');
-                labBtn.classList.replace('text-white', 'text-gray-400');
-                labBtn.classList.remove('bg-gray-700', 'shadow-sm');
-                growView.classList.remove('hidden');
-                growView.classList.add('flex');
-                labView.classList.add('hidden');
+            // 2. Hide All
+            Object.values(views).forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('flex');
+            });
+            Object.values(btns).forEach(el => {
+                el.classList.remove('bg-gray-700', 'text-white', 'shadow-sm');
+                el.classList.add('text-gray-400');
+            });
+
+            // 3. Show Active
+            if (views[view] && btns[view]) {
+                views[view].classList.remove('hidden');
+                views[view].classList.add('flex');
+                btns[view].classList.remove('text-gray-400');
+                btns[view].classList.add('bg-gray-700', 'text-white', 'shadow-sm');
             }
         }
 
