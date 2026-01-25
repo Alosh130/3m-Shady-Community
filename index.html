@@ -103,7 +103,7 @@
 
         .glass-panel {
             background: rgba(17, 24, 39, 0.6);
-            backdrop-filter: blur(12px);
+            
             border: 1px solid rgba(75, 85, 99, 0.3);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
@@ -126,7 +126,7 @@
             font-size: 12px;
             font-weight: bold;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            backdrop-filter: blur(4px);
+            
             display: flex;
             align-items: center; /* Fixed syntax error 'items-center' -> 'align-items' */
             gap: 10px;
@@ -157,7 +157,7 @@
 <body class="h-screen flex flex-col font-sans selection:bg-accent selection:text-white overflow-hidden">
 
     <!-- Header -->
-    <header class="border-b border-gray-800 bg-gray-950/80 backdrop-blur-md sticky top-0 z-50 flex-none">
+    <header class="border-b border-gray-800 bg-gray-950/80 sticky top-0 z-50 flex-none">
         <div class="max-w-[1800px] mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div
@@ -238,7 +238,7 @@
             <div id="pantry-list" class="flex-grow overflow-y-auto scroller p-2 space-y-1"></div>
         </div>
         
-        <div id="pantry-backdrop" onclick="togglePantry()" class="fixed inset-0 bg-black/50 z-40 hidden backdrop-blur-sm transition-opacity"></div>
+        <div id="pantry-backdrop" onclick="togglePantry()" class="fixed inset-0 bg-black/50 z-40 hidden transition-opacity"></div>
 
 
         <div class="flex-grow flex flex-col xl:flex-row gap-6 h-full overflow-hidden">
@@ -314,7 +314,7 @@
                 
                 <div id="warnings" class="space-y-2 flex-none"></div>
 
-                <div class="rounded-xl p-4 shadow-xl backdrop-blur-md mb-4">
+                <div class="rounded-xl p-4 shadow-xl mb-4">
                     
                     <div class="grid grid-cols-3 gap-2 text-center mb-3">
                         <div>
@@ -436,7 +436,7 @@
         </div>
     </main>
 
-    <div id="wet-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+    <div id="wet-modal" class="hidden fixed inset-0 bg-black/80 z-[60] flex items-center justify-center p-4">
         <div class="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-lg shadow-2xl modal-fade p-6 relative">
             <h3 class="text-lg font-bold text-white mb-1">Add Wet Marijuana</h3>
             <p class="text-xs text-gray-500 mb-4">Select a strain to auto-calculate production cost.</p>
