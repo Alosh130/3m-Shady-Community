@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DDS Architect v7.0 (Labs Added)</title>
+    <title>DDS Architect v7.1 (Labs Added)</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -170,7 +170,7 @@
                 <div>
                     <h1 class="text-lg font-bold tracking-tight text-white leading-none">DDS <span
                             class="text-accent">Architect</span></h1>
-                    <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Labs Added v7.0</span>
+                    <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Labs Added v7.1</span>
                 </div>
             </div>
 
@@ -190,17 +190,7 @@
 
                 </nav>
 
-                <!-- Mode Selection -->
-                <div class="flex items-center bg-gray-900 rounded-lg p-1 border border-gray-700 shadow-inner">
-                    <button id="mode-visual" onclick="setMode('visual')"
-                        class="text-[10px] font-bold px-3 py-1.5 rounded-md bg-gray-700 text-white transition-all shadow-sm flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-green-400"></span> WEBSITE
-                    </button>
-                    <button id="mode-internal" onclick="setMode('internal')"
-                        class="text-[10px] font-bold px-3 py-1.5 rounded-md text-gray-400 hover:text-white transition-all flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-red-900"></span> INTERNAL
-                    </button>
-                </div>
+                
             </div>
         </div>
     </header>
@@ -508,12 +498,12 @@
                     <label class="block text-[10px] uppercase text-gray-500 font-bold mb-1">Drug Base</label>
                     <select id="order-base" class="w-full bg-gray-950 border border-gray-700 rounded p-2 text-xs text-white focus:border-accent outline-none" onchange="recommendRecipe()">
                         <option value="">Select Base...</option>
-                        <option value="amphetamine">Amphetamine</option>
-                        <option value="cocaine">Cocaine</option>
-                        <option value="heroin">Heroin</option>
-                        <option value="ecstasy">Ecstasy</option>
                         <option value="marijuana">Marijuana</option>
+                        <option value="amphetamine">Amphetamine</option>
+                        <option value="ecstasy">Ecstasy</option>
                         <option value="meth">Crystal Meth</option>
+                        <option value="heroin">Heroin</option>
+                        <option value="cocaine">Cocaine</option>
                         <option value="lsd">LSD</option>
                         <option value="Mushrooms">Mushrooms</option>
                         <option value="dmt">DMT</option>
@@ -717,66 +707,6 @@
             // DOPE (Calibrated to your specs: Tox 3.5, Adct 1.98 result)
             // Ecstasy: Tox 3.5, Adct 1.3
             {
-                id: 'ecstasy',
-                name: 'Ecstasy',
-                type: 'dope',
-                str: 2.0,
-                mixStr: 1.3,
-                tox: 3.5,
-                adct: 1.3,
-                cost: 6.00,
-                color: '#a855f7',
-                form: 'pill'
-            },
-            {
-                id: 'amphetamine',
-                name: 'Amphetamine',
-                type: 'dope',
-                str: 2.5,
-                mixStr: 1.6,
-                tox: 4.0,
-                adct: 1.7,
-                cost: 7.00,
-                color: '#ef4444',
-                form: 'powder'
-            },
-            {
-                id: 'cocaine',
-                name: 'Cocaine',
-                type: 'dope',
-                str: 4.0,
-                mixStr: 2.0,
-                tox: 5.0,
-                adct: 3.0,
-                cost: 25.00,
-                color: '#f97316',
-                form: 'powder'
-            },
-            {
-                id: 'heroin',
-                name: 'Heroin',
-                type: 'dope',
-                str: 3.5,
-                mixStr: 2.0,
-                tox: 6.0,
-                adct: 4.0,
-                cost: 18.00,
-                color: '#7e22ce',
-                form: 'powder'
-            },
-            {
-                id: 'meth',
-                name: 'Crystal Meth',
-                type: 'dope',
-                str: 3.0,
-                mixStr: 2.4,
-                tox: 5.5,
-                adct: 3.0,
-                cost: 9.00,
-                color: '#3b82f6',
-                form: 'crystal'
-            },
-            {
                 id: 'marijuana',
                 name: 'Marijuana (Dry)',
                 type: 'dope',
@@ -801,7 +731,65 @@
                 form: 'plant',
                 custom: true,
                 saleable: false
+            },{
+                id: 'amphetamine',
+                name: 'Amphetamine',
+                type: 'dope',
+                str: 2.5,
+                mixStr: 1.6,
+                tox: 4.0,
+                adct: 1.7,
+                cost: 7.00,
+                color: '#ef4444',
+                form: 'powder'
+            },{
+                id: 'ecstasy',
+                name: 'Ecstasy',
+                type: 'dope',
+                str: 2.0,
+                mixStr: 1.3,
+                tox: 3.5,
+                adct: 1.3,
+                cost: 6.00,
+                color: '#a855f7',
+                form: 'pill'
+            },{
+                id: 'meth',
+                name: 'Crystal Meth',
+                type: 'dope',
+                str: 3.0,
+                mixStr: 2.4,
+                tox: 5.5,
+                adct: 3.0,
+                cost: 9.00,
+                color: '#3b82f6',
+                form: 'crystal'
+            },{
+                id: 'heroin',
+                name: 'Heroin',
+                type: 'dope',
+                str: 3.5,
+                mixStr: 2.0,
+                tox: 6.0,
+                adct: 4.0,
+                cost: 18.00,
+                color: '#7e22ce',
+                form: 'powder'
             },
+            {
+                id: 'cocaine',
+                name: 'Cocaine',
+                type: 'dope',
+                str: 4.0,
+                mixStr: 2.0,
+                tox: 5.0,
+                adct: 3.0,
+                cost: 25.00,
+                color: '#f97316',
+                form: 'powder'
+            },
+            
+            
 
             // PSYCHEDELICS
             {
@@ -1208,7 +1196,6 @@
         // STATE VARIABLES
         let currentMix = [];
         let radarChart = null;
-        let calcMode = 'visual'; // 'visual' = Relative to Main Ingredient (Website Logic)
         let savedPremixes = [];
 
         // --- CORE LIFECYCLE ---
@@ -1493,30 +1480,6 @@
                 filterPantry('premix');
                 showToast("All premixes deleted", "info");
             }
-        }
-
-        // --- CALCULATION MODE ---
-        function setMode(mode) {
-            calcMode = mode;
-            const visBtn = document.getElementById('mode-visual');
-            const intBtn = document.getElementById('mode-internal');
-
-            if (mode === 'visual') {
-                visBtn.classList.replace('text-gray-400', 'bg-gray-700');
-                visBtn.classList.replace('hover:text-white', 'text-white');
-                visBtn.classList.add('shadow-sm');
-                intBtn.classList.replace('bg-red-900/50', 'text-gray-400');
-                intBtn.classList.replace('text-red-200', 'hover:text-white');
-                intBtn.classList.remove('shadow-sm');
-            } else {
-                intBtn.classList.replace('text-gray-400', 'bg-red-900/50');
-                intBtn.classList.replace('hover:text-white', 'text-red-200');
-                intBtn.classList.add('shadow-sm');
-                visBtn.classList.replace('bg-gray-700', 'text-gray-400');
-                visBtn.classList.replace('text-white', 'hover:text-white');
-                visBtn.classList.remove('shadow-sm');
-            }
-            updateCalculations();
         }
 
         // --- PANTRY & SEARCH ---
