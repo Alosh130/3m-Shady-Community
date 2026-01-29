@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DDS Architect v7.1 (Labs Added)</title>
+    <title>DDS Architect v7.2 (Labs Added)</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -170,7 +170,7 @@
                 <div>
                     <h1 class="text-lg font-bold tracking-tight text-white leading-none">DDS <span
                             class="text-accent">Architect</span></h1>
-                    <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Labs Added v7.1</span>
+                    <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Labs Added v7.2</span>
                 </div>
             </div>
 
@@ -283,7 +283,23 @@
                 <div class="h-48 flex-none glass-panel rounded-xl flex flex-col overflow-hidden min-h-0">
                     <div class="p-2 border-b border-gray-700/50 bg-gray-900/30 flex justify-between items-center">
                         <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 px-2">Batch Manifest</h3>
+                        
+                        <div class="flex items-center gap-2 bg-gray-950/50 rounded-lg px-2 py-1 border border-gray-800">
+                            <span class="text-[9px] text-gray-500 font-bold uppercase tracking-wider mr-1">Scale Mix</span>
+                            
+                            <div class="flex items-center">
+                                <span class="text-[9px] text-gray-500 font-bold mr-1">x</span>
+                                <input type="number" id="batch-scaler" value="1" min="0.1" step="0.1" 
+                                    class="w-10 bg-transparent text-right text-xs font-mono text-accent font-bold focus:outline-none focus:border-b focus:border-accent"
+                                    onkeydown="if(event.key === 'Enter') scaleMix()">
+                            </div>
+
+                            <button onclick="scaleMix()" class="ml-2 p-1 rounded bg-accent hover:bg-accent/80 text-white shadow-lg transition-all" title="Apply Scaling">
+                                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                            </button>
+                        </div>
                     </div>
+
                     <div class="overflow-y-auto scroller p-0">
                         <table class="w-full text-left text-[11px] text-gray-400">
                             <thead class="bg-gray-900/50 sticky top-0 font-bold uppercase text-gray-500">
@@ -1869,7 +1885,6 @@
             currentMix.forEach(item => {
                 let name, costPerG;
 
-                // Lookup Data
                 if (item.isPremix) {
                     name = item.name + " (Mix)";
                     costPerG = item.costPerG || 0;
@@ -1877,18 +1892,17 @@
                     const data = ingredients.find(i => i.id === item.id);
                     if (!data) return;
                     name = data.name;
-                    costPerG = item.isWet ? item.dynamicCost : data.cost;
+                    costPerG = (item.dynamicCost !== undefined) ? item.dynamicCost : data.cost;
                 }
                 
-                // 2. Logic: Handle Acetone differently
+                // 2. Logic: Handle Acetone
                 let pctStr = "0.0%";
-                let massDisplay = item.amount.toFixed(1);
+                let massDisplay = item.amount.toFixed(1); // Use REAL amount
                 
                 if (item.id === 'acetone') {
                     pctStr = '<span class="text-cyan-500 text-[9px] uppercase tracking-wider">Solvent</span>';
                     massDisplay = `<span class="text-gray-600 line-through decoration-cyan-900/50">${item.amount.toFixed(1)}</span>`;
                 } else {
-                    // Normal item: Calculate % based on SOLID mass only
                     const pct = solidMass > 0 ? (item.amount / solidMass) * 100 : 0;
                     pctStr = pct.toFixed(1) + '%';
                 }
@@ -1896,11 +1910,15 @@
                 const cost = item.amount * costPerG;
 
                 const tr = document.createElement('tr');
+                tr.className = "border-b border-gray-800/50 last:border-0 hover:bg-white/5 transition-colors";
                 tr.innerHTML = `
-                    <td class="pl-3 font-medium text-gray-300 py-1">${name}</td>
-                    <td class="text-right font-mono">${massDisplay}</td>
+                    <td class="pl-3 font-medium text-gray-300 py-1.5 flex flex-col justify-center h-full">
+                        <span class="leading-none">${name}</span>
+                        ${item.sourceLabel ? `<span class="text-[8px] text-gray-600 leading-none mt-0.5">${item.sourceLabel}</span>` : ''}
+                    </td>
+                    <td class="text-right font-mono text-white">${massDisplay}</td>
                     <td class="text-right font-mono text-gray-500">${pctStr}</td>
-                    <td class="text-right pr-3 font-mono text-gray-400">$${cost.toFixed(2)}</td>
+                    <td class="text-right pr-3 font-mono text-gray-400">$${cost.toFixed(0)}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -2140,6 +2158,12 @@
                 const el = document.getElementById(id);
                 if (el) el.innerText = 'Base: -';
             });
+
+            const multInput = document.getElementById('batch-multiplier');
+            if(multInput) multInput.value = "1";
+            
+            const totalDisp = document.getElementById('manifest-total-display');
+            if(totalDisp) totalDisp.innerText = "0g";
         }
 
         function loadRecipe(index) {
@@ -2743,6 +2767,42 @@
 
             renderMix(); // Refresh UI to show new cost
             updateCalculations();
+        }
+
+        function scaleMix() {
+            // 1. Get the multiplier
+            const input = document.getElementById('batch-scaler');
+            const factor = parseFloat(input.value);
+
+            // Safety Checks
+            if (isNaN(factor) || factor <= 0) {
+                showToast("Invalid multiplier", "error");
+                return;
+            }
+            if (currentMix.length === 0) {
+                showToast("Flask is empty", "error");
+                return;
+            }
+
+            // 2. Apply Multiplication to Data
+            currentMix.forEach(item => {
+                // SKIP Acetone (Keep it strictly at 1g as per your rule)
+                if (item.id === 'acetone') {
+                    item.amount = 1;
+                } else {
+                    item.amount = item.amount * factor;
+                }
+            });
+
+            // 3. Reset the input to "1" (Standard UX for scaling operations)
+            input.value = "1";
+
+            // 4. Refresh EVERYTHING
+            renderMix();            // Updates the sliders & inputs
+            updateCalculations();   // Updates the stats
+            updateVisualBeaker();   // Updates the beaker
+            
+            showToast(`Batch scaled by x${factor}`, "success");
         }
     </script>
 </body>
