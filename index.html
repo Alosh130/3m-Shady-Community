@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DDS Architect v6.9 (Comparing Addition)</title>
+    <title>DDS Architect v7.0 (Labs Added)</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -170,7 +170,7 @@
                 <div>
                     <h1 class="text-lg font-bold tracking-tight text-white leading-none">DDS <span
                             class="text-accent">Architect</span></h1>
-                    <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Comparing Addition v6.9</span>
+                    <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Labs Added v7.0</span>
                 </div>
             </div>
 
@@ -1570,14 +1570,20 @@
             const row = document.createElement('div');
             row.className =
                 "flex items-center justify-between p-2 rounded-lg hover:bg-gray-800/80 cursor-pointer group transition-all border border-transparent hover:border-gray-700/50";
+            
+            // --- FIX: Revert to direct add ---
             row.onclick = () => {
                 if (item.custom) {
+                    // Keep Wet Weed Modal logic
                     document.getElementById('wet-modal').classList.remove('hidden');
                     updateModalCalc();
                 } else {
+                    // DIRECT ADD (Fixes the crash)
                     addToMix(item.id);
                 }
             };
+            // ---------------------------------
+
             row.innerHTML = `
                 <div class="flex items-center gap-3">
                     <div class="w-1.5 h-8 rounded-full shadow-[0_0_8px_currentColor]" style="color: ${item.color}; background-color: ${item.color}"></div>
@@ -1632,12 +1638,34 @@
         }
 
         // --- 6. FLASK OPERATIONS ---
+        // Updated to accept source info
         function addToMix(id) {
-            const existing = currentMix.find(i => i.id === id);
-            if (!existing) currentMix.push({
-                id,
-                amount: 10
+            // 1. Get Default Cost (First option in pricingModels or Base DB cost)
+            let startCost = 0;
+            let startLabel = null;
+            const model = pricingModels[id];
+            const dbItem = ingredients.find(i => i.id === id);
+
+            if (model) {
+                // Pick the first option as default (usually "Eddie")
+                const defaultOption = (model.type === 'complex') ? model.base[0] : model.options[0];
+                startCost = defaultOption.cost;
+                startLabel = defaultOption.label;
+            } else {
+                startCost = dbItem.cost; // Fallback for Sugar/Soda
+            }
+
+            // 2. Default Amount logic
+            let startAmount = (id === 'acetone') ? 1 : 10;
+
+            // 3. Add to Flask
+            currentMix.push({
+                id: id,
+                amount: startAmount,
+                dynamicCost: startCost,
+                sourceLabel: startLabel
             });
+
             renderMix();
             updateCalculations();
         }
@@ -1651,41 +1679,43 @@
         function updateAmount(index, val) {
             const item = currentMix[index];
             if (item) {
-                if(item.id === 'acetone'){
-                    item.amount = 1;
-                }else{
+                // Strict Acetone Lock
+                if (item.id === 'acetone') {
+                    item.amount = 1; 
+                } else {
                     let v = parseFloat(val);
                     if (isNaN(v) || v < 0) v = 0;
                     item.amount = v;
                 }
-                
 
                 const slider = document.querySelector(`#slider-${index}`);
-                // const input = document.querySelector(`#input-${index}`); // Keep commented out to allow typing
-
                 if (slider) slider.value = item.amount;
-                // if(input) input.value = ... // Keep commented out
 
-                // --- NEW LOGIC: Update ALL Ratio Badges ---
-                const totalMass = currentMix.reduce((a, b) => a + b.amount, 0);
+                // --- UPDATED BADGE LOGIC ---
+                // Calculate total excluding Acetone
+                const solidMass = currentMix.reduce((a, b) => {
+                    return (b.id === 'acetone') ? a : a + b.amount;
+                }, 0);
 
                 currentMix.forEach((itm, idx) => {
                     const badge = document.getElementById(`ratio-badge-${idx}`);
                     if (badge) {
-                        const ratio = totalMass > 0 ? (itm.amount / totalMass) * 100 : 0;
-                        badge.innerText = ratio.toFixed(1) + '%';
-
-                        // Optional: Live coloring
-                        if (ratio > 70) {
-                            badge.classList.remove('text-gray-500');
-                            badge.classList.add('text-green-400');
+                        if (itm.id === 'acetone') {
+                            // Special badge for Acetone
+                            badge.innerText = 'SOLV';
+                            badge.className = "text-[9px] font-mono text-cyan-500 bg-gray-900 border border-cyan-900/50 px-1.5 rounded ml-2";
                         } else {
-                            badge.classList.add('text-gray-500');
-                            badge.classList.remove('text-green-400');
+                            // Standard % Calculation
+                            const ratio = solidMass > 0 ? (itm.amount / solidMass) * 100 : 0;
+                            badge.innerText = ratio.toFixed(1) + '%';
+                            
+                            // Re-apply standard classes
+                            badge.className = "text-[10px] font-mono px-1.5 rounded ml-2 transition-colors border border-gray-700 bg-gray-900 " + 
+                                (ratio > 70 ? 'text-green-400' : 'text-gray-500');
                         }
                     }
                 });
-                // ------------------------------------------
+                // ---------------------------
 
                 updateCalculations();
                 updateVisualBeaker();
@@ -1695,10 +1725,8 @@
 
         function renderMix() {
             const container = document.getElementById('mix-container');
-            const totalMass = currentMix.reduce((a, b) => a + b.amount, 0);
-
+            
             if (currentMix.length === 0) {
-                // Empty state
                 container.innerHTML = `<div class="col-span-1 xl:col-span-2 h-full flex flex-col items-center justify-center text-gray-600 opacity-60 min-h-[200px]"><p class="text-xs font-medium">Add ingredients from Pantry</p></div>`;
                 updateVisualBeaker();
                 updateManifestTable();
@@ -1706,51 +1734,93 @@
             }
 
             container.innerHTML = '';
+            
             currentMix.forEach((item, index) => {
-                // --- DATA LOOKUP (SAFE VERSION) ---
-                let displayName = "Unknown Item";
-                let displayColor = "#6b7280"; // Gray default
-                let displayCost = 0;
-                
+                let displayName = "Unknown";
+                let displayColor = "#666";
+                let displayCost = item.dynamicCost || 0;
+                let sourceSelector = ""; // This will hold our dropdown HTML
+
+                // --- 1. PREPARE DATA ---
                 if (item.isPremix) {
-                    // 1. PREMIX HANDLING
                     displayName = item.name + " (Premix)";
                     displayColor = item.color || "#fbbf24";
                     displayCost = item.costPerG || 0;
                 } else {
-                    // 2. REGULAR INGREDIENT HANDLING
                     const data = ingredients.find(i => i.id === item.id);
-                    
                     if (data) {
                         displayName = data.name;
                         displayColor = data.color;
-                        // Use dynamic cost for Wet Weed, otherwise database cost
-                        displayCost = item.isWet ? item.dynamicCost : data.cost;
-                    } else {
-                        // Fallback if data is missing (Prevents Crash)
-                        console.warn("Missing data for:", item.id);
-                        displayName = item.name || item.id || "Unknown";
+                        if(item.dynamicCost === undefined) displayCost = data.cost;
+
+                        // --- 2. BUILD DROPDOWN (If Applicable) ---
+                        const model = pricingModels[item.id];
+                        
+                        if (item.isWet) {
+                            sourceSelector = `<span class="text-[9px] bg-green-900/30 text-green-400 px-1.5 py-0.5 rounded border border-green-500/30 ml-2">Harvest</span>`;
+                        } 
+                        else if (model) {
+                            // Gather all options
+                            let opts = [];
+                            if (model.type === 'complex') opts = [...model.base];
+                            else opts = [...model.options];
+
+                            // Add strains for Weed
+                            if (item.id === 'marijuana') {
+                                Object.values(strainsData).forEach(s => {
+                                    opts.push({ label: `${s.name} (Homegrown)` });
+                                });
+                            }
+
+                            // Generate <option> tags
+                            const optionsHTML = opts.map(o => {
+                                const selected = (o.label === item.sourceLabel) ? "selected" : "";
+                                return `<option value="${o.label}" ${selected} class="bg-gray-900 text-gray-300">${o.label}</option>`;
+                            }).join('');
+
+                            // The Styled Select Box
+                            sourceSelector = `
+                                <div class="relative ml-2 group/select">
+                                    <select onchange="updateItemSource(${index}, this.value)" 
+                                        class="appearance-none bg-gray-900/50 hover:bg-gray-900 border border-gray-700 hover:border-gray-500 text-[9px] text-gray-300 rounded px-2 py-0.5 pr-4 focus:outline-none focus:border-accent transition-colors cursor-pointer">
+                                        ${optionsHTML}
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-1 text-gray-500">
+                                        <svg class="h-2 w-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                                    </div>
+                                </div>
+                            `;
+                        }
                     }
                 }
-                // ----------------------------------
 
+                // --- 3. RENDER ROW ---
                 const el = document.createElement('div');
                 el.className = "bg-gray-800/40 border border-gray-700/50 rounded-lg p-3 group hover:border-gray-600 transition-colors";
                 
-                const ratio = totalMass > 0 ? (item.amount / totalMass) * 100 : 0;
-                const ratioColor = ratio > 70 ? 'text-green-400' : 'text-gray-500';
+                // Calculate Ratio Logic (Same as before)
+                const solidMass = currentMix.reduce((a, b) => (b.id === 'acetone') ? a : a + b.amount, 0);
+                let ratioBadge = "";
+                if(item.id === 'acetone') {
+                     ratioBadge = `<span id="ratio-badge-${index}" class="text-[9px] font-mono text-cyan-500 bg-gray-900 border border-cyan-900/50 px-1.5 rounded ml-2">SOLV</span>`;
+                } else {
+                     const ratio = solidMass > 0 ? (item.amount / solidMass) * 100 : 0;
+                     const colorClass = ratio > 70 ? 'text-green-400' : 'text-gray-500';
+                     ratioBadge = `<span id="ratio-badge-${index}" class="text-[10px] font-mono ${colorClass} bg-gray-900 border border-gray-700 px-1.5 rounded ml-2 transition-colors">${ratio.toFixed(1)}%</span>`;
+                }
 
                 el.innerHTML = `
                     <div class="flex justify-between items-center mb-2">
-                        <div class="flex items-center gap-2">
-                            <div class="w-2 h-2 rounded-full shadow-[0_0_5px_currentColor]" style="color: ${displayColor}; background-color: ${displayColor}"></div>
-                            <span class="text-xs font-bold text-gray-200">${displayName} <span class="text-[9px] text-gray-500">($${displayCost.toFixed(2)}/g)</span></span>
+                        <div class="flex items-center gap-1 overflow-visible">
+                            <div class="w-2 h-2 rounded-full shadow-[0_0_5px_currentColor] flex-none" style="color: ${displayColor}; background-color: ${displayColor}"></div>
+                            <span class="text-xs font-bold text-gray-200 truncate ml-1">${displayName}</span>
                             
-                            <span id="ratio-badge-${index}" class="text-[10px] font-mono ${ratioColor} bg-gray-900 border border-gray-700 px-1.5 rounded ml-2 transition-colors">
-                                ${ratio.toFixed(1)}%
-                            </span>
+                            ${sourceSelector}
+                            
+                            <span class="text-[9px] text-gray-500 ml-1 font-mono">($${displayCost.toFixed(2)}/g)</span>
+                            ${ratioBadge}
                         </div>
-                        <button onclick="removeFromMix(${index})" class="text-gray-600 hover:text-red-400 text-[10px] font-bold transition-colors uppercase tracking-wider">Remove</button>
+                        <button onclick="removeFromMix(${index})" class="text-gray-600 hover:text-red-400 text-[10px] font-bold transition-colors uppercase tracking-wider flex-none ml-2">Remove</button>
                     </div>
                     <div class="flex items-center gap-3">
                         <input type="range" min="0" max="1000" value="${item.amount}" id="slider-${index}"
@@ -1766,6 +1836,7 @@
                 `;
                 container.appendChild(el);
             });
+            
             updateVisualBeaker();
             updateManifestTable();
         }
@@ -1773,28 +1844,35 @@
         // --- 7. VISUALIZERS ---
         function updateVisualBeaker() {
             const beaker = document.getElementById('visual-beaker');
+            if (!beaker) return;
             beaker.innerHTML = '';
-            const total = currentMix.reduce((a, b) => a + b.amount, 0);
-            if (total === 0) return;
+            
+            // 1. Calculate Solid Mass Only
+            const solidTotal = currentMix.reduce((a, b) => {
+                return (b.id === 'acetone') ? a : a + (b.amount || 0);
+            }, 0);
+
+            if (solidTotal === 0) return;
 
             currentMix.forEach(item => {
-                // --- FIX STARTS HERE ---
-                let name, color;
+                if (!item || !item.amount) return; 
                 
+                // 2. Skip Acetone Visuals
+                if (item.id === 'acetone') return;
+
+                let name = "Unknown", color = "#666";
                 if (item.isPremix) {
-                    // 1. Read directly from the Premix item
-                    name = item.name;
-                    color = item.color; 
+                    name = item.name || "Premix";
+                    color = item.color || "#fbbf24"; 
                 } else {
-                    // 2. Look up regular ingredients
                     const data = ingredients.find(i => i.id === item.id);
-                    if (!data) return; // Skip if broken
+                    if (!data) return; 
                     name = data.name;
                     color = data.color;
                 }
-                // -----------------------
 
-                const pct = (item.amount / total) * 100;
+                // 3. Pct based on Solids
+                const pct = (item.amount / solidTotal) * 100;
                 if (pct < 1) return;
 
                 const layer = document.createElement('div');
@@ -1814,17 +1892,21 @@
         function updateManifestTable() {
             const tbody = document.getElementById('manifest-body');
             tbody.innerHTML = '';
-            const totalMass = currentMix.reduce((a, b) => a + b.amount, 0);
+            
+            // 1. Calculate Solid Mass (Exclude Acetone)
+            const solidMass = currentMix.reduce((a, b) => {
+                return (b.id === 'acetone') ? a : a + b.amount;
+            }, 0);
 
-            if (totalMass === 0) {
+            if (solidMass === 0 && currentMix.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="4" class="text-center text-gray-600 italic py-4">No data</td></tr>`;
                 return;
             }
 
             currentMix.forEach(item => {
-                // --- FIX STARTS HERE ---
                 let name, costPerG;
 
+                // Lookup Data
                 if (item.isPremix) {
                     name = item.name + " (Mix)";
                     costPerG = item.costPerG || 0;
@@ -1834,16 +1916,27 @@
                     name = data.name;
                     costPerG = item.isWet ? item.dynamicCost : data.cost;
                 }
-                // -----------------------
                 
-                const pct = (item.amount / totalMass) * 100;
+                // 2. Logic: Handle Acetone differently
+                let pctStr = "0.0%";
+                let massDisplay = item.amount.toFixed(1);
+                
+                if (item.id === 'acetone') {
+                    pctStr = '<span class="text-cyan-500 text-[9px] uppercase tracking-wider">Solvent</span>';
+                    massDisplay = `<span class="text-gray-600 line-through decoration-cyan-900/50">${item.amount.toFixed(1)}</span>`;
+                } else {
+                    // Normal item: Calculate % based on SOLID mass only
+                    const pct = solidMass > 0 ? (item.amount / solidMass) * 100 : 0;
+                    pctStr = pct.toFixed(1) + '%';
+                }
+
                 const cost = item.amount * costPerG;
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td class="pl-3 font-medium text-gray-300 py-1">${name}</td>
-                    <td class="text-right font-mono">${item.amount.toFixed(1)}</td>
-                    <td class="text-right font-mono text-gray-500">${pct.toFixed(1)}%</td>
+                    <td class="text-right font-mono">${massDisplay}</td>
+                    <td class="text-right font-mono text-gray-500">${pctStr}</td>
                     <td class="text-right pr-3 font-mono text-gray-400">$${cost.toFixed(2)}</td>
                 `;
                 tbody.appendChild(tr);
@@ -1854,45 +1947,44 @@
         function calculateStats() {
             if (currentMix.length === 0) return null;
 
-            let totalMass = 0, wStr = 0, wMixStr = 0, wTox = 0, wAdct = 0, totalCost = 0;
+            let mixingMass = 0; 
+            let finalMass = 0;  
+            let totalCost = 0;
             
             // --- PASS 1: MASS & COST ---
             currentMix.forEach(item => {
-                // 1. Handle PREMIX
-                if (item.isPremix) {
-                    totalMass += item.amount;
-                    totalCost += (item.amount * (item.costPerG || 0));
-                    return; // Stop here for this item
+                const amount = item.amount;
+                mixingMass += amount;
+
+                if (item.id !== 'acetone') {
+                    finalMass += amount;
                 }
 
-                // 2. Handle REGULAR INGREDIENT
-                const data = ingredients.find(i => i.id === item.id);
-                if (!data) return; // Skip invalid items
-
-                totalMass += item.amount;
-                const costPerG = item.isWet ? item.dynamicCost : data.cost;
-                totalCost += (item.amount * costPerG);
+                // COST CALCULATION UPDATE
+                if (item.isPremix) {
+                    totalCost += (amount * (item.costPerG || 0));
+                } else {
+                    // Use the cost we saved during Source Selection
+                    // Fallback to item.dynamicCost (Wet Weed) or ingredient default
+                    const unitCost = (item.dynamicCost !== undefined) ? item.dynamicCost : 0;
+                    totalCost += (amount * unitCost);
+                }
             });
             
-            if (totalMass === 0) return null;
+            if (mixingMass === 0) return null;
 
-            // --- PASS 2: CHEMISTRY (STATS) ---
+            let wStr = 0, wMixStr = 0, wTox = 0, wAdct = 0;
+
+            // --- PASS 2: CHEMISTRY ---
             currentMix.forEach(item => {
                 let data = null;
-
-                if (item.isPremix) {
-                    // USE STORED STATS
-                    data = item.stats; 
-                } else {
-                    // USE DATABASE STATS
-                    data = ingredients.find(i => i.id === item.id);
-                }
+                if (item.isPremix) data = item.stats; 
+                else data = ingredients.find(i => i.id === item.id);
 
                 if (!data) return;
 
-                const ratio = item.amount / totalMass;
+                const ratio = item.amount / mixingMass;
                 
-                // Use '||' to handle property name variations safely
                 wStr += (data.str || data.avgStr || 0) * ratio;
                 wMixStr += (data.mixStr || data.avgMixStr || 0) * ratio;
                 wTox += (data.tox || data.finalTox || 0) * ratio;
@@ -1900,7 +1992,7 @@
             });
 
             return { 
-                mass: totalMass, 
+                mass: finalMass,
                 cost: totalCost, 
                 finalStr: wStr, 
                 finalTox: wTox, 
@@ -2017,27 +2109,26 @@
         }
 
         function determineEquipment(mix) {
-            const hasEcstasy = mix.some(m => m.id === 'ecstasy');
-            const hasLiquid = mix.some(m => {
+            // Safety: Filter out null/undefined items first
+            const validMix = mix.filter(m => m && m.id);
+
+            const hasEcstasy = validMix.some(m => m.id === 'ecstasy');
+            
+            const hasLiquid = validMix.some(m => {
+                // If it's a premix, it's not a liquid ingredient for equipment purposes
+                if (m.isPremix) return false;
+
                 const i = ingredients.find(x => x.id === m.id);
-                if(!i) return false;
+                
+                // CRASH FIX: If ingredient not found, return false instead of crashing
+                if (!i) return false;
+
                 return i.id === 'acetone' || i.id === 'nebilin' || i.form === 'liquid';
             });
-            if (hasLiquid) return {
-                eq: "Crystallizer",
-                icon: "💎",
-                form: "Crystal"
-            };
-            if (hasEcstasy) return {
-                eq: "Pill Press",
-                icon: "💊",
-                form: "Pill"
-            };
-            return {
-                eq: "Mixer",
-                icon: "🥣",
-                form: "Powder"
-            };
+
+            if (hasLiquid) return { eq: "Crystallizer", icon: "💎", form: "Crystal" };
+            if (hasEcstasy) return { eq: "Pill Press", icon: "💊", form: "Pill" };
+            return { eq: "Mixer", icon: "🥣", form: "Powder" };
         }
 
         function resetLab() {
@@ -2047,23 +2138,45 @@
         }
 
         function resetUI() {
+            // 1. Reset Standard Values
             document.getElementById('total-mass').innerText = '0';
             document.getElementById('val-str').innerText = '0.00';
             document.getElementById('val-add').innerText = '0.00';
             document.getElementById('val-tox').innerText = '0.00';
-            document.getElementById('base-str-diff').innerText = '';
-            document.getElementById('val-cost-batch').innerText = '$0';
+            
+            // 2. Reset Financials
+            document.getElementById('val-cost-batch').innerText = 'Cost: $0';
             document.getElementById('val-cost-gram').innerText = '($0.00/g)';
             document.getElementById('val-profit-batch').innerText = '$0';
             document.getElementById('val-profit-gram').innerText = '$0.00';
+            
+            // 3. Clear Visuals
             document.getElementById('warnings').innerHTML = '';
             document.getElementById('visual-beaker').innerHTML = '';
             document.getElementById('manifest-body').innerHTML =
                 `<tr><td colspan="4" class="text-center text-gray-600 italic py-4">No data</td></tr>`;
+            
+            // 4. Reset Chart
             if (radarChart) {
                 radarChart.data.datasets[0].data = [0, 0, 0, 0];
                 radarChart.update();
             }
+
+            // --- 5. NEW LAYOUT RESET (Fixes the crash) ---
+            // Reset the Big Percentages
+            ['pct-str', 'pct-add', 'pct-tox'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.innerText = '-%';
+                    el.className = 'text-lg font-mono font-bold text-gray-600';
+                }
+            });
+
+            // Reset the Small Info Text
+            ['info-str', 'info-add', 'info-tox'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerText = 'Base: -';
+            });
         }
 
         function loadRecipe(index) {
@@ -2543,6 +2656,130 @@
                 backdrop.classList.add('opacity-0');
                 setTimeout(() => backdrop.classList.add('hidden'), 300);
             }
+        }
+
+        // --- PRICING DATA (Endgame & Labs) ---
+        const pricingModels = {
+            'marijuana': {
+                type: 'complex', // Has Eddie/Labs + Dynamic Strains
+                base: [
+                    { label: 'Eddie', cost: 5.00 },
+                    { label: 'Small Lab', cost: 5.00 },
+                    { label: 'Large Lab', cost: 3.57 }
+                ]
+            },
+            'amphetamine': {
+                type: 'simple',
+                options: [
+                    { label: 'Eddie', cost: 7.00 },
+                    { label: 'Small Lab', cost: 6.00 },
+                    { label: 'Large Lab', cost: 4.29 }
+                ]
+            },
+            'ecstasy': {
+                type: 'simple',
+                options: [
+                    { label: 'Eddie', cost: 7.00 },
+                    { label: 'Small Lab', cost: 6.00 },
+                    { label: 'Large Lab', cost: 4.29 }
+                ]
+            },
+            'meth': {
+                type: 'simple',
+                options: [
+                    { label: 'Eddie', cost: 9.00 },
+                    { label: 'Small Lab', cost: 8.00 },
+                    { label: 'Large Lab', cost: 5.71 }
+                ]
+            },
+            'cocaine': {
+                type: 'simple',
+                options: [
+                    { label: 'Eddie', cost: 25.00 },
+                    { label: 'Small Lab', cost: 23.00 },
+                    { label: 'Large Lab', cost: 16.43 }
+                ]
+            },
+            'heroin': {
+                type: 'simple',
+                options: [
+                    { label: 'Eddie', cost: 17.00 },
+                    { label: 'Small Lab', cost: 16.00 },
+                    { label: 'Large Lab', cost: 11.43 }
+                ]
+            },
+            'lsd': {
+                type: 'simple',
+                options: [
+                    { label: 'Eddie', cost: 4.00 },
+                    { label: 'Walther', cost: 4.00 }
+                ]
+            },
+            'dmt': {
+                type: 'simple',
+                options: [
+                    { label: 'Eddie', cost: 4.00 },
+                    { label: 'Walther', cost: 4.00 }
+                ]
+            },
+            'shrooms': { // Matched ID 'shrooms' from ingredients list
+                type: 'simple',
+                options: [
+                    { label: 'Eddie', cost: 5.00 },
+                    { label: 'Walther', cost: 5.00 }
+                ]
+            }
+        };
+
+        // --- SOURCE MODAL LOGIC ---
+        let pendingItemId = null;
+
+        function confirmSource(label, cost) {
+            if (pendingItemId) {
+                addToMix(pendingItemId, label, cost);
+                closeSourceModal();
+            }
+        }
+
+        function updateItemSource(index, newLabel) {
+            const item = currentMix[index];
+            if (!item) return;
+
+            const model = pricingModels[item.id];
+            if (!model) return;
+
+            let newCost = 0;
+
+            // 1. Check Standard Options (Eddie, Labs, Walther)
+            let option = null;
+            if (model.type === 'complex') {
+                option = model.base.find(o => o.label === newLabel);
+            } else {
+                option = model.options.find(o => o.label === newLabel);
+            }
+
+            // 2. Check Dynamic Strains (if not found in standard)
+            if (!option && item.id === 'marijuana') {
+                // Parse label like "Ghetto Kush (Homegrown)"
+                // Actually, let's look up the strain key directly if possible, 
+                // but simpler to scan strainsData since we generated the label
+                const strainKey = Object.keys(strainsData).find(k => 
+                    `${strainsData[k].name} (Homegrown)` === newLabel
+                );
+                if (strainKey) {
+                    const s = strainsData[strainKey];
+                    newCost = s.cost / s.dry; // Dried Cost Calculation
+                }
+            } else if (option) {
+                newCost = option.cost;
+            }
+
+            // 3. Apply Update
+            item.sourceLabel = newLabel;
+            item.dynamicCost = newCost;
+
+            renderMix(); // Refresh UI to show new cost
+            updateCalculations();
         }
     </script>
 </body>
