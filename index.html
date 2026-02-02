@@ -2603,34 +2603,7 @@
             });
         }
 
-        // --- Navigation Logic ---
-        const originalSwitchView = switchView;
-        switchView = function (view) {
-            const distBtn = document.getElementById('nav-dist');
-            const distView = document.getElementById('view-dist');
-
-            distBtn.classList.replace('text-white', 'text-gray-400');
-            distBtn.classList.remove('bg-gray-700', 'shadow-sm');
-            distView.classList.add('hidden');
-
-            if (view === 'dist') {
-                document.getElementById('nav-lab').classList.replace('text-white', 'text-gray-400');
-                document.getElementById('nav-lab').classList.remove('bg-gray-700', 'shadow-sm');
-                document.getElementById('view-lab').classList.add('hidden');
-                document.getElementById('view-lab').classList.remove('flex');
-
-                document.getElementById('nav-grow').classList.replace('text-white', 'text-gray-400');
-                document.getElementById('nav-grow').classList.remove('bg-gray-700', 'shadow-sm');
-                document.getElementById('view-grow').classList.add('hidden');
-
-                distBtn.classList.replace('text-gray-400', 'text-white');
-                distBtn.classList.add('bg-gray-700', 'shadow-sm');
-                distView.classList.remove('hidden');
-                distView.classList.add('flex');
-            } else {
-                originalSwitchView(view);
-            }
-        }
+        
         function showToast(msg, type = 'info') {
             const container = document.getElementById('toast-container');
             const el = document.createElement('div');
