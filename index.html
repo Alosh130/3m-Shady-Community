@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DDS Architect v7.4 (Calculator Added)</title>
+    <title>DDS Architect v7.5 (Demand Added)</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -170,7 +170,7 @@
                 <div>
                     <h1 class="text-lg font-bold tracking-tight text-white leading-none">DDS <span
                             class="text-accent">Architect</span></h1>
-                    <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Calculator Added v7.4</span>
+                    <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Demand Added v7.5</span>
                 </div>
             </div>
 
@@ -186,6 +186,9 @@
                     
                     <button onclick="switchView('calc')" id="nav-calc"
                         class="px-4 py-1.5 rounded-md text-[10px] font-bold text-gray-400 hover:text-white transition-all">VAULT</button>
+
+                    <button onclick="switchView('demand')" id="nav-demand"
+                        class="px-4 py-1.5 rounded-md text-[10px] font-bold text-gray-400 hover:text-white transition-all">DEMAND</button>
                     
                     <button onclick="switchView('dist')" id="nav-dist"
                         class="px-4 py-1.5 rounded-md text-[10px] font-bold text-gray-400 hover:text-white transition-all">
@@ -455,6 +458,43 @@
                     <div class="text-xs text-gray-500 uppercase font-bold tracking-widest mb-1">Total Cash Required</div>
                     <div class="text-5xl md:text-6xl font-mono font-bold text-green-400 tracking-tight drop-shadow-lg" id="calc-total">$0</div>
                     <div class="text-sm text-gray-500 mt-2 font-mono" id="calc-breakdown">0 batches @ $0/batch</div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <main id="view-demand" class="hidden flex-grow p-4 lg:p-6 max-w-[1800px] mx-auto w-full overflow-hidden flex gap-6">
+        
+        <div class="w-48 flex-none glass-panel rounded-xl flex flex-col overflow-hidden border border-gray-700/50">
+            <div class="p-3 border-b border-gray-700/50 bg-gray-900/30">
+                <h2 class="text-xs font-bold uppercase tracking-widest text-gray-400">Select Drug</h2>
+            </div>
+            <div class="flex-grow overflow-y-auto scroller p-2 space-y-1" id="demand-drug-list">
+                </div>
+        </div>
+
+        <div class="flex-grow flex flex-col h-full overflow-hidden">
+            
+            <div class="glass-panel flex-grow rounded-xl border border-gray-700/50 bg-gray-900/40 flex flex-col overflow-hidden">
+                <div class="bg-gray-800/50 border-b border-gray-700/50 p-4 flex justify-between items-center" id="demand-header-bg">
+                    <h2 class="text-2xl font-bold text-white tracking-tight" id="demand-title">Marijuana</h2>
+                    <span class="text-[10px] text-gray-500 uppercase tracking-widest bg-gray-950/50 px-2 py-1 rounded border border-gray-800">Main Demand Areas</span>
+                </div>
+                
+                <div class="flex-grow grid grid-cols-3 divide-x divide-gray-800 overflow-hidden">
+                    <div class="flex flex-col min-h-0 bg-gray-900/20">
+                        <div class="p-2 border-b border-gray-800 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Sector A</div>
+                        <div class="p-4 overflow-y-auto scroller space-y-2" id="sector-a-list"></div>
+                    </div>
+                    <div class="flex flex-col min-h-0 bg-gray-900/20">
+                        <div class="p-2 border-b border-gray-800 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Sector B</div>
+                        <div class="p-4 overflow-y-auto scroller space-y-2" id="sector-b-list"></div>
+                    </div>
+                    <div class="flex flex-col min-h-0 bg-gray-900/20">
+                        <div class="p-2 border-b border-gray-800 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Sector C</div>
+                        <div class="p-4 overflow-y-auto scroller space-y-2" id="sector-c-list"></div>
+                    </div>
                 </div>
             </div>
 
@@ -1293,6 +1333,7 @@
             renderGrowGrid(); // Initialize new view
             renderLabsGrid();
             initBatchCalc();
+            initDemandView();
 
             // Modal Listeners
             document.getElementById('seed-cost').addEventListener('input', updateModalCalc);
@@ -1308,14 +1349,16 @@
                 grow: document.getElementById('view-grow'),
                 labs: document.getElementById('view-labs'),
                 calc: document.getElementById('view-calc'), // NEW
-                dist: document.getElementById('view-dist')
+                dist: document.getElementById('view-dist'),
+                demand: document.getElementById('view-demand')
             };
             const btns = {
                 lab: document.getElementById('nav-lab'),
                 grow: document.getElementById('nav-grow'),
                 labs: document.getElementById('nav-labs'),
                 calc: document.getElementById('nav-calc'), // NEW
-                dist: document.getElementById('nav-dist')
+                dist: document.getElementById('nav-dist'),
+                demand: document.getElementById('nav-demand')
             };
 
             // 2. Hide All
@@ -3091,6 +3134,239 @@
 
             // 2. Fallback: Just get the heaviest item (e.g. if mixing only chemicals)
             return currentMix.reduce((prev, current) => (prev.amount > current.amount) ? prev : current).id;
+        }
+
+        // --- DEMAND / REQUEST RATES DATA ---
+        const demandData = {
+            marijuana: {
+                name: "Marijuana",
+                colorClass: "border-green-500/50",
+                sectors: {
+                    A: [
+                        { n: "East Oldtown", v: 150, c: "blue" }, { n: "West Oldtown", v: 130, c: "blue" },
+                        { n: "Two Towers", v: 100, c: "blue" }, { n: "Old Market", v: 100, c: "blue" },
+                        { n: "Stink", v: 130, c: "blue" }, { n: "Kennel", v: 130, c: "blue" },
+                        { n: "Eastern Slums", v: 170, c: "green" }, { n: "Camp", v: 150, c: "blue" }
+                    ],
+                    B: [
+                        { n: "Supermarket", v: 130, c: "purple" }, { n: "Downtown", v: 40, c: "red" },
+                        { n: "West Deadtown", v: 40, c: "red" }, { n: "Mid Deadtown", v: 30, c: "red" },
+                        { n: "East Deadtown", v: 30, c: "red" }
+                    ],
+                    C: [ { n: "No Demand", v: null, c: "red" } ]
+                }
+            },
+            amphetamine: {
+                name: "Amphetamine",
+                colorClass: "border-red-500/50",
+                sectors: {
+                    A: [
+                        { n: "East Oldtown", v: 100, c: "blue" }, { n: "West Oldtown", v: 120, c: "blue" },
+                        { n: "Two Towers", v: 160, c: "green" }, { n: "Old Market", v: 140, c: "blue" },
+                        { n: "Stink", v: 150, c: "blue" }, { n: "Kennel", v: 170, c: "green" },
+                        { n: "Eastern Slums", v: 130, c: "blue" }
+                    ],
+                    B: [
+                        { n: "Supermarket", v: 30, c: "red" }, { n: "Downtown", v: 60, c: "brown" },
+                        { n: "West Deadtown", v: 80, c: "brown" }, { n: "Mid Deadtown", v: 50, c: "brown" },
+                        { n: "East Deadtown", v: 20, c: "brown" }, { n: "Bad Asia", v: 140, c: "blue" }
+                    ],
+                    C: [ { n: "Tower Blocks", v: 70, c: "brown" } ]
+                }
+            },
+            ecstasy: {
+                name: "Ecstasy",
+                colorClass: "border-purple-500/50",
+                sectors: {
+                    A: [
+                        { n: "Two Towers", v: 120, c: "blue" }, { n: "Old Market", v: 40, c: "red" },
+                        { n: "Stink", v: 60, c: "brown" }, { n: "Kennel", v: 40, c: "red" }
+                    ],
+                    B: [
+                        { n: "Supermarket", v: 50, c: "red" }, { n: "West Deadtown", v: 80, c: "brown" },
+                        { n: "Bad Asia", v: 130, c: "blue" }
+                    ],
+                    C: [ { n: "Fancy Hill", v: 70, c: "brown" } ]
+                }
+            },
+            meth: {
+                name: "Crystal Meth",
+                colorClass: "border-blue-500/50",
+                sectors: {
+                    A: [
+                        { n: "Two Towers", v: 115, c: "blue" }, { n: "Stink", v: 30, c: "red" },
+                        { n: "Kennel", v: 30, c: "red" }, { n: "Eastern Slums", v: 30, c: "red" },
+                        { n: "Camp", v: 30, c: "red" }
+                    ],
+                    B: [
+                        { n: "Supermarket", v: 130, c: "blue" }, { n: "Downtown", v: 220, c: "green" },
+                        { n: "West Deadtown", v: 200, c: "green" }, { n: "Mid Deadtown", v: 190, c: "green" },
+                        { n: "East Deadtown", v: 220, c: "green" }, { n: "Bad Asia", v: 180, c: "green" }
+                    ],
+                    C: [
+                        { n: "Tower Blocks", v: 60, c: "brown" }, { n: "Construction", v: 50, c: "red" },
+                        { n: "Commune", v: 70, c: "brown" }, { n: "Factory North", v: 50, c: "red" }
+                    ]
+                }
+            },
+            heroin: {
+                name: "Heroin",
+                colorClass: "border-violet-500/50",
+                sectors: {
+                    A: [ { n: "Kennel", v: 20, c: "red" }, { n: "Eastern Slums", v: 20, c: "red" } ],
+                    B: [
+                        { n: "Supermarket", v: 60, c: "brown" }, { n: "Downtown", v: 30, c: "red" },
+                        { n: "Mid Deadtown", v: 50, c: "brown" }, { n: "East Deadtown", v: 70, c: "brown" },
+                        { n: "Bad Asia", v: 70, c: "brown" }
+                    ],
+                    C: [
+                        { n: "Tower Blocks", v: 100, c: "blue" }, { n: "Construction", v: 70, c: "brown" },
+                        { n: "Commune", v: 220, c: "green" }, { n: "Factory South", v: 120, c: "blue" },
+                        { n: "Factory North", v: 100, c: "blue" }
+                    ]
+                }
+            },
+            cocaine: {
+                name: "Cocaine",
+                colorClass: "border-orange-500/50",
+                sectors: {
+                    A: [ { n: "No Demand", v: null, c: "red" } ],
+                    B: [
+                        { n: "Downtown", v: 20, c: "red" }, { n: "West Deadtown", v: 40, c: "red" },
+                        { n: "Mid Deadtown", v: 30, c: "red" }, { n: "Bad Asia", v: 40, c: "red" }
+                    ],
+                    C: [
+                        { n: "Tower Blocks", v: 120, c: "blue" }, { n: "Construction", v: 120, c: "blue" },
+                        { n: "Fancy Hill", v: 300, c: "green" }, { n: "Commune", v: 140, c: "blue" },
+                        { n: "Factory South", v: 150, c: "blue" }, { n: "Factory North", v: 120, c: "blue" }
+                    ]
+                }
+            },
+            lsd: {
+                name: "LSD",
+                colorClass: "border-cyan-500/50",
+                sectors: {
+                    A: [ { n: "Two Towers", v: 50, c: "red" } ],
+                    B: [
+                        { n: "Supermarket", v: 60, c: "brown" }, { n: "Downtown", v: 50, c: "red" },
+                        { n: "West Deadtown", v: 60, c: "brown" }, { n: "East Deadtown", v: 60, c: "brown" },
+                        { n: "Bad Asia", v: 60, c: "brown" }
+                    ],
+                    C: [
+                        { n: "Tower Blocks", v: 40, c: "red" }, { n: "Construction", v: 50, c: "red" },
+                        { n: "Factory South", v: 60, c: "brown" }, { n: "Factory North", v: 60, c: "brown" }
+                    ]
+                }
+            },
+            shrooms: {
+                name: "Mushrooms",
+                colorClass: "border-yellow-700/50",
+                sectors: {
+                    A: [
+                        { n: "Two Towers", v: 50, c: "red" }, { n: "Old Market", v: 40, c: "red" },
+                        { n: "Stink", v: 60, c: "brown" }, { n: "Eastern Slums", v: 80, c: "brown" },
+                        { n: "Camp", v: 80, c: "brown" }
+                    ],
+                    B: [ { n: "East Deadtown", v: 70, c: "brown" } ],
+                    C: [
+                        { n: "Tower Blocks", v: 40, c: "red" }, { n: "Commune", v: 60, c: "brown" },
+                        { n: "Factory North", v: 60, c: "brown" }
+                    ]
+                }
+            },
+            dmt: {
+                name: "DMT",
+                colorClass: "border-amber-500/50",
+                sectors: {
+                    A: [ { n: "Eastern Slums", v: 80, c: "brown" }, { n: "Camp", v: 80, c: "brown" } ],
+                    B: [ { n: "East Deadtown", v: 70, c: "brown" }, { n: "Bad Asia", v: 80, c: "brown" } ],
+                    C: [ { n: "Fancy Hill", v: 50, c: "red" }, { n: "Commune", v: 70, c: "brown" } ]
+                }
+            }
+        };
+
+        function initDemandView() {
+            // 1. Render Sidebar Buttons
+            const list = document.getElementById('demand-drug-list');
+            list.innerHTML = '';
+            
+            Object.keys(demandData).forEach(key => {
+                const item = demandData[key];
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left px-3 py-2 rounded text-xs font-bold text-gray-400 hover:text-white hover:bg-gray-800 transition-colors uppercase";
+                btn.innerText = item.name;
+                btn.onclick = () => renderDemand(key);
+                list.appendChild(btn);
+            });
+
+            // 2. Load Default
+            renderDemand('marijuana');
+        }
+
+        function renderDemand(key) {
+            const data = demandData[key];
+            if (!data) return;
+
+            // 1. Update Simple Header
+            const titleEl = document.getElementById('demand-title');
+            titleEl.innerText = data.name;
+            
+            // Optional: Subtle border color change for the header background
+            const headerBg = document.getElementById('demand-header-bg');
+            // Remove old colors
+            headerBg.className = "bg-gray-800/50 border-b border-gray-700/50 p-4 flex justify-between items-center transition-colors duration-300";
+            // Add slight tint based on drug color (using the colorClass map from data)
+            if(data.colorClass) {
+                // Extract just the color part, e.g., "border-green-500/50" -> "border-green-500/20"
+                // Or just leave it standard gray for a cleaner look. 
+                // Let's add a subtle bottom border color:
+                headerBg.classList.add(data.colorClass); 
+            }
+
+            // 2. Render Sectors
+            const renderSector = (containerId, items) => {
+                const container = document.getElementById(containerId);
+                container.innerHTML = '';
+                
+                if(!items || items.length === 0) {
+                     container.innerHTML = `<div class="p-2 text-center text-[10px] text-gray-600 italic">No Demand</div>`;
+                     return;
+                }
+
+                const grid = document.createElement('div');
+                grid.className = "grid grid-cols-2 gap-2";
+
+                items.forEach(area => {
+                    const el = document.createElement('div');
+                    
+                    // Colors
+                    let colorStyle = "bg-gray-800 border-gray-700 text-gray-400"; 
+                    if(area.c === 'blue') colorStyle = "bg-sky-900/40 border-sky-700/50 text-sky-200";
+                    if(area.c === 'green') colorStyle = "bg-green-900/40 border-green-700/50 text-green-200";
+                    if(area.c === 'red') colorStyle = "bg-red-900/40 border-red-800/50 text-red-200";
+                    if(area.c === 'brown') colorStyle = "bg-orange-900/30 border-orange-800/50 text-orange-200";
+                    if(area.c === 'purple') colorStyle = "bg-purple-900/40 border-purple-800/50 text-purple-200";
+
+                    el.className = `rounded border p-2 text-center flex flex-col items-center justify-center ${colorStyle}`;
+                    
+                    if (area.v === null) {
+                         el.className = "col-span-2 rounded border border-red-900/50 bg-red-900/20 p-2 text-center text-red-400 text-xs font-bold";
+                         el.innerText = "No Demand";
+                    } else {
+                        el.innerHTML = `
+                            <div class="text-[9px] font-bold uppercase tracking-tight leading-none mb-1 opacity-80">${area.n}</div>
+                            <div class="text-sm font-mono font-bold leading-none">${area.v}%</div>
+                        `;
+                    }
+                    
+                    grid.appendChild(el);
+                });
+                container.appendChild(grid);
+            };
+
+            renderSector('sector-a-list', data.sectors.A);
+            renderSector('sector-b-list', data.sectors.B);
+            renderSector('sector-c-list', data.sectors.C);
         }
     </script>
 </body>
