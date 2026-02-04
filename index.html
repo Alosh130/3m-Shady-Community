@@ -181,9 +181,11 @@
                         class="px-4 py-1.5 rounded-md text-[10px] font-bold text-white bg-gray-700 shadow-sm transition-all">LABORATORY</button>
                     <button onclick="switchView('grow')" id="nav-grow"
                         class="px-4 py-1.5 rounded-md text-[10px] font-bold text-gray-400 hover:text-white transition-all">GROW ROOM</button>
-                    
                     <button onclick="switchView('labs')" id="nav-labs"
                         class="px-4 py-1.5 rounded-md text-[10px] font-bold text-gray-400 hover:text-white transition-all">LABS</button>
+                    
+                    <button onclick="switchView('calc')" id="nav-calc"
+                        class="px-4 py-1.5 rounded-md text-[10px] font-bold text-gray-400 hover:text-white transition-all">VAULT</button>
                     
                     <button onclick="switchView('dist')" id="nav-dist"
                         class="px-4 py-1.5 rounded-md text-[10px] font-bold text-gray-400 hover:text-white transition-all">
@@ -191,8 +193,6 @@
                         <span id="order-badge" class="hidden w-1.5 h-1.5 rounded-full bg-accent animate-pulse"></span>
                     </button>
                 </nav>
-
-                
             </div>
         </div>
     </header>
@@ -367,7 +367,9 @@
                         <h3 class="text-xs font-bold text-gray-300 uppercase tracking-widest">Financials</h3>
                         <div class="flex items-center bg-gray-950 rounded border border-gray-700 px-2 py-1">
                             <span class="text-[9px] text-gray-500 mr-2">SALE $/g</span>
-                            <input type="number" id="street-price" value="10" class="bg-transparent border-none text-right text-xs text-white font-mono w-10 p-0 focus:ring-0" onchange="updateCalculations()">
+                            <input type="number" id="street-price" value="0" placeholder="-" 
+                                class="bg-transparent border-none text-right text-xs text-white font-mono w-12 p-0 focus:ring-0 placeholder-gray-700" 
+                                oninput="savePrice()">
                         </div>
                     </div>
                     
@@ -411,6 +413,51 @@
                     <div class="overflow-y-auto scroller p-2 space-y-2" id="recipe-list"></div>
                 </div>
             </div>
+        </div>
+    </main>
+
+    <main id="view-calc" class="hidden flex-grow p-4 lg:p-6 max-w-[1800px] mx-auto w-full overflow-hidden flex flex-col items-center justify-center">
+        
+        <div class="glass-panel p-8 rounded-2xl border border-gray-700/50 bg-gray-900/60 shadow-2xl w-full max-w-2xl backdrop-blur-xl">
+            
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-white tracking-tight flex items-center justify-center gap-3">
+                    <svg class="w-8 h-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    Production Fund Calculator
+                </h2>
+                <p class="text-sm text-gray-400 mt-2">Calculate required vault cash for lab production queues.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div>
+                    <label class="block text-xs uppercase text-gray-500 font-bold mb-2">Select Lab Type</label>
+                    <select id="calc-drug" class="w-full bg-gray-950 border border-gray-700 rounded-xl p-4 text-white focus:border-green-500 focus:ring-1 focus:ring-green-500 outline-none appearance-none cursor-pointer transition-all hover:bg-gray-900" onchange="updateBatchCalc()">
+                        </select>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-gray-500 font-bold mb-2">Number of Batches</label>
+                    <div class="relative">
+                        <input type="number" id="calc-batches" value="1" min="1" class="w-full bg-gray-950 border border-gray-700 rounded-xl p-4 text-white font-mono font-bold focus:border-green-500 focus:ring-1 focus:ring-green-500 outline-none transition-all placeholder-gray-700" oninput="updateBatchCalc()">
+                        <div class="absolute right-4 top-1/2 -translate-y-1/2 flex gap-1">
+                            <button onclick="adjustBatches(1)" class="p-1 hover:bg-gray-800 rounded text-gray-400 hover:text-white transition-colors">+</button>
+                            <button onclick="adjustBatches(-1)" class="p-1 hover:bg-gray-800 rounded text-gray-400 hover:text-white transition-colors">-</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gray-950 rounded-xl p-6 border border-gray-800 relative overflow-hidden group">
+                <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                    <svg class="w-32 h-32 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" /></svg>
+                </div>
+                
+                <div class="relative z-10 text-center">
+                    <div class="text-xs text-gray-500 uppercase font-bold tracking-widest mb-1">Total Cash Required</div>
+                    <div class="text-5xl md:text-6xl font-mono font-bold text-green-400 tracking-tight drop-shadow-lg" id="calc-total">$0</div>
+                    <div class="text-sm text-gray-500 mt-2 font-mono" id="calc-breakdown">0 batches @ $0/batch</div>
+                </div>
+            </div>
+
         </div>
     </main>
 
@@ -1245,6 +1292,7 @@
             updateCalculations();
             renderGrowGrid(); // Initialize new view
             renderLabsGrid();
+            initBatchCalc();
 
             // Modal Listeners
             document.getElementById('seed-cost').addEventListener('input', updateModalCalc);
@@ -1258,25 +1306,27 @@
             const views = {
                 lab: document.getElementById('view-lab'),
                 grow: document.getElementById('view-grow'),
-                labs: document.getElementById('view-labs'), // NEW
+                labs: document.getElementById('view-labs'),
+                calc: document.getElementById('view-calc'), // NEW
                 dist: document.getElementById('view-dist')
             };
             const btns = {
                 lab: document.getElementById('nav-lab'),
                 grow: document.getElementById('nav-grow'),
-                labs: document.getElementById('nav-labs'), // NEW
+                labs: document.getElementById('nav-labs'),
+                calc: document.getElementById('nav-calc'), // NEW
                 dist: document.getElementById('nav-dist')
             };
 
             // 2. Hide All
             Object.values(views).forEach(el => {
-                if(el) {
+                if (el) {
                     el.classList.add('hidden');
                     el.classList.remove('flex');
                 }
             });
             Object.values(btns).forEach(el => {
-                if(el) {
+                if (el) {
                     el.classList.remove('bg-gray-700', 'text-white', 'shadow-sm');
                     el.classList.add('text-gray-400');
                 }
@@ -1285,7 +1335,7 @@
             // 3. Show Active
             if (views[view] && btns[view]) {
                 views[view].classList.remove('hidden');
-                views[view].classList.add('flex');
+                views[view].classList.add('flex'); // Important for centering
                 btns[view].classList.remove('text-gray-400');
                 btns[view].classList.add('bg-gray-700', 'text-white', 'shadow-sm');
             }
@@ -2012,6 +2062,24 @@
         }
 
         function updateCalculations() {
+            // --- NEW: AUTO-FILL PRICE LOGIC ---
+            const newBase = determineBaseDrug();
+            
+            // Only update the input if the drug CHANGED (prevents overwriting while typing)
+            if (newBase && newBase !== activeBaseId) {
+                activeBaseId = newBase;
+                
+                // Load saved price, or default to 0 if new
+                const savedPrice = drugPrices[activeBaseId];
+                const input = document.getElementById('street-price');
+                
+                if (savedPrice !== undefined) {
+                    input.value = savedPrice;
+                } else {
+                    // Optional: You could set a default based on the ingredient cost here
+                    // input.value = 10; 
+                }
+            }
             const stats = calculateStats();
 
             if (!stats || stats.mass === 0) {
@@ -2192,6 +2260,7 @@
             
             const totalDisp = document.getElementById('manifest-total-display');
             if(totalDisp) totalDisp.innerText = "0g";
+            activeBaseId = null;
         }
 
         function loadRecipe(index) {
@@ -2941,6 +3010,87 @@
                 `;
                 grid.appendChild(el);
             });
+        }
+
+        // --- BATCH CALCULATOR LOGIC ---
+        function initBatchCalc() {
+            const select = document.getElementById('calc-drug');
+            if (!select || typeof labsData === 'undefined') return;
+
+            select.innerHTML = '';
+            labsData.forEach((lab, index) => {
+                const opt = document.createElement('option');
+                opt.value = index; // Use index to grab data easily
+                // Show Name and Cost in the dropdown for clarity
+                opt.innerText = `${lab.name} ($${lab.small.cost.toLocaleString()}/batch)`;
+                select.appendChild(opt);
+            });
+            
+            // Set default and calc
+            select.value = 0;
+            updateBatchCalc();
+        }
+
+        function adjustBatches(delta) {
+            const input = document.getElementById('calc-batches');
+            let val = parseInt(input.value) || 0;
+            val += delta;
+            if (val < 1) val = 1;
+            input.value = val;
+            updateBatchCalc();
+        }
+
+        function updateBatchCalc() {
+            const idx = document.getElementById('calc-drug').value;
+            const count = parseInt(document.getElementById('calc-batches').value) || 0;
+            const totalDisplay = document.getElementById('calc-total');
+            const breakdownDisplay = document.getElementById('calc-breakdown');
+
+            if (typeof labsData === 'undefined' || !labsData[idx]) return;
+
+            const lab = labsData[idx];
+            // Cost per batch is consistent across sizes in your data
+            const costPerBatch = lab.small.cost; 
+            
+            const totalRequired = costPerBatch * count;
+
+            totalDisplay.innerText = '$' + totalRequired.toLocaleString();
+            breakdownDisplay.innerText = `${count} batches @ $${costPerBatch.toLocaleString()}/ea`;
+        }
+
+        // --- PRICE MEMORY SYSTEM ---
+        let drugPrices = JSON.parse(localStorage.getItem('dds_prices_v1')) || {};
+        let activeBaseId = null; // Tracks which drug is currently dominant
+
+        function savePrice() {
+            const input = document.getElementById('street-price');
+            const val = parseFloat(input.value);
+            
+            // If we have a detected base drug, save this price for it
+            if (activeBaseId && !isNaN(val)) {
+                drugPrices[activeBaseId] = val;
+                localStorage.setItem('dds_prices_v1', JSON.stringify(drugPrices));
+            }
+            
+            updateCalculations(); // Recalculate profits immediately
+        }
+
+        function determineBaseDrug() {
+            if (currentMix.length === 0) return null;
+            
+            // 1. Try to find the heaviest DRUG (type 'dope')
+            // This ensures 10g Amp + 100g Sugar is still treated as "Amphetamine" pricing
+            const drugs = currentMix.filter(m => {
+                const i = ingredients.find(x => x.id === m.id);
+                return i && i.type === 'dope';
+            });
+
+            if (drugs.length > 0) {
+                return drugs.reduce((prev, current) => (prev.amount > current.amount) ? prev : current).id;
+            }
+
+            // 2. Fallback: Just get the heaviest item (e.g. if mixing only chemicals)
+            return currentMix.reduce((prev, current) => (prev.amount > current.amount) ? prev : current).id;
         }
     </script>
 </body>
