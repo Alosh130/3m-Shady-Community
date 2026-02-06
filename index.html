@@ -4026,10 +4026,24 @@ function renderCompMix(target) {
     }
 
     list.forEach((item, idx) => {
-        const info = ingredients.find(i => i.id === item.id);
-        const name = info ? info.name : item.id;
-        const color = info ? info.color : '#fff';
-        
+        // --- FIX START ---
+        let name = item.id;
+        let color = '#fff';
+
+        if (item.isPremix) {
+            // 1. It's a Premix: Use its own properties
+            name = item.name || "Unknown Premix";
+            color = item.color || '#fbbf24'; 
+        } else {
+            // 2. It's an Ingredient: Look up in database
+            const info = ingredients.find(i => i.id === item.id);
+            if (info) {
+                name = info.name;
+                color = info.color;
+            }
+        }
+        // --- FIX END ---
+
         const row = document.createElement('div');
         row.className = "bg-gray-800/50 border border-gray-700/50 rounded p-2 mb-2";
         row.innerHTML = `
@@ -4088,7 +4102,7 @@ function updateCompAnalysis() {
         if (mix.length === 0) return null;
         const oldMix = currentMix;
         currentMix = mix;
-        const stats = calculateStats(); // Uses dynamicCost for accuracy
+        const stats = calculateStats();
         currentMix = oldMix;
         return stats;
     };
@@ -4096,21 +4110,61 @@ function updateCompAnalysis() {
     const sA = calc(compMixA);
     const sB = calc(compMixB);
     
-    // 2. Determine Base Drug & Sale Price
+    // 2. Determine Base Drug ID (The heaviest item)
     const baseA = getMixBaseId(compMixA);
     const baseB = getMixBaseId(compMixB);
 
-    // Load user saved prices from Laboratory (or 0 if not set)
-    const pricePerGA = (baseA && drugPrices[baseA]) ? parseFloat(drugPrices[baseA]) : 0;
-    const pricePerGB = (baseB && drugPrices[baseB]) ? parseFloat(drugPrices[baseB]) : 0;
+    // --- FIX 1: NAME RESOLVER ---
+    // Checks Ingredients first, then Saved Premixes
+    const resolveName = (id) => {
+        if (!id) return "N/A";
+        // Try Standard Ingredients
+        const ing = ingredients.find(i => i.id === id);
+        if (ing) return ing.name;
+        // Try Saved Premixes
+        const pmx = savedPremixes.find(p => p.id === id);
+        if (pmx) return pmx.name;
+        // Fallback
+        return id;
+    };
 
-    // 3. Calculate Financials (Batch Totals)
-    // A
+    const nameA = resolveName(baseA);
+    const nameB = resolveName(baseB);
+
+    // --- FIX 2: SMART PRICE LOOKUP ---
+    // If the base item is a Premix, we need to find ITS real drug to get the price
+    const getRealPrice = (id) => {
+        if (!id) return 0;
+        
+        // 1. Direct Lookup (e.g. 'amphetamine')
+        if (drugPrices[id]) return parseFloat(drugPrices[id]);
+        
+        // 2. Premix Lookup (e.g. 'premix_123' -> contains 'amphetamine')
+        if (id.startsWith('premix_')) {
+            const pmx = savedPremixes.find(p => p.id === id);
+            // If we found the premix, look at its composition to find the drug
+            if (pmx && pmx.composition) {
+                const drugItem = pmx.composition.find(c => {
+                    const i = ingredients.find(x => x.id === c.id);
+                    return i && i.type === 'dope';
+                });
+                // If we found the underlying drug (e.g. amphetamine), return THAT price
+                if (drugItem && drugPrices[drugItem.id]) {
+                    return parseFloat(drugPrices[drugItem.id]);
+                }
+            }
+        }
+        return 0;
+    };
+
+    const pricePerGA = getRealPrice(baseA);
+    const pricePerGB = getRealPrice(baseB);
+
+    // 3. Calculate Financials
     const revA = sA ? (sA.mass * pricePerGA) : 0;
     const profA = sA ? (revA - sA.cost) : 0;
     const profPerGA = sA && sA.mass > 0 ? (profA / sA.mass) : 0;
     
-    // B
     const revB = sB ? (sB.mass * pricePerGB) : 0;
     const profB = sB ? (revB - sB.cost) : 0;
     const profPerGB = sB && sB.mass > 0 ? (profB / sB.mass) : 0;
@@ -4175,7 +4229,7 @@ function updateCompAnalysis() {
         container.appendChild(row);
     };
 
-    // --- RENDER ROWS ---
+    // Render Stats
     renderRow("Strength", sA?.finalStr, sB?.finalStr, 'high', 'num', 'text-str');
     renderRow("Addiction", sA?.finalAdct, sB?.finalAdct, 'high', 'num', 'text-adct');
     renderRow("Toxicity", sA?.finalTox, sB?.finalTox, 'low', 'num', 'text-tox');
@@ -4184,17 +4238,13 @@ function updateCompAnalysis() {
     hr.className = "h-px bg-gray-800/50 my-2";
     container.appendChild(hr);
 
-    // Financials
-    renderRow("Total Profit", profA, profB, 'high', 'money', 'text-green-400'); // Batch Profit
-    renderRow("Profit / g", profPerGA, profPerGB, 'high', 'money', 'text-gray-500'); // Efficiency
+    renderRow("Total Profit", profA, profB, 'high', 'money', 'text-green-400');
+    renderRow("Profit / g", profPerGA, profPerGB, 'high', 'money', 'text-gray-500');
 
-    // --- 5. PROFIT DIFFERENCE CARD (TOTAL BATCH) ---
-    // Compare Absolute Total Profit as requested
+    // --- Footer Card ---
     const deltaTotal = profB - profA;
     
-    // Update display text (A vs B)
-    const nameA = baseA ? (ingredients.find(i=>i.id===baseA)?.name || baseA) : "N/A";
-    const nameB = baseB ? (ingredients.find(i=>i.id===baseB)?.name || baseB) : "N/A";
+    // Updated HTML using the resolved names
     profitRawEl.innerHTML = `
         <span class="text-blue-400">${nameA}: $${profA.toFixed(0)}</span> vs 
         <span class="text-purple-400">${nameB}: $${profB.toFixed(0)}</span>
@@ -4220,7 +4270,7 @@ function updateCompAnalysis() {
         profitCard.className = "bg-red-900/10 border border-red-500/30 rounded-lg p-3 text-center";
     }
     
-    // Sale Price Check Warning
+    // Warn if price is 0
     if(sA && pricePerGA === 0) profitLabelEl.innerHTML += "<br><span class='text-orange-400'>Set Sale Price for A in Lab</span>";
     if(sB && pricePerGB === 0) profitLabelEl.innerHTML += "<br><span class='text-orange-400'>Set Sale Price for B in Lab</span>";
 }
