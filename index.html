@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DDS Architect v7.7 (Premix Stats Added)</title>
+    <title>DDS Architect v7.8 (Compare Tab Added)</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -170,7 +170,7 @@
                 <div>
                     <h1 class="text-lg font-bold tracking-tight text-white leading-none">DDS <span
                             class="text-accent">Architect</span></h1>
-                    <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Premix Stats Added v7.7</span>
+                    <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Compare Tab Added v7.8</span>
                 </div>
             </div>
 
@@ -189,6 +189,9 @@
 
                     <button onclick="switchView('demand')" id="nav-demand"
                         class="px-4 py-1.5 rounded-md text-[10px] font-bold text-gray-400 hover:text-white transition-all">DEMAND</button>
+
+                        <button onclick="switchView('compare')" id="nav-compare"
+                        class="px-4 py-1.5 rounded-md text-[10px] font-bold text-gray-400 hover:text-white transition-all flex items-center gap-2">COMPARE</button>
                     
                     <button onclick="switchView('dist')" id="nav-dist"
                         class="px-4 py-1.5 rounded-md text-[10px] font-bold text-gray-400 hover:text-white transition-all">
@@ -530,6 +533,99 @@
 
         </div>
     </main>
+
+    <main id="view-compare" class="hidden flex-grow p-4 lg:p-6 max-w-[1800px] mx-auto w-full overflow-hidden gap-6">
+    
+    <div class="w-72 glass-panel rounded-xl flex flex-col overflow-hidden border border-gray-700/50 flex-none bg-gray-900/40">
+        <div class="p-3 border-b border-gray-700/50 bg-gray-900/50">
+            <h2 class="text-xs font-bold uppercase tracking-widest text-gray-400">Ingredients</h2>
+        </div>
+        
+        <div class="p-2 border-b border-gray-800 bg-gray-900/20">
+            <input type="text" id="comp-pantry-search" placeholder="Search..." 
+                class="w-full bg-gray-950 border border-gray-800 rounded px-2 py-1 text-[10px] text-white focus:border-accent outline-none"
+                onkeyup="renderCompPantry()">
+        </div>
+
+        <div class="flex p-1 gap-1 bg-gray-950 border-b border-gray-800 flex-wrap">
+            <button onclick="filterCompPantry('dope')" data-comp-tab="dope" 
+                class="flex-1 py-1.5 text-[9px] uppercase font-bold rounded bg-gray-800 text-white border border-gray-700 shadow-sm transition-all">Drugs</button>
+            <button onclick="filterCompPantry('active')" data-comp-tab="active" 
+                class="flex-1 py-1.5 text-[9px] uppercase font-bold rounded text-gray-500 border border-transparent hover:text-gray-300 transition-all">Additives</button>
+            <button onclick="filterCompPantry('filler')" data-comp-tab="filler" 
+                class="flex-1 py-1.5 text-[9px] uppercase font-bold rounded text-gray-500 border border-transparent hover:text-gray-300 transition-all">Fillers</button>
+            <button onclick="filterCompPantry('premix')" data-comp-tab="premix" 
+                class="flex-1 py-1.5 text-[9px] uppercase font-bold rounded text-yellow-600/70 border border-transparent hover:text-yellow-500 transition-all">Premix</button>
+        </div>
+
+        <div id="comp-pantry-list" class="flex-grow overflow-y-auto scroller p-2 space-y-1">
+            </div>
+    </div>
+
+    <div class="flex-grow flex flex-col gap-4 min-w-0">
+        
+        <div onclick="setCompTarget('A')" id="panel-mix-a" class="flex-1 glass-panel rounded-xl border-2 border-blue-500/50 bg-gray-900/20 flex flex-col overflow-hidden relative transition-all shadow-[0_0_15px_rgba(59,130,246,0.1)]">
+            <div class="p-2 border-b border-gray-700/50 bg-gray-900/50 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_5px_#3b82f6]"></div>
+                    <span class="text-xs font-bold text-blue-400 uppercase tracking-wider">Mix A (Baseline)</span>
+                </div>
+                <button onclick="clearCompMix('A')" class="text-[9px] text-gray-600 hover:text-red-400 font-bold uppercase">Clear</button>
+            </div>
+            
+            <div id="list-mix-a" class="flex-grow overflow-y-auto scroller p-2 space-y-2">
+                </div>
+            
+            <div id="overlay-mix-a" class="hidden absolute inset-0 bg-black/60 z-10 flex items-center justify-center cursor-pointer hover:bg-black/50 transition-colors backdrop-blur-sm">
+                <span class="text-xs font-bold text-gray-400 border border-gray-600 px-3 py-1 rounded-full">Click to Edit</span>
+            </div>
+        </div>
+
+        <div onclick="setCompTarget('B')" id="panel-mix-b" class="flex-1 glass-panel rounded-xl border border-gray-800 bg-gray-900/20 flex flex-col overflow-hidden relative transition-all opacity-80 hover:opacity-100">
+            <div class="p-2 border-b border-gray-700/50 bg-gray-900/50 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-purple-500 shadow-[0_0_5px_#a855f7]"></div>
+                    <span class="text-xs font-bold text-purple-400 uppercase tracking-wider">Mix B (Challenger)</span>
+                </div>
+                <button onclick="clearCompMix('B')" class="text-[9px] text-gray-600 hover:text-red-400 font-bold uppercase">Clear</button>
+            </div>
+
+            <div id="list-mix-b" class="flex-grow overflow-y-auto scroller p-2 space-y-2">
+                </div>
+
+            <div id="overlay-mix-b" class="absolute inset-0 bg-black/60 z-10 flex items-center justify-center cursor-pointer hover:bg-black/50 transition-colors backdrop-blur-sm">
+                <span class="text-xs font-bold text-gray-400 border border-gray-600 px-3 py-1 rounded-full">Click to Edit</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="w-80 glass-panel rounded-xl flex flex-col border border-gray-700/50 flex-none bg-gray-900/40">
+        <div class="p-3 border-b border-gray-700/50 bg-gray-900/50 flex justify-between items-center">
+            <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400">Live Showdown</h3>
+            <span class="text-[9px] bg-gray-900 border border-gray-700 px-1.5 rounded text-gray-500">Real-time</span>
+        </div>
+        
+        <div class="flex justify-between px-4 py-2 text-[9px] font-bold uppercase border-b border-gray-800/50">
+            <span class="text-blue-400">Mix A (Base)</span>
+            <span class="text-purple-400">Mix B (New)</span>
+        </div>
+
+        <div id="comp-analysis-content" class="flex-grow p-3 space-y-3 overflow-y-auto scroller">
+            <div class="text-center text-[10px] text-gray-600 italic py-10">Add ingredients to compare</div>
+        </div>
+
+        <div class="p-4 border-t border-gray-700/50 bg-gray-900/50">
+            <div class="flex justify-between items-center mb-1">
+                <span class="text-[10px] text-gray-500 uppercase font-bold">Profit Difference</span>
+                <span class="text-[10px] text-gray-500" id="comp-profit-raw">($0 vs $0)</span>
+            </div>
+            <div id="comp-profit-card" class="bg-gray-950 border border-gray-800 rounded-lg p-3 text-center transition-all">
+                <div class="text-xl font-mono font-bold text-gray-600" id="comp-profit-delta">$0.00</div>
+                <div class="text-[9px] text-gray-500 mt-1 uppercase tracking-wider" id="comp-profit-label">No Change</div>
+            </div>
+        </div>
+    </div>
+</main>
 
     <main id="view-grow" class="hidden flex-grow p-4 lg:p-6 max-w-[1800px] mx-auto w-full overflow-hidden flex flex-col">
         <div class="glass-panel p-6 rounded-xl border border-gray-700/50 bg-gray-900/40 shadow-2xl h-full flex flex-col">
@@ -1385,7 +1481,8 @@
                 labs: document.getElementById('view-labs'),
                 calc: document.getElementById('view-calc'), // NEW
                 dist: document.getElementById('view-dist'),
-                demand: document.getElementById('view-demand')
+                demand: document.getElementById('view-demand'),
+                compare: document.getElementById('view-compare')
             };
             const btns = {
                 lab: document.getElementById('nav-lab'),
@@ -1393,7 +1490,8 @@
                 labs: document.getElementById('nav-labs'),
                 calc: document.getElementById('nav-calc'), // NEW
                 dist: document.getElementById('nav-dist'),
-                demand: document.getElementById('nav-demand')
+                demand: document.getElementById('nav-demand'),
+                compare: document.getElementById('nav-compare')
             };
 
             // 2. Hide All
@@ -1521,51 +1619,51 @@
         }
         // --- PREMIX LOGIC (v6.1) ---
         function savePremix() {
-            if (currentMix.length === 0) {
-                showToast("Cannot save empty mix!", "error");
-                return;
-            }
-            
-            // 1. Calculate Stats
-            const stats = calculateStats();
-            
-            if (!stats || isNaN(stats.avgStr) || isNaN(stats.finalTox)) {
-                showToast("Error: Calculation failed (NaN). Check your mix.", "error");
-                return;
-            }
+    if (currentMix.length === 0) {
+        showToast("Cannot save empty mix!", "error");
+        return;
+    }
+    
+    const stats = calculateStats();
+    
+    if (!stats || isNaN(stats.avgStr) || isNaN(stats.finalTox)) {
+        showToast("Error: Calculation failed (NaN). Check your mix.", "error");
+        return;
+    }
 
-            const name = prompt("Name this premix:");
-            if (!name) return;
+    const name = prompt("Name this premix:");
+    if (!name) return;
 
-            const newPremix = {
-                id: 'premix_' + Date.now(),
-                name: name,
-                type: 'premix',
-                stats: {
-                    str: Number(stats.avgStr) || 0,
-                    mixStr: Number(stats.avgMixStr) || 1,
-                    tox: Number(stats.finalTox) || 0,
-                    adct: Number(stats.finalAdct) || 0
-                },
-                costPerG: stats.mass > 0 ? stats.cost / stats.mass : 0,
-                color: '#fbbf24',
-                form: 'mix',
-                isPremix: true,
-                // === FIX: Save 'amount' here so the tooltip can see it ===
-                composition: currentMix.map(item => ({
-                    id: item.id,
-                    amount: item.amount, // <--- This was missing!
-                    ratio: item.amount / stats.mass,
-                    isWet: item.isWet
-                }))
-            };
+    const newPremix = {
+        id: 'premix_' + Date.now(),
+        name: name,
+        type: 'premix',
+        stats: {
+            str: Number(stats.avgStr) || 0,
+            mixStr: Number(stats.avgMixStr) || 1,
+            tox: Number(stats.finalTox) || 0,
+            adct: Number(stats.finalAdct) || 0
+        },
+        costPerG: stats.mass > 0 ? stats.cost / stats.mass : 0,
+        color: '#fbbf24',
+        form: 'mix',
+        isPremix: true,
+        composition: currentMix.map(item => ({
+            id: item.id,
+            amount: item.amount,
+            ratio: item.amount / stats.mass,
+            isWet: item.isWet,
+            // === FIX: Save the exact price (e.g. Homegrown cost) ===
+            savedCost: item.dynamicCost 
+        }))
+    };
 
-            savedPremixes.push(newPremix);
-            localStorage.setItem('dds_premixes_v3', JSON.stringify(savedPremixes));
-            
-            showToast(`Saved "${name}" successfully!`, "success");
-            filterPantry('premix');
-        }
+    savedPremixes.push(newPremix);
+    localStorage.setItem('dds_premixes_v3', JSON.stringify(savedPremixes));
+    
+    showToast(`Saved "${name}" successfully!`, "success");
+    filterPantry('premix');
+}
 
         function loadPremixes() {
             try {
@@ -3692,6 +3790,502 @@ function hideDebugTooltip() {
     const t = document.getElementById('debug-tooltip');
     if(t) t.style.display = 'none';
 }
+
+// ==========================================
+// DUAL LAB COMPARISON LOGIC
+// ==========================================
+let compMixA = [];
+let compMixB = [];
+let activeCompTarget = 'A'; // 'A' or 'B'
+let compPantryType = 'dope';
+
+function initCompareView() {
+    renderCompPantry();
+    renderCompMix('A');
+    renderCompMix('B');
+    updateCompAnalysis();
+}
+
+// --- 1. SELECTION & PANTRY ---
+function setCompTarget(target) {
+    activeCompTarget = target;
+    
+    // Visual Updates (Highlight active panel)
+    const panelA = document.getElementById('panel-mix-a');
+    const panelB = document.getElementById('panel-mix-b');
+    const overA = document.getElementById('overlay-mix-a');
+    const overB = document.getElementById('overlay-mix-b');
+
+    if (target === 'A') {
+        panelA.className = "flex-1 glass-panel rounded-xl border-2 border-blue-500/50 bg-gray-900/20 flex flex-col overflow-hidden relative shadow-[0_0_15px_rgba(59,130,246,0.1)]";
+        panelB.className = "flex-1 glass-panel rounded-xl border border-gray-800 bg-gray-900/20 flex flex-col overflow-hidden relative opacity-60";
+        overA.classList.add('hidden');
+        overB.classList.remove('hidden');
+    } else {
+        panelA.className = "flex-1 glass-panel rounded-xl border border-gray-800 bg-gray-900/20 flex flex-col overflow-hidden relative opacity-60";
+        panelB.className = "flex-1 glass-panel rounded-xl border-2 border-purple-500/50 bg-gray-900/20 flex flex-col overflow-hidden relative shadow-[0_0_15px_rgba(168,85,247,0.1)]";
+        overA.classList.remove('hidden');
+        overB.classList.add('hidden');
+    }
+}
+
+function filterCompPantry(type) {
+    compPantryType = type;
+    
+    // Update Tab Styles
+    document.querySelectorAll('[data-comp-tab]').forEach(el => {
+        el.className = "flex-1 py-1.5 text-[9px] uppercase font-bold rounded text-gray-500 border border-transparent hover:text-gray-300 transition-all";
+        
+        // Restore specific text colors for inactive tabs
+        if(el.innerText === 'PREMIX') el.classList.add('text-yellow-600/70', 'hover:text-yellow-500');
+    });
+
+    const activeBtn = document.querySelector(`[data-comp-tab="${type}"]`);
+    if (activeBtn) {
+        activeBtn.className = "flex-1 py-1.5 text-[9px] uppercase font-bold rounded bg-gray-800 text-white border border-gray-700 shadow-sm transition-all";
+        if(type === 'premix') activeBtn.classList.add('text-yellow-500');
+    }
+
+    renderCompPantry();
+}
+
+function renderCompPantry() {
+    const list = document.getElementById('comp-pantry-list');
+    const term = document.getElementById('comp-pantry-search').value.toLowerCase();
+    list.innerHTML = '';
+
+    let items = [];
+
+    // A. Handle Premixes
+    if (compPantryType === 'premix') {
+        if (savedPremixes.length === 0) {
+            list.innerHTML = `<div class="text-[10px] text-gray-600 italic text-center py-4">No saved mixes found</div>`;
+            return;
+        }
+        items = savedPremixes.filter(p => p.name.toLowerCase().includes(term));
+    } 
+    // B. Handle Normal Ingredients
+    else {
+        items = ingredients.filter(i => {
+            if (compPantryType === 'active') return ['active', 'solvent'].includes(i.type);
+            return i.type === compPantryType;
+        }).filter(i => i.name.toLowerCase().includes(term));
+    }
+
+    items.forEach(item => {
+        const row = document.createElement('div');
+        row.className = "flex flex-col p-2 rounded hover:bg-gray-800 border border-transparent hover:border-gray-700 group transition-all mb-1";
+        
+        // --- 1. BUILD SOURCE SELECTOR FROM VARIABLES ---
+        let sourceSelect = "";
+        const model = pricingModels[item.id]; // Access your prefilled variables
+        
+        if (model && compPantryType !== 'premix') {
+            let opts = "";
+            // Handle both 'complex' (Weed) and 'simple' (Powders) models
+            const optionsList = (model.type === 'complex') ? model.base : model.options;
+            
+            optionsList.forEach(opt => {
+                opts += `<option value="${opt.cost}">${opt.label} ($${opt.cost})</option>`;
+            });
+
+            // Add Homegrown Strains for Weed
+            if (item.id === 'marijuana') {
+                opts += `<option disabled>── Homegrown ──</option>`;
+                Object.values(strainsData).forEach(s => {
+                    const cost = s.cost / s.dry;
+                    opts += `<option value="${cost}">${s.name} ($${cost.toFixed(2)})</option>`;
+                });
+            }
+
+            // The Select Element (Stops click propagation so you can select without adding)
+            sourceSelect = `
+                <select id="pantry-src-${item.id}" onclick="event.stopPropagation()" 
+                    class="w-full mt-1.5 bg-gray-950 border border-gray-700 rounded text-[9px] text-gray-400 py-0.5 px-1 outline-none focus:border-blue-500 focus:text-white transition-colors cursor-pointer">
+                    ${opts}
+                </select>
+            `;
+        }
+
+        // --- STATS BADGES ---
+        let statsHtml = "";
+        if (compPantryType === 'premix') {
+            const s = item.stats || { str: 0, tox: 0, adct: 0 };
+            statsHtml = `<span class="text-str">S:${s.str.toFixed(1)}</span> <span class="text-tox">T:${s.tox.toFixed(1)}</span>`;
+        } else {
+            statsHtml = `<span class="${item.str > 0 ? 'text-str' : 'text-gray-600'}">S:${item.str}</span> <span class="${item.tox > 0 ? 'text-tox' : 'text-gray-600'}">T:${item.tox}</span>`;
+        }
+
+        row.innerHTML = `
+            <div class="flex justify-between items-center cursor-pointer" onclick="addToCompMix('${item.id}')">
+                <div class="flex items-center gap-3">
+                    <div class="w-1.5 h-8 rounded-full shadow-[0_0_8px_currentColor]" style="color: ${item.color}; background-color: ${item.color}"></div>
+                    <div>
+                        <div class="text-[10px] font-bold text-gray-300 group-hover:text-white transition-colors">${item.name}</div>
+                        <div class="flex gap-1.5 mt-0.5 font-mono text-[9px]">
+                            ${statsHtml}
+                        </div>
+                    </div>
+                </div>
+                <button class="w-5 h-5 rounded flex items-center justify-center bg-gray-900 text-gray-500 group-hover:bg-accent group-hover:text-white transition-all text-[10px] font-bold shadow">+</button>
+            </div>
+            ${sourceSelect}
+        `;
+        list.appendChild(row);
+    });
+}
+
+// --- 2. MIX EDITING (Dual Lab) ---
+function addToCompMix(id) {
+    const targetArray = (activeCompTarget === 'A') ? compMixA : compMixB;
+    
+    // A. Handle Premix
+    if (id.startsWith('premix_')) {
+        const pmx = savedPremixes.find(p => p.id === id);
+        if (pmx) {
+            targetArray.push({
+                id: pmx.id,
+                name: pmx.name,
+                amount: 10,
+                isPremix: true,
+                stats: pmx.stats,
+                costPerG: pmx.costPerG || 0,
+                savedCost: pmx.costPerG, 
+                color: pmx.color
+            });
+        }
+    } 
+    // B. Handle Ingredient (Read Source Dropdown)
+    else {
+        const itemData = ingredients.find(i => i.id === id);
+        
+        // 1. Default to standard DB cost
+        let selectedCost = itemData.cost;
+
+        // 2. Check if a source dropdown exists for this item
+        const selectEl = document.getElementById(`pantry-src-${id}`);
+        if (selectEl) {
+            // Read the user's selection (e.g., Small Lab price)
+            selectedCost = parseFloat(selectEl.value);
+        }
+
+        targetArray.push({
+            id: id,
+            amount: id === 'acetone' ? 1 : 10,
+            dynamicCost: selectedCost // <--- Uses your selected source!
+        });
+    }
+
+    renderCompMix(activeCompTarget);
+    updateCompAnalysis();
+}
+
+function updateCompAmount(target, index, val) {
+    const list = (target === 'A') ? compMixA : compMixB;
+    const item = list[index];
+    
+    let v = parseFloat(val);
+    if (isNaN(v) || v < 0) v = 0;
+    
+    // Acetone Lock
+    if (item.id === 'acetone') v = 1;
+    
+    item.amount = v;
+    
+    // Sync inputs
+    const slider = document.getElementById(`comp-slider-${target}-${index}`);
+    const input = document.getElementById(`comp-input-${target}-${index}`);
+    if(slider) slider.value = v;
+    if(input) input.value = v;
+
+    updateCompAnalysis();
+}
+
+function removeCompItem(target, index) {
+    const list = (target === 'A') ? compMixA : compMixB;
+    list.splice(index, 1);
+    renderCompMix(target);
+    updateCompAnalysis();
+}
+
+function clearCompMix(target) {
+    if (target === 'A') compMixA = [];
+    else compMixB = [];
+    renderCompMix(target);
+    updateCompAnalysis();
+}
+
+function renderCompMix(target) {
+    const list = (target === 'A') ? compMixA : compMixB;
+    const container = document.getElementById(`list-mix-${target.toLowerCase()}`);
+    container.innerHTML = '';
+
+    if (list.length === 0) {
+        container.innerHTML = `<div class="text-center text-[10px] text-gray-600 italic py-4">Add ingredients from left</div>`;
+        return;
+    }
+
+    list.forEach((item, idx) => {
+        const info = ingredients.find(i => i.id === item.id);
+        const name = info ? info.name : item.id;
+        const color = info ? info.color : '#fff';
+        
+        const row = document.createElement('div');
+        row.className = "bg-gray-800/50 border border-gray-700/50 rounded p-2 mb-2";
+        row.innerHTML = `
+            <div class="flex justify-between items-center mb-1">
+                <div class="flex items-center gap-2">
+                    <div class="w-1.5 h-1.5 rounded-full" style="background-color: ${color}"></div>
+                    <span class="text-[10px] font-bold text-gray-300">${name}</span>
+                </div>
+                <button onclick="removeCompItem('${target}', ${idx})" class="text-[9px] text-gray-600 hover:text-red-400 font-bold uppercase">X</button>
+            </div>
+            <div class="flex items-center gap-2">
+                <input type="range" min="0" max="500" value="${item.amount}" 
+                    class="flex-grow h-1 bg-gray-900 rounded-lg cursor-pointer slider-thumb"
+                    oninput="updateCompAmount('${target}', ${idx}, this.value)">
+                <div class="relative">
+                    <input type="number" value="${Math.round(item.amount*100)/100}" 
+                        class="w-12 bg-gray-950 border border-gray-700 rounded px-1 py-0.5 text-right text-[10px] font-mono text-white focus:border-blue-500 outline-none"
+                        oninput="updateCompAmount('${target}', ${idx}, this.value)">
+                    <span class="absolute -top-1.5 right-0 text-[8px] text-gray-600 pointer-events-none">g</span>
+                </div>
+            </div>
+        `;
+        container.appendChild(row);
+    });
+}
+
+// Helper to save the manually edited cost
+function updateCompCost(target, index, val) {
+    const list = (target === 'A') ? compMixA : compMixB;
+    const item = list[index];
+    let v = parseFloat(val);
+    if (isNaN(v) || v < 0) v = 0;
+    
+    item.dynamicCost = v;
+    updateCompAnalysis(); // Recalculate immediately
+}
+
+// Helper to handle the new cost input
+function updateCompCost(target, index, val) {
+    const list = (target === 'A') ? compMixA : compMixB;
+    const item = list[index];
+    let v = parseFloat(val);
+    if (isNaN(v) || v < 0) v = 0;
+    
+    item.dynamicCost = v;
+    updateCompAnalysis(); // Recalculate immediately
+}
+
+// --- 3. ANALYSIS TABLE (The Math) ---
+// --- 3. ENHANCED ANALYSIS RENDERING ---
+// --- 3. ENHANCED ANALYSIS RENDERING (With Proper Colors) ---
+// --- 3. ENHANCED ANALYSIS RENDERING (Smart Profit Logic) ---
+function updateCompAnalysis() {
+    // 1. Calculate Stats (Mass & Total Cost)
+    const calc = (mix) => {
+        if (mix.length === 0) return null;
+        const oldMix = currentMix;
+        currentMix = mix;
+        const stats = calculateStats(); // Uses dynamicCost for accuracy
+        currentMix = oldMix;
+        return stats;
+    };
+
+    const sA = calc(compMixA);
+    const sB = calc(compMixB);
+    
+    // 2. Determine Base Drug & Sale Price
+    const baseA = getMixBaseId(compMixA);
+    const baseB = getMixBaseId(compMixB);
+
+    // Load user saved prices from Laboratory (or 0 if not set)
+    const pricePerGA = (baseA && drugPrices[baseA]) ? parseFloat(drugPrices[baseA]) : 0;
+    const pricePerGB = (baseB && drugPrices[baseB]) ? parseFloat(drugPrices[baseB]) : 0;
+
+    // 3. Calculate Financials (Batch Totals)
+    // A
+    const revA = sA ? (sA.mass * pricePerGA) : 0;
+    const profA = sA ? (revA - sA.cost) : 0;
+    const profPerGA = sA && sA.mass > 0 ? (profA / sA.mass) : 0;
+    
+    // B
+    const revB = sB ? (sB.mass * pricePerGB) : 0;
+    const profB = sB ? (revB - sB.cost) : 0;
+    const profPerGB = sB && sB.mass > 0 ? (profB / sB.mass) : 0;
+
+    // 4. Render UI
+    const container = document.getElementById('comp-analysis-content');
+    const profitCard = document.getElementById('comp-profit-card');
+    const profitDeltaEl = document.getElementById('comp-profit-delta');
+    const profitLabelEl = document.getElementById('comp-profit-label');
+    const profitRawEl = document.getElementById('comp-profit-raw');
+
+    container.innerHTML = '';
+
+    if (!sA && !sB) {
+        container.innerHTML = `<div class="text-center text-[10px] text-gray-600 italic py-10">Add ingredients to compare</div>`;
+        profitDeltaEl.innerText = "$0.00";
+        profitCard.className = "bg-gray-950 border border-gray-800 rounded-lg p-3 text-center";
+        return;
+    }
+
+    // Row Renderer
+    const renderRow = (label, valA, valB, type = 'high', format = 'num', labelColor = 'text-gray-500') => {
+        const vA = valA || 0;
+        const vB = valB || 0;
+        const diff = vB - vA;
+        let winner = 'tie';
+        if (Math.abs(diff) > 0.01) {
+            if (type === 'high') winner = diff > 0 ? 'B' : 'A';
+            else winner = diff < 0 ? 'B' : 'A';
+        }
+        
+        const txtA = format === 'money' ? `$${vA.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}` : vA.toFixed(2);
+        const txtB = format === 'money' ? `$${vB.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}` : vB.toFixed(2);
+        
+        const colorA = winner === 'A' ? (type === 'low' ? 'text-green-400' : 'text-blue-400') : 'text-gray-600';
+        const colorB = winner === 'B' ? (type === 'low' ? 'text-green-400' : 'text-purple-400') : 'text-gray-600';
+        const bgA = winner === 'A' ? 'bg-blue-500/10 border-blue-500/30' : 'bg-gray-900/30 border-transparent';
+        const bgB = winner === 'B' ? 'bg-purple-500/10 border-purple-500/30' : 'bg-gray-900/30 border-transparent';
+
+        let icon = '';
+        if (winner === 'B') icon = type === 'low' ? '↓' : '↑';
+        else if (winner === 'A') icon = type === 'low' ? '↑' : '↓'; 
+
+        const row = document.createElement('div');
+        row.className = "flex flex-col gap-1";
+        row.innerHTML = `
+            <div class="flex justify-between text-[9px] uppercase font-bold px-1 items-end">
+                <span class="${labelColor} tracking-wider">${label}</span>
+                <span class="${winner === 'B' ? 'text-green-400' : winner === 'A' ? 'text-red-400' : 'text-gray-600'}">${icon}</span>
+            </div>
+            <div class="flex gap-2 items-stretch h-8">
+                <div class="flex-1 rounded border ${bgA} flex items-center justify-between px-2 transition-all">
+                    <span class="font-mono font-bold text-xs ${colorA}">${txtA}</span>
+                    ${winner === 'A' ? '<div class="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_5px_currentColor]"></div>' : ''}
+                </div>
+                <div class="flex-1 rounded border ${bgB} flex items-center justify-between px-2 transition-all">
+                    ${winner === 'B' ? '<div class="w-1.5 h-1.5 rounded-full bg-purple-500 shadow-[0_0_5px_currentColor]"></div>' : ''}
+                    <span class="font-mono font-bold text-xs ${colorB}">${txtB}</span>
+                </div>
+            </div>
+        `;
+        container.appendChild(row);
+    };
+
+    // --- RENDER ROWS ---
+    renderRow("Strength", sA?.finalStr, sB?.finalStr, 'high', 'num', 'text-str');
+    renderRow("Addiction", sA?.finalAdct, sB?.finalAdct, 'high', 'num', 'text-adct');
+    renderRow("Toxicity", sA?.finalTox, sB?.finalTox, 'low', 'num', 'text-tox');
+    
+    const hr = document.createElement('div');
+    hr.className = "h-px bg-gray-800/50 my-2";
+    container.appendChild(hr);
+
+    // Financials
+    renderRow("Total Profit", profA, profB, 'high', 'money', 'text-green-400'); // Batch Profit
+    renderRow("Profit / g", profPerGA, profPerGB, 'high', 'money', 'text-gray-500'); // Efficiency
+
+    // --- 5. PROFIT DIFFERENCE CARD (TOTAL BATCH) ---
+    // Compare Absolute Total Profit as requested
+    const deltaTotal = profB - profA;
+    
+    // Update display text (A vs B)
+    const nameA = baseA ? (ingredients.find(i=>i.id===baseA)?.name || baseA) : "N/A";
+    const nameB = baseB ? (ingredients.find(i=>i.id===baseB)?.name || baseB) : "N/A";
+    profitRawEl.innerHTML = `
+        <span class="text-blue-400">${nameA}: $${profA.toFixed(0)}</span> vs 
+        <span class="text-purple-400">${nameB}: $${profB.toFixed(0)}</span>
+    `;
+
+    if (Math.abs(deltaTotal) < 0.01) {
+        profitDeltaEl.innerText = "$0.00";
+        profitDeltaEl.className = "text-xl font-mono font-bold text-gray-500";
+        profitLabelEl.innerText = "No Difference";
+        profitLabelEl.className = "text-[9px] text-gray-500 mt-1 uppercase tracking-wider";
+        profitCard.className = "bg-gray-950 border border-gray-800 rounded-lg p-3 text-center";
+    } else if (deltaTotal > 0) {
+        profitDeltaEl.innerText = `+$${deltaTotal.toFixed(2)}`;
+        profitDeltaEl.className = "text-xl font-mono font-bold text-green-400";
+        profitLabelEl.innerText = "MORE PROFIT (BATCH)";
+        profitLabelEl.className = "text-[9px] text-green-500 mt-1 uppercase tracking-wider font-bold";
+        profitCard.className = "bg-green-900/10 border border-green-500/30 rounded-lg p-3 text-center shadow-[0_0_15px_rgba(34,197,94,0.1)]";
+    } else {
+        profitDeltaEl.innerText = `-$${Math.abs(deltaTotal).toFixed(2)}`;
+        profitDeltaEl.className = "text-xl font-mono font-bold text-red-400";
+        profitLabelEl.innerText = "LESS PROFIT (BATCH)";
+        profitLabelEl.className = "text-[9px] text-red-500 mt-1 uppercase tracking-wider font-bold";
+        profitCard.className = "bg-red-900/10 border border-red-500/30 rounded-lg p-3 text-center";
+    }
+    
+    // Sale Price Check Warning
+    if(sA && pricePerGA === 0) profitLabelEl.innerHTML += "<br><span class='text-orange-400'>Set Sale Price for A in Lab</span>";
+    if(sB && pricePerGB === 0) profitLabelEl.innerHTML += "<br><span class='text-orange-400'>Set Sale Price for B in Lab</span>";
+}
+
+function loadComparePreset(slot) {
+    const elId = `comp-select-${slot.toLowerCase()}`;
+    const el = document.getElementById(elId);
+    if (!el) return;
+    
+    const val = el.value;
+    let newData = [];
+
+    if (val === 'flask') {
+        // Deep copy current flask
+        newData = JSON.parse(JSON.stringify(currentMix)); 
+    } else if (val !== 'empty') {
+        const pmx = savedPremixes[val];
+        if (pmx && pmx.composition) {
+            newData = pmx.composition.map(c => {
+                // Recover Amount
+                const amt = c.amount || (c.ratio * 100);
+                
+                // === FIX: Recover Cost ===
+                // Use savedCost if available, otherwise look up default cost
+                let cost = c.savedCost;
+                if (cost === undefined) {
+                    const dbItem = ingredients.find(i => i.id === c.id);
+                    cost = dbItem ? dbItem.cost : 0;
+                }
+
+                return {
+                    id: c.id,
+                    amount: amt,
+                    isWet: c.isWet,
+                    dynamicCost: cost // Load the specific cost into the comparison
+                };
+            });
+        }
+    }
+
+    if (slot === 'A') compMixA = newData;
+    else compMixB = newData;
+
+    // Refresh UI
+    renderCompMix(slot); 
+    updateCompAnalysis();
+}
+
+// Helper: Finds the main drug in a specific mix array
+function getMixBaseId(mix) {
+    if (!mix || mix.length === 0) return null;
+    
+    // Prioritize ingredients tagged as 'dope'
+    const drugs = mix.filter(m => {
+        const i = ingredients.find(x => x.id === m.id);
+        return i && i.type === 'dope';
+    });
+
+    // Return the heaviest drug, or the heaviest item if no drugs found
+    if (drugs.length > 0) {
+        return drugs.reduce((prev, current) => (prev.amount > current.amount) ? prev : current).id;
+    }
+    return mix.reduce((prev, current) => (prev.amount > current.amount) ? prev : current).id;
+}
+
     </script>
 </body>
 
