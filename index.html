@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DDS Architect v7.6 (Demand Added)</title>
+    <title>DDS Architect v7.7 (Premix Stats Added)</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -170,7 +170,7 @@
                 <div>
                     <h1 class="text-lg font-bold tracking-tight text-white leading-none">DDS <span
                             class="text-accent">Architect</span></h1>
-                    <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Demand Added v7.6</span>
+                    <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Premix Stats Added v7.7</span>
                 </div>
             </div>
 
@@ -744,6 +744,10 @@
         </div>
     </main>
 <div id="toast-container"></div>
+<div id="premix-tooltip" class="hidden fixed z-[9999] bg-gray-900/95 border border-gray-600 rounded-lg shadow-2xl p-3 pointer-events-none backdrop-blur-md w-48 transition-opacity duration-200">
+    <div class="text-xs font-bold text-accent mb-2 uppercase tracking-wider border-b border-gray-700 pb-1" id="tooltip-title">Mix Details</div>
+    <div class="space-y-1" id="tooltip-content"></div>
+</div>
     <!-- LOGIC -->
     <script>
         // --- 1. DATA DEFINITIONS ---
@@ -1364,6 +1368,7 @@
             renderLabsGrid();
             initBatchCalc();
             initDemandView();
+            initTooltipSystem();
 
             // Modal Listeners
             document.getElementById('seed-cost').addEventListener('input', updateModalCalc);
@@ -1524,7 +1529,6 @@
             // 1. Calculate Stats
             const stats = calculateStats();
             
-            // 2. VALIDATION CHECK (New)
             if (!stats || isNaN(stats.avgStr) || isNaN(stats.finalTox)) {
                 showToast("Error: Calculation failed (NaN). Check your mix.", "error");
                 return;
@@ -1537,10 +1541,9 @@
                 id: 'premix_' + Date.now(),
                 name: name,
                 type: 'premix',
-                // Explicitly saving mapped properties to avoid confusion
                 stats: {
                     str: Number(stats.avgStr) || 0,
-                    mixStr: Number(stats.avgMixStr) || 1, // Default to 1 (neutral) if 0
+                    mixStr: Number(stats.avgMixStr) || 1,
                     tox: Number(stats.finalTox) || 0,
                     adct: Number(stats.finalAdct) || 0
                 },
@@ -1548,8 +1551,10 @@
                 color: '#fbbf24',
                 form: 'mix',
                 isPremix: true,
+                // === FIX: Save 'amount' here so the tooltip can see it ===
                 composition: currentMix.map(item => ({
                     id: item.id,
+                    amount: item.amount, // <--- This was missing!
                     ratio: item.amount / stats.mass,
                     isWet: item.isWet
                 }))
@@ -1731,41 +1736,123 @@
         }
 
         function renderPremixItem(item, container) {
-            const row = document.createElement('div');
-            row.className = "flex items-center justify-between p-2 rounded-lg hover:bg-gray-800/80 cursor-pointer group transition-all border border-transparent hover:border-yellow-500/30";
-            
-            row.onclick = () => addPremixToFlask(item);
-            
-            // EXTRACT STATS FOR DISPLAY
-            // Use saved stats, or 0.00 if missing
-            const sStr = (item.stats && item.stats.str) ? item.stats.str.toFixed(2) : "0.00";
-            const sMix = (item.stats && item.stats.mixStr) ? item.stats.mixStr.toFixed(2) : "0.00";
-            
-            row.innerHTML = `
-                <div class="flex items-center gap-3">
-                    <div class="w-1.5 h-8 rounded-full shadow-[0_0_8px_currentColor]" style="color: ${item.color}; background-color: ${item.color}"></div>
-                    <div>
-                        <div class="text-xs font-bold text-yellow-100 group-hover:text-white transition-colors">${item.name}</div>
-                        <div class="text-[10px] text-yellow-500/70 font-mono flex gap-2">
-                             <span class="text-str">S:${sStr}</span>
-                             <span class="text-accent">M:${sMix}</span>
-                        </div>
-                    </div>
+    const row = document.createElement('div');
+    // Using inline style for the border to ensure it works
+    row.className = "flex items-center justify-between p-2 rounded-lg hover:bg-gray-800/80 cursor-pointer group transition-all border border-transparent";
+    
+    // === CONNECTION TO TOOLTIP ===
+    // We pass the 'item' object directly.
+    row.onmousemove = (e) => showDebugTooltip(e, item);
+    row.onmouseleave = () => hideDebugTooltip();
+    // =============================
+
+    row.onclick = () => addPremixToFlask(item);
+    
+    // Stats safe check
+    const sStr = (item.stats && item.stats.str) ? item.stats.str.toFixed(2) : "0.00";
+    const sMix = (item.stats && item.stats.mixStr) ? item.stats.mixStr.toFixed(2) : "0.00";
+    
+    row.innerHTML = `
+        <div class="flex items-center gap-3 pointer-events-none">
+            <div class="w-1.5 h-8 rounded-full shadow-[0_0_8px_currentColor]" style="color: ${item.color}; background-color: ${item.color}"></div>
+            <div>
+                <div class="text-xs font-bold text-yellow-100 group-hover:text-white transition-colors">${item.name}</div>
+                <div class="text-[10px] text-yellow-500/70 font-mono flex gap-2">
+                     <span class="text-str">S:${sStr}</span>
+                     <span class="text-accent">M:${sMix}</span>
                 </div>
-                
-                <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                    <button onclick="event.stopPropagation(); deletePremix('${item.id}')" 
-                        class="w-6 h-6 rounded bg-gray-900 text-gray-600 hover:text-red-400 hover:bg-red-900/30 flex items-center justify-center transition-all border border-gray-800 hover:border-red-500/50"
-                        title="Delete Mix">
-                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                        </svg>
-                    </button>
-                    <button class="w-6 h-6 rounded bg-gray-900 text-yellow-500 hover:text-white hover:bg-yellow-600 flex items-center justify-center text-sm font-bold shadow-lg border border-gray-800 hover:border-yellow-400">+</button>
-                </div>
-            `;
-            container.appendChild(row);
-        }
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
+            <button onclick="event.stopPropagation(); deletePremix('${item.id}')" 
+                class="w-6 h-6 rounded bg-gray-900 text-gray-600 hover:text-red-400 hover:bg-red-900/30 flex items-center justify-center transition-all border border-gray-800 hover:border-red-500/50"
+                title="Delete Mix">
+                <svg class="w-3 h-3 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+            </button>
+            <button class="w-6 h-6 rounded bg-gray-900 text-yellow-500 hover:text-white hover:bg-yellow-600 flex items-center justify-center text-sm font-bold shadow-lg border border-gray-800 hover:border-yellow-400">+</button>
+        </div>
+    `;
+    container.appendChild(row);
+}
+
+        function initTooltipSystem() {
+    // If it exists, remove it and recreate (clean slate)
+    const existing = document.getElementById('premix-tooltip');
+    if (existing) existing.remove();
+
+    const div = document.createElement('div');
+    div.id = 'premix-tooltip';
+    div.className = "hidden fixed z-[9999] bg-gray-900/95 border border-gray-600 rounded-lg shadow-2xl p-3 pointer-events-none backdrop-blur-md w-48 transition-opacity duration-200";
+    div.innerHTML = `
+        <div class="text-xs font-bold text-accent mb-2 uppercase tracking-wider border-b border-gray-700 pb-1" id="tooltip-title">Mix Details</div>
+        <div class="space-y-1" id="tooltip-content"></div>
+    `;
+    document.body.appendChild(div);
+}
+
+// 2. The Logic (Updated to use 'savedPremixes')
+function showPremixTooltip(e, recipe) {
+    const tooltip = document.getElementById('premix-tooltip');
+    if (!tooltip) {
+        initTooltipSystem(); // Auto-fix if missing
+        return; 
+    }
+    
+    const title = document.getElementById('tooltip-title');
+    const content = document.getElementById('tooltip-content');
+
+    // Safety check: Does the recipe have ingredients?
+    if (!recipe || !recipe.ingredients) {
+        console.warn("Tooltip: No ingredients found in recipe", recipe);
+        return;
+    }
+
+    // Setup Text
+    title.innerText = recipe.name;
+    content.innerHTML = '';
+    
+    // Calculate Total Weight for Percentages
+    const totalWeight = recipe.ingredients.reduce((sum, ing) => sum + ing.amount, 0);
+
+    recipe.ingredients.forEach(ing => {
+        // Find the ingredient details (color, name)
+        const ingData = ingredients.find(i => i.id === ing.id);
+        const color = ingData ? ingData.color : '#9ca3af';
+        const name = ingData ? ingData.name : ing.id;
+        
+        // Calculate Percentage
+        const pct = totalWeight > 0 ? (ing.amount / totalWeight) * 100 : 0;
+
+        const row = document.createElement('div');
+        row.className = "flex justify-between items-center text-[10px] py-0.5";
+        row.innerHTML = `
+            <span class="text-gray-300 flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full" style="background-color: ${color}"></span>
+                ${name}
+            </span>
+            <span class="font-mono font-bold text-accent">${Math.round(pct)}%</span>
+        `;
+        content.appendChild(row);
+    });
+
+    // Position the tooltip near the mouse
+    // We add offsets (+15) so the mouse doesn't block the text
+    const x = e.clientX + 15;
+    const y = e.clientY + 15;
+    
+    // Boundary check (keeps it inside the screen)
+    tooltip.style.left = `${Math.min(x, window.innerWidth - 220)}px`;
+    tooltip.style.top = `${Math.min(y, window.innerHeight - 200)}px`;
+    tooltip.classList.remove('hidden');
+}
+
+        function hideTooltip() {
+    const t = document.getElementById('premix-tooltip');
+    if(t) t.classList.add('hidden');
+}
 
         // --- 6. FLASK OPERATIONS ---
         // Updated to accept source info
@@ -3498,6 +3585,113 @@
                 container.innerHTML = `<div class="text-center text-gray-500 py-10 italic">No significant demand found in Sector ${sectorKey}.</div>`;
             }
         }
+
+        // --- SMARTER DEBUG TOOLTIP SYSTEM ---
+
+// 1. Create the Tooltip Element (if not exists)
+if (!document.getElementById('debug-tooltip')) {
+    const tooltipDiv = document.createElement('div');
+    tooltipDiv.id = 'debug-tooltip';
+    // High Z-Index to stay on top
+    tooltipDiv.style.cssText = "display: none; position: fixed; z-index: 9999999; bg-gray-900; background: rgba(17, 24, 39, 0.98); border: 1px solid #4b5563; border-radius: 8px; padding: 12px; width: 220px; pointer-events: none; backdrop-filter: blur(4px); box-shadow: 0 10px 25px rgba(0,0,0,0.5);";
+    tooltipDiv.innerHTML = `
+        <div style="font-size: 11px; font-weight: bold; color: #4ade80; text-transform: uppercase; border-bottom: 1px solid #374151; padding-bottom: 4px; margin-bottom: 4px;" id="dt-title">LOADING...</div>
+        <div style="font-size: 10px; color: white;" id="dt-content"></div>
+    `;
+    document.body.appendChild(tooltipDiv);
+}
+
+// 2. The Show Function
+function showDebugTooltip(e, item) {
+    const t = document.getElementById('debug-tooltip');
+    const title = document.getElementById('dt-title');
+    const content = document.getElementById('dt-content');
+
+    // Debugging: Print the full object to your browser console (F12)
+    console.log("HOVER DEBUG:", item);
+
+    // 1. Set Title
+    title.innerText = item.name || "Unknown";
+
+    // 2. Aggressive Search for the List
+    // We try every possible name for the ingredient list
+    let list = item.ingredients || item.mix || item.recipe || item.contents || item.composition || item.data || item.items;
+
+    // 3. Render
+    content.innerHTML = '';
+
+    if (!list || !Array.isArray(list) || list.length === 0) {
+        // === DIAGNOSTIC MODE ===
+        // If we can't find the list, show us what IS there
+        const keys = Object.keys(item).join(', ');
+        
+        content.innerHTML = `
+            <div style="color: #f87171; font-weight: bold; margin-bottom:5px; border-bottom:1px solid #555;">DATA STRUCTURE ERROR</div>
+            <div style="font-size: 9px; color: #d1d5db;">
+                I cannot find the ingredient list.<br>
+                <strong>Properties found on this object:</strong><br>
+                <div style="color: #fbbf24; font-family: monospace; margin-top:4px; line-height:1.4;">
+                    ${keys}
+                </div>
+            </div>
+            <div style="font-size: 9px; color: #9ca3af; margin-top:5px;">
+                * Open Console (F12) to see full details
+            </div>
+        `;
+    } else {
+        // === NORMAL MODE (Data Found) ===
+        // Calculate Total
+        const total = list.reduce((acc, i) => {
+            const val = i.amount || i.qty || i.weight || i.g || i.value || 0;
+            return acc + parseFloat(val);
+        }, 0);
+        
+        list.forEach(ing => {
+            const qty = parseFloat(ing.amount || ing.qty || ing.weight || ing.g || ing.value || 0);
+            const pct = total > 0 ? ((qty / total) * 100).toFixed(0) : 0;
+            
+            // Name Resolution
+            let ingName = ing.name || ing.id;
+            if ((!ing.name || ing.name === ing.id) && typeof ingredients !== 'undefined') {
+                const found = ingredients.find(x => x.id === ing.id);
+                if (found) ingName = found.name;
+            }
+            
+            content.innerHTML += `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom:2px;">
+                    <span style="color: #e5e7eb; margin-right: 10px;">${ingName}</span>
+                    <div style="text-align: right;">
+                        <span style="color: #9ca3af; font-size: 9px; margin-right: 6px;">${qty}g</span>
+                        <span style="font-weight: bold; color: #fbbf24; font-family: monospace;">${pct}%</span>
+                    </div>
+                </div>
+            `;
+        });
+        
+         content.innerHTML += `
+            <div style="margin-top: 4px; padding-top: 4px; border-top: 1px dashed #4b5563; text-align: right; color: #6b7280; font-size: 9px;">
+                Total: ${total}g
+            </div>
+        `;
+    }
+
+    // 4. Position & Show
+    t.style.display = 'block';
+    
+    let leftPos = e.clientX + 15;
+    if (leftPos + 220 > window.innerWidth) leftPos = e.clientX - 235;
+    let topPos = e.clientY + 15;
+    if (topPos + 200 > window.innerHeight) topPos = e.clientY - 200;
+
+    t.style.left = leftPos + 'px';
+    t.style.top = topPos + 'px';
+}
+
+// 3. The Hide Function
+function hideDebugTooltip() {
+    const t = document.getElementById('debug-tooltip');
+    if(t) t.style.display = 'none';
+}
     </script>
 </body>
 
